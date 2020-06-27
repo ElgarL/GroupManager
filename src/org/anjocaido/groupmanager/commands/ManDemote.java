@@ -1,0 +1,134 @@
+/**
+ * 
+ */
+package org.anjocaido.groupmanager.commands;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.data.User;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+
+/**
+ * @author ElgarL
+ *
+ */
+public class ManDemote extends BaseCommand implements TabCompleter {
+
+	/**
+	 * 
+	 */
+	public ManDemote() {}
+
+	@Override
+	protected boolean parseCommand(@NotNull String[] args) {
+
+		// Validating state of sender
+		if (dataHolder == null || permissionHandler == null) {
+			if (!setDefaultWorldHandler(sender))
+				return true;
+		}
+		// Validating arguments
+		if (args.length != 2) {
+			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mandemote <player> <group>)");
+			return true;
+		}
+		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+			return false;
+		}
+		if (match != null) {
+			auxUser = dataHolder.getUser(match.toString());
+		} else {
+			auxUser = dataHolder.getUser(args[0]);
+		}
+		auxGroup = dataHolder.getGroup(args[1]);
+		if (auxGroup == null) {
+			sender.sendMessage(ChatColor.RED + "'" + args[1] + "' Group doesnt exist!");
+			return true;
+		}
+		if (auxGroup.isGlobal()) {
+			sender.sendMessage(ChatColor.RED + "Players may not be members of GlobalGroups directly.");
+			return true;
+		}
+		// Validating permission
+		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+			sender.sendMessage(ChatColor.RED + "You can't modify a player with same permissions as you, or higher.");
+			return true;
+		}
+		if (!isConsole && !isOpOverride && (permissionHandler.hasGroupInInheritance(auxGroup, senderGroup.getName()))) {
+			sender.sendMessage(ChatColor.RED + "The destination group can't be the same as yours, or higher.");
+			return true;
+		}
+		if (!isConsole && !isOpOverride && (!permissionHandler.inGroup(senderUser.getUUID(), auxUser.getGroupName()) || !permissionHandler.inGroup(senderUser.getUUID(), auxGroup.getName()))) {
+			sender.sendMessage(ChatColor.RED + "You can't modify a player involving a group that you don't inherit.");
+			return true;
+		}
+		if (!permissionHandler.hasGroupInInheritance(auxUser.getGroup(), auxGroup.getName()) && !permissionHandler.hasGroupInInheritance(auxGroup, auxUser.getGroupName())) {
+			sender.sendMessage(ChatColor.RED + "You can't modify a player using groups with different inheritage line.");
+			return true;
+		}
+		if (permissionHandler.hasGroupInInheritance(auxGroup, auxUser.getGroupName())) {
+			sender.sendMessage(ChatColor.RED + "The new group must be a lower rank.");
+			return true;
+		}
+		// Seems OK
+		auxUser.setGroup(auxGroup);
+		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
+			sender.sendMessage(ChatColor.YELLOW + "You changed " + auxUser.getLastName() + " group to " + auxGroup.getName() + ".");
+
+		return true;
+	}
+
+	@Override
+	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+		
+		parseSender(sender, alias);
+		
+		List<String> result = new ArrayList<String>();
+		
+		/*
+		 * Return a TabComplete for users.
+		 */
+		if (args.length == 1) {
+
+			for (User user : dataHolder.getUserList()) {
+				result.add(user.getLastName());
+			}
+			return result;
+		}
+		
+		/*
+		 * Populate the second argument of TabComplete with a list of valid group names.
+		 */
+		if (args.length == 2) {
+			
+			if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+				return null;
+			}
+
+			if (match != null) {
+				auxUser = dataHolder.getUser(match.toString());
+			} else {
+				auxUser = dataHolder.getUser(args[0]);
+			}
+
+			for (Group g : dataHolder.getGroupList()) {
+				if (permissionHandler.hasGroupInInheritance(auxUser.getGroup(), g.getName()) && !auxUser.getGroup().equals(g))
+					result.add(g.getName());
+			}
+
+			return result;
+		}
+		
+		return null;
+		
+	}
+
+}

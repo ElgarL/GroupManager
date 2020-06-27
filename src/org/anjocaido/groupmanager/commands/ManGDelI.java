@@ -1,0 +1,104 @@
+/**
+ * 
+ */
+package org.anjocaido.groupmanager.commands;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.Group;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * @author ElgarL
+ *
+ */
+public class ManGDelI extends BaseCommand implements TabCompleter {
+
+	/**
+	 * 
+	 */
+	public ManGDelI() {
+
+	}
+
+	@Override
+	protected boolean parseCommand(@NotNull String[] args) {
+
+		// Validating state of sender
+		if (dataHolder == null || permissionHandler == null) {
+			if (!setDefaultWorldHandler(sender))
+				return true;
+		}
+		// Validating arguments
+		if (args.length != 2) {
+			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangdeli <group1> <group2>)");
+			return true;
+		}
+		auxGroup = dataHolder.getGroup(args[0]);
+		if (auxGroup == null) {
+			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			return true;
+		}
+		auxGroup2 = dataHolder.getGroup(args[1]);
+		if (auxGroup2 == null) {
+			sender.sendMessage(ChatColor.RED + "'" + args[1] + "' Group doesnt exist!");
+			return true;
+		}
+		if (auxGroup.isGlobal()) {
+			sender.sendMessage(ChatColor.RED + "GlobalGroups do NOT support inheritance.");
+			return true;
+		}
+
+		// Validating permission
+		if (!permissionHandler.hasGroupInInheritance(auxGroup, auxGroup2.getName())) {
+			sender.sendMessage(ChatColor.RED + "Group " + auxGroup.getName() + " does not inherit " + auxGroup2.getName() + ".");
+			return true;
+		}
+		if (!auxGroup.getInherits().contains(auxGroup2.getName())) {
+			sender.sendMessage(ChatColor.RED + "Group " + auxGroup.getName() + " does not inherit " + auxGroup2.getName() + " directly.");
+			return true;
+		}
+		// Seems OK
+		auxGroup.removeInherits(auxGroup2.getName());
+		sender.sendMessage(ChatColor.YELLOW + "Group " + auxGroup2.getName() + " was removed from " + auxGroup.getName() + " inheritance list.");
+
+		GroupManager.getBukkitPermissions().updateAllPlayers();
+
+		return true;
+	}
+	
+	@Override
+	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+
+		parseSender(sender, alias);
+		
+		List<String> result = new ArrayList<String>();
+		/*
+		 * Return a TabComplete for base groups.
+		 */
+		if (args.length == 1) {
+
+			for (Group g : dataHolder.getGroupList()) {
+				result.add(g.getName());
+			}
+		}
+		/*
+		 * Return a TabComplete for inherited groups.
+		 */
+		if (args.length == 2) {
+				
+			result = dataHolder.getGroup(args[0]).getInherits();
+
+		}
+		return result;
+
+	}
+
+}

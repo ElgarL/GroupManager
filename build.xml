@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+
+<project name="GroupManager" default="jar" basedir=".">
+	<property name="build" value="bin" />
+	<property file="build.properties" />
+	<property environment="env"/>
+
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="${build}" />
+		<mkdir dir="${env.LIB}" />
+
+	</target>
+
+	<target name="download" depends="init">
+	
+		<get src="http://palmergames.com/libs/annotations-19.0.0.jar" dest="${env.LIB}/annotations-19.0.0.jar" skipexisting="true" />
+		<get src="http://palmergames.com/libs/annotations-19.0.0-javadoc.jar" dest="${env.LIB}/annotations-19.0.0-javadoc.jar" skipexisting="true" />
+		<get src="http://palmergames.com/libs/annotations-19.0.0-sources.jar" dest="${env.LIB}/annotations-19.0.0-sources.jar" skipexisting="true" />
+		
+		<get src="http://palmergames.com/libs/spigot-api-1.16.1-R0.1-SNAPSHOT.jar" dest="${env.LIB}/spigot.jar" skipexisting="true" />
+		<get src="http://palmergames.com/libs/snakeyaml-1.9.jar" dest="${env.LIB}/snakeyaml-1.9.jar" skipexisting="true" />
+
+	</target>
+
+	<target name="compile" depends="download">
+		<!-- Compile the java code -->
+		<javac srcdir="src" destdir="${build}" includeantruntime="false" target="1.8" source="1.8" debug="true" debuglevel="lines,vars,source">
+			<classpath>
+				<pathelement location="${env.LIB}/annotations-19.0.0.jar" />
+				<pathelement location="${env.LIB}/spigot.jar" />
+				<pathelement location="${env.LIB}/snakeyaml-1.9.jar" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<copy todir="${build}" >  
+		    <fileset dir="./resources" includes="**" />
+		</copy>
+		<!-- Update the version in the plugin.yml -->
+		<replace file="${build}/plugin.yml" token="{BUILD_VER}" value="${env.TOWNY_BUILD_VER}"/>
+		<!-- Build the jar file -->
+		<jar basedir="${build}" destfile="${env.LIB}/GroupManager.jar">
+			<fileset dir="./src" />
+		</jar>
+		<copy file="${env.LIB}/GroupManager.jar" tofile="S:\Minecraft Spigot\plugins\GroupManager.jar" overwrite="true" />
+	</target>
+</project>
