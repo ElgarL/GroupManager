@@ -62,7 +62,7 @@ public class GMConfiguration {
 
 		if (!configFile.exists()) {
 			try {
-				Tasks.copy(plugin.getResourceAsStream("config.yml"), configFile);
+				Tasks.copy(plugin.getClass().getResourceAsStream("config.yml"), configFile);
 			} catch (IOException ex) {
 				GroupManager.logger.log(Level.SEVERE, "Error creating a new config.yml", ex);
 			}

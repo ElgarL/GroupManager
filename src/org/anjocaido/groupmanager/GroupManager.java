@@ -2,7 +2,6 @@ package org.anjocaido.groupmanager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -194,7 +193,7 @@ public class GroupManager extends JavaPlugin {
 			GroupManager.logger.setLevel(Level.ALL);
 
 			// Create the backup folder, if it doesn't exist.
-			prepareFileFields();
+			prepareBackupFolder();
 			// Load the config.yml
 			prepareConfig();
 			// Load the global groups
@@ -385,12 +384,7 @@ public class GroupManager extends JavaPlugin {
 		this.validateOnlinePlayer = validateOnlinePlayer;
 	}
 
-	public InputStream getResourceAsStream(String fileName) {
-
-		return this.getClassLoader().getResourceAsStream(fileName);
-	}
-
-	private void prepareFileFields() {
+	private void prepareBackupFolder() {
 
 		backupFolder = new File(this.getDataFolder(), "backup");
 		if (!backupFolder.exists()) {

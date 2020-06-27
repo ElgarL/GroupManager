@@ -567,7 +567,7 @@ public class WorldsHolder {
 				File groupsFile = new File(defaultWorldFolder, "groups.yml");
 				if (!groupsFile.exists() || groupsFile.length() == 0) {
 
-					InputStream template = plugin.getResourceAsStream("groups.yml");
+					InputStream template = plugin.getClass().getResourceAsStream("groups.yml");
 					try {
 						Tasks.copy(template, groupsFile);
 					} catch (IOException ex) {
@@ -580,7 +580,7 @@ public class WorldsHolder {
 				File usersFile = new File(defaultWorldFolder, "users.yml");
 				if (!usersFile.exists() || usersFile.length() == 0) {
 
-					InputStream template = plugin.getResourceAsStream("users.yml");
+					InputStream template = plugin.getClass().getResourceAsStream("users.yml");
 					try {
 						Tasks.copy(template, usersFile);
 					} catch (IOException ex) {

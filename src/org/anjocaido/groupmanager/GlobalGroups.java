@@ -102,7 +102,7 @@ public class GlobalGroups {
 		if (!GlobalGroupsFile.exists()) {
 			try {
 				// Create a new file if it doesn't exist.
-				Tasks.copy(plugin.getResourceAsStream("globalgroups.yml"), GlobalGroupsFile);
+				Tasks.copy(plugin.getClass().getResourceAsStream("globalgroups.yml"), GlobalGroupsFile);
 			} catch (IOException ex) {
 				GroupManager.logger.log(Level.SEVERE, null, ex);
 			}
