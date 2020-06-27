@@ -51,7 +51,7 @@ public class ManLoad extends BaseCommand implements TabCompleter {
 			GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
 
 			GroupManager.getGlobalGroups().load();
-			GroupManager.getWorldsHolder().loadWorld(auxString);
+			plugin.getWorldsHolder().loadWorld(auxString);
 
 			sender.sendMessage("The request to reload world '" + auxString + "' was attempted.");
 

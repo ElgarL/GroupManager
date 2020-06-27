@@ -109,11 +109,11 @@ public abstract class BaseCommand implements CommandExecutor {
 				return false;
 			}
 
-			senderUser = GroupManager.getWorldsHolder().getWorldData(senderPlayer).getUser(senderPlayer.getUniqueId().toString());
+			senderUser = plugin.getWorldsHolder().getWorldData(senderPlayer).getUser(senderPlayer.getUniqueId().toString());
 			senderGroup = senderUser.getGroup();
-			isOpOverride = (isOpOverride && (senderPlayer.isOp() || GroupManager.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op")));
+			isOpOverride = (isOpOverride && (senderPlayer.isOp() || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op")));
 
-			if (isOpOverride || GroupManager.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias)) {
+			if (isOpOverride || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias)) {
 				playerCanDo = true;
 			}
 		} else {
@@ -131,12 +131,12 @@ public abstract class BaseCommand implements CommandExecutor {
 		permissionHandler = null;
 
 		if (senderPlayer != null) {
-			dataHolder = GroupManager.getWorldsHolder().getWorldData(senderPlayer);
+			dataHolder = plugin.getWorldsHolder().getWorldData(senderPlayer);
 		}
 
 		String selectedWorld = GroupManager.getSelectedWorlds().get(sender.getName());
 		if (selectedWorld != null) {
-			dataHolder = GroupManager.getWorldsHolder().getWorldData(selectedWorld);
+			dataHolder = plugin.getWorldsHolder().getWorldData(selectedWorld);
 		}
 
 		if (dataHolder != null) {
@@ -158,12 +158,12 @@ public abstract class BaseCommand implements CommandExecutor {
 	 */
 	protected boolean setDefaultWorldHandler(CommandSender sender) {
 
-		dataHolder = GroupManager.getWorldsHolder().getWorldData(GroupManager.getWorldsHolder().getDefaultWorld().getName());
+		dataHolder = plugin.getWorldsHolder().getWorldData(plugin.getWorldsHolder().getDefaultWorld().getName());
 		permissionHandler = dataHolder.getPermissionsHandler();
 
 		if ((dataHolder != null) && (permissionHandler != null)) {
 			GroupManager.getSelectedWorlds().put(sender.getName(), dataHolder.getName());
-			sender.sendMessage(ChatColor.RED + "Couldn't retrieve your world. Default world '" + GroupManager.getWorldsHolder().getDefaultWorld().getName() + "' selected.");
+			sender.sendMessage(ChatColor.RED + "Couldn't retrieve your world. Default world '" + plugin.getWorldsHolder().getDefaultWorld().getName() + "' selected.");
 			return true;
 		}
 
@@ -216,7 +216,7 @@ public abstract class BaseCommand implements CommandExecutor {
 		
 		List<String> worlds = new ArrayList<String>();
 		
-		for (OverloadedWorldHolder world : GroupManager.getWorldsHolder().allWorldsDataList())
+		for (OverloadedWorldHolder world : plugin.getWorldsHolder().allWorldsDataList())
 			worlds.add(world.getName());
 
 		return worlds;

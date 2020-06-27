@@ -32,28 +32,28 @@ public class GMWorldListener implements Listener {
 
 		String worldName = event.getWorld().getName();
 
-		if (GroupManager.isLoaded() && !GroupManager.getWorldsHolder().isInList(worldName)) {
+		if (GroupManager.isLoaded() && !plugin.getWorldsHolder().isInList(worldName)) {
 			GroupManager.logger.info("New world detected...");
 			GroupManager.logger.info("Creating data for: " + worldName);
 			
-			if (GroupManager.getWorldsHolder().isWorldKnown("all_unnamed_worlds")) {
+			if (plugin.getWorldsHolder().isWorldKnown("all_unnamed_worlds")) {
 				
-				String usersMirror = GroupManager.getWorldsHolder().getMirrorsUser().get("all_unnamed_worlds");
-				String groupsMirror = GroupManager.getWorldsHolder().getMirrorsGroup().get("all_unnamed_worlds");
+				String usersMirror = plugin.getWorldsHolder().getMirrorsUser().get("all_unnamed_worlds");
+				String groupsMirror = plugin.getWorldsHolder().getMirrorsGroup().get("all_unnamed_worlds");
 				
 				if (usersMirror != null)
-					GroupManager.getWorldsHolder().getMirrorsUser().put(worldName.toLowerCase(), usersMirror);
+					plugin.getWorldsHolder().getMirrorsUser().put(worldName.toLowerCase(), usersMirror);
 				
 				if (groupsMirror != null)
-					GroupManager.getWorldsHolder().getMirrorsGroup().put(worldName.toLowerCase(), groupsMirror);
+					plugin.getWorldsHolder().getMirrorsGroup().put(worldName.toLowerCase(), groupsMirror);
 				
 			}
 			
-			GroupManager.getWorldsHolder().setupWorldFolder(worldName);
-			GroupManager.getWorldsHolder().loadWorld(worldName);
+			plugin.getWorldsHolder().setupWorldFolder(worldName);
+			plugin.getWorldsHolder().loadWorld(worldName);
 			
 			
-			if (GroupManager.getWorldsHolder().isInList(worldName)) {
+			if (plugin.getWorldsHolder().isInList(worldName)) {
 				GroupManager.logger.info("Don't forget to configure/mirror this world in config.yml.");
 			} else
 				GroupManager.logger.severe("Failed to configure this world.");

@@ -6,7 +6,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
 import org.bukkit.ChatColor;
@@ -37,7 +36,7 @@ public class ManUAdd extends BaseCommand implements TabCompleter {
 
 		// Select the relevant world (if specified)
 		if (args.length == 3) {
-			dataHolder = GroupManager.getWorldsHolder().getWorldData(args[2]);
+			dataHolder = plugin.getWorldsHolder().getWorldData(args[2]);
 			permissionHandler = dataHolder.getPermissionsHandler();
 		}
 

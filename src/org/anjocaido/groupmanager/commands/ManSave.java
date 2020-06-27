@@ -6,7 +6,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.Arrays;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -35,7 +34,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 			forced = true;
 
 		try {
-			GroupManager.getWorldsHolder().saveChanges(forced);
+			plugin.getWorldsHolder().saveChanges(forced);
 			sender.sendMessage(ChatColor.YELLOW + "All changes were saved.");
 		} catch (IllegalStateException ex) {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());

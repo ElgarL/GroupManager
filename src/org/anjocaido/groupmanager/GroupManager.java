@@ -138,7 +138,7 @@ public class GroupManager extends JavaPlugin {
 
 		if (!restarting) {
 			// Unregister this service if we are shutting down.
-			this.getServer().getServicesManager().unregister(GroupManager.getWorldsHolder());
+			this.getServer().getServicesManager().unregister(getWorldsHolder());
 		}
 
 		disableScheduler(); // Shutdown before we save, so it doesn't interfere.
@@ -264,7 +264,7 @@ public class GroupManager extends JavaPlugin {
 
 			// Register as a service
 			if (!restarting)
-				this.getServer().getServicesManager().register(WorldsHolder.class, GroupManager.getWorldsHolder(), this, ServicePriority.Lowest);
+				this.getServer().getServicesManager().register(WorldsHolder.class, getWorldsHolder(), this, ServicePriority.Lowest);
 			
 		} catch (Exception ex) {
 
@@ -440,7 +440,7 @@ public class GroupManager extends JavaPlugin {
 		}
 	}
 
-	public static WorldsHolder getWorldsHolder() {
+	public WorldsHolder getWorldsHolder() {
 
 		return worldsHolder;
 	}

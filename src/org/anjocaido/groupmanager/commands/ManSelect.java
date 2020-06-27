@@ -33,7 +33,7 @@ public class ManSelect extends BaseCommand implements TabCompleter {
 		if (args.length < 1) {
 			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manselect <world>)");
 			sender.sendMessage(ChatColor.YELLOW + "Worlds available: ");
-			ArrayList<OverloadedWorldHolder> worlds = GroupManager.getWorldsHolder().allWorldsDataList();
+			ArrayList<OverloadedWorldHolder> worlds = plugin.getWorldsHolder().allWorldsDataList();
 			auxString = "";
 			for (int i = 0; i < worlds.size(); i++) {
 				auxString += worlds.get(i).getName();
@@ -56,7 +56,7 @@ public class ManSelect extends BaseCommand implements TabCompleter {
 				auxString += " ";
 			}
 		}
-		dataHolder = GroupManager.getWorldsHolder().getWorldData(auxString);
+		dataHolder = plugin.getWorldsHolder().getWorldData(auxString);
 		permissionHandler = dataHolder.getPermissionsHandler();
 		GroupManager.getSelectedWorlds().put(sender.getName(), dataHolder.getName());
 		sender.sendMessage(ChatColor.YELLOW + "You have selected world '" + dataHolder.getName() + "'.");

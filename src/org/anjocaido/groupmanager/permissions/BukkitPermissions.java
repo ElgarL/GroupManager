@@ -149,7 +149,7 @@ public class BukkitPermissions {
 		String uuid = player.getUniqueId().toString();
 
 		// Reset the User objects player reference.
-		User user = GroupManager.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
+		User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 		
 		if (user != null)
 			user.updatePlayer(player);
@@ -170,7 +170,7 @@ public class BukkitPermissions {
 
 		// Add all permissions for this player (GM only)
 		// child nodes will be calculated by Bukkit.
-		List<String> playerPermArray = new ArrayList<String>(GroupManager.getWorldsHolder().getWorldData(world).getPermissionsHandler().getAllPlayersPermissions(uuid, false));
+		List<String> playerPermArray = new ArrayList<String>(plugin.getWorldsHolder().getWorldData(world).getPermissionsHandler().getAllPlayersPermissions(uuid, false));
 		LinkedHashMap<String, Boolean> newPerms = new LinkedHashMap<String, Boolean>();
 
 		// Sort the perm list by parent/child, so it will push to superperms
@@ -445,7 +445,7 @@ public class BukkitPermissions {
 			removeAttachment(player.getUniqueId().toString());
 
 			// force GM to create the player if they are not already listed.
-			GroupManager.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
 			setPlayer_join(false);
 			updatePermissions(event.getPlayer());
@@ -472,7 +472,7 @@ public class BukkitPermissions {
 			String uuid = player.getUniqueId().toString();
 			
 			// Reset the User objects player reference.
-			User user = GroupManager.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
+			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 			
 			user.updatePlayer(null);
 
