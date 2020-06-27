@@ -341,16 +341,16 @@ public class GroupManager extends JavaPlugin {
 
 		lastError = ex.getMessage();
 
-		GroupManager.logger.severe("===================================================");
+		GroupManager.logger.severe("====================================================");
 		GroupManager.logger.severe("= ERROR REPORT START - " + this.getDescription().getVersion() + " =");
-		GroupManager.logger.severe("===================================================");
-		GroupManager.logger.severe("=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ==");
-		GroupManager.logger.severe("= GROUPMANAGER FOLDER TO AN ESSENTIALS  DEVELOPER =");
-		GroupManager.logger.severe("===================================================");
+		GroupManager.logger.severe("====================================================");
+		GroupManager.logger.severe("=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ===");
+		GroupManager.logger.severe("= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER =");
+		GroupManager.logger.severe("====================================================");
 		GroupManager.logger.severe(lastError);
-		GroupManager.logger.severe("===================================================");
+		GroupManager.logger.severe("====================================================");
 		GroupManager.logger.severe("= ERROR REPORT ENDED =");
-		GroupManager.logger.severe("===================================================");
+		GroupManager.logger.severe("====================================================");
 
 		// Append this error to the error log.
 		try {
