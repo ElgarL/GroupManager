@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="../libs/spigot.jar" sourcepath="P:/Spigot/Spigot/Spigot-API">
+	<classpathentry kind="lib" path="../libs/spigot-api-SNAPSHOT-shaded.jar" sourcepath="P:/Spigot/Spigot/Spigot-API">
 		<attributes>
 			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
 		</attributes>
@@ -12,6 +12,5 @@
 			<attribute name="javadoc_location" value="jar:file:/P:/eclipse2020-workspace/libs/annotations-19.0.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="../libs/snakeyaml-1.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

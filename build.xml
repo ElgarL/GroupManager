@@ -23,9 +23,7 @@
 		<get src="${env.ARCHIVE}/annotations-19.0.0-javadoc.jar" dest="${env.LIB}/annotations-19.0.0-javadoc.jar" skipexisting="true" />
 		<get src="${env.ARCHIVE}/annotations-19.0.0-sources.jar" dest="${env.LIB}/annotations-19.0.0-sources.jar" skipexisting="true" />
 		
-		<get src="${env.ARCHIVE}/spigot-api-1.16.1-R0.1-SNAPSHOT.jar" dest="${env.LIB}/spigot.jar" skipexisting="true" />
-		<get src="${env.ARCHIVE}/snakeyaml-1.9.jar" dest="${env.LIB}/snakeyaml-1.9.jar" skipexisting="true" />
-
+		<get src="${env.ARCHIVE}/spigot-api-1.16.1-R0.1-SNAPSHOT-shaded.jar" dest="${env.LIB}/spigot-api-SNAPSHOT-shaded.jar" skipexisting="true" />
 	</target>
 
 	<target name="compile" depends="download">
@@ -33,8 +31,7 @@
 		<javac srcdir="src" destdir="${env.BUILD}" includeantruntime="false" target="1.8" source="1.8" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<pathelement location="${env.LIB}/annotations-19.0.0.jar" />
-				<pathelement location="${env.LIB}/spigot.jar" />
-				<pathelement location="${env.LIB}/snakeyaml-1.9.jar" />
+				<pathelement location="${env.LIB}/spigot-api-SNAPSHOT-shaded.jar" />
 			</classpath>
 		</javac>
 	</target>
