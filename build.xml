@@ -11,19 +11,20 @@
 	</target>
 
 	<target name="init" depends="clean">
+		<!-- Ensure our source and destination folders exist -->
 		<mkdir dir="${build}" />
 		<mkdir dir="${env.LIB}" />
 
 	</target>
 
 	<target name="download" depends="init">
-	
-		<get src="http://palmergames.com/libs/annotations-19.0.0.jar" dest="${env.LIB}/annotations-19.0.0.jar" skipexisting="true" />
-		<get src="http://palmergames.com/libs/annotations-19.0.0-javadoc.jar" dest="${env.LIB}/annotations-19.0.0-javadoc.jar" skipexisting="true" />
-		<get src="http://palmergames.com/libs/annotations-19.0.0-sources.jar" dest="${env.LIB}/annotations-19.0.0-sources.jar" skipexisting="true" />
+		<!-- Download any missing libraries -->
+		<get src="${env.SRC}/annotations-19.0.0.jar" dest="${env.LIB}/annotations-19.0.0.jar" skipexisting="true" />
+		<get src="${env.SRC}/annotations-19.0.0-javadoc.jar" dest="${env.LIB}/annotations-19.0.0-javadoc.jar" skipexisting="true" />
+		<get src="${env.SRC}/annotations-19.0.0-sources.jar" dest="${env.LIB}/annotations-19.0.0-sources.jar" skipexisting="true" />
 		
-		<get src="http://palmergames.com/libs/spigot-api-1.16.1-R0.1-SNAPSHOT.jar" dest="${env.LIB}/spigot.jar" skipexisting="true" />
-		<get src="http://palmergames.com/libs/snakeyaml-1.9.jar" dest="${env.LIB}/snakeyaml-1.9.jar" skipexisting="true" />
+		<get src="${env.SRC}/spigot-api-1.16.1-R0.1-SNAPSHOT.jar" dest="${env.LIB}/spigot.jar" skipexisting="true" />
+		<get src="${env.SRC}/snakeyaml-1.9.jar" dest="${env.LIB}/snakeyaml-1.9.jar" skipexisting="true" />
 
 	</target>
 
@@ -48,6 +49,7 @@
 		<jar basedir="${build}" destfile="${env.LIB}/GroupManager.jar">
 			<fileset dir="./src" />
 		</jar>
-		<copy file="${env.LIB}/GroupManager.jar" tofile="S:\Minecraft Spigot\plugins\GroupManager.jar" overwrite="true" />
+		<!-- Copy the jar file to a test server -->
+		<copy file="${env.LIB}/GroupManager.jar" tofile="${env.TEST}\plugins\GroupManager.jar" overwrite="true" />
 	</target>
 </project>
