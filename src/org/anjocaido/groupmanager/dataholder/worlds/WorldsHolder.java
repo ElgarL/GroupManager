@@ -584,12 +584,11 @@ public class WorldsHolder {
 				File groupsFile = new File(defaultWorldFolder, "groups.yml");
 				if (!groupsFile.exists() || groupsFile.length() == 0) {
 
-					InputStream template = plugin.getClass().getResourceAsStream("groups.yml");
+					InputStream template = plugin.getResource("groups.yml");
 					try {
 						Tasks.copy(template, groupsFile);
 					} catch (IOException ex) {
-						GroupManager.logger.log(Level.SEVERE, null, ex);
-					}
+						GroupManager.logger.log(Level.SEVERE, null, ex);					}
 				}
 			}
 
