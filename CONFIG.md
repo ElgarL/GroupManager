@@ -1,8 +1,8 @@
 # Config
 
-This page details the default and basic configuration of the Group Manager config files.
+This page details the configuration of the GroupManager config files.
 
-Warning: Group manager overwrites its config files on reload, if you make manual changes be sure to /manload them.
+**Warning: Group manager overwrites its config files on reload, if you make manual changes be sure to /manload them.**
 
 Contents
 ---|
