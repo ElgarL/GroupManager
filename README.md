@@ -95,16 +95,16 @@ ___
 GroupManager provides two ways to perform user and group management. Either define the groups and users using the config files or modify the users and groups using console commands. All these commands can be used in the server console or in-game by someone with op, or the relevant permissions for each command. It is recommended to define the groups at least initially using the config files and perform user management with the commands. To give all permissions you can use the wildcard permission groupmanager.*.
 
 Contents
-
-    1 Rule of Thumb
-        2.1 User Management
-        2.2 Overriding User Permissions
-        2.3 User Variables
-        3.1 Group Managament
-        3.2 Group Permissions
-        3.3 Group Variables
-    4 Utility Commands
-    5 Non-Command Permissions
+----|
+1. [Rule of Thumb](#rule-of-thumb)
+2. [User Management](#user-management)
+3. [User Permissions](#user-permissions)
+4. [User Variables](#user-variables)
+5. [Group Managament](#group-management)
+6. [Group Permissions](#group-permissions)
+7. [Group Variables](#group-variables)
+8. [Utility Commands](#utility-commands)
+9. [Non-Command Permissions](#non-command-permissions)
 
 ## Rule of Thumb
 
@@ -197,7 +197,7 @@ permission: groupmanager.manulistv
 syntax: <command> <user> <variable>
 permission: groupmanager.manucheckv
 ```
-## Group Managament
+## Group Management
 
 Note the availability here for effecting globalgroups with the g: prefix.
 
