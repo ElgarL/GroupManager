@@ -68,7 +68,7 @@ GroupManager supports exception nodes, these will override negative nodes, allow
 ## Example Permissions
 
 There are a number of example (default) permissions files available for GroupManager:  
-[GroupManager Groups](https://github.com/ElgarL/GroupManager/blob/master/resources/groups.yml) :: [GroupManager GlobalGroups](https://github.com/ElgarL/GroupManager/blob/master/resources/globalgroups.yml) 
+[Groups](https://github.com/ElgarL/GroupManager/blob/master/resources/groups.yml) :: [GlobalGroups](https://github.com/ElgarL/GroupManager/blob/master/resources/globalgroups.yml) 
 
 ## Variables
 Group Manager allows you to define variables as well as permissions. These are values which are unique to the group. They are typically used in plugins to alter behaviour, based on groups. There are two major examples of this: the 'prefix' and 'suffix' variable and the 'build' toggle.
