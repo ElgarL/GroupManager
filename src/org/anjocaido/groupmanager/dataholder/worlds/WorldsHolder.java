@@ -596,7 +596,7 @@ public class WorldsHolder {
 				File usersFile = new File(defaultWorldFolder, "users.yml");
 				if (!usersFile.exists() || usersFile.length() == 0) {
 
-					InputStream template = plugin.getClass().getResourceAsStream("users.yml");
+					InputStream template = plugin.getResource("users.yml");
 					try {
 						Tasks.copy(template, usersFile);
 					} catch (IOException ex) {
