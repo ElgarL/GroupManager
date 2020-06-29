@@ -34,7 +34,7 @@ The directory structure when you first generate the config files will look somet
 ## config
 Located at: plugins/GroupManager/config.yml
 
-This config file is used when you have multiple worlds. It is used to copy the permissions from a single world across to others.
+This config file contains some basic settings and is used when you have multiple worlds. It is used to mirror the permissions from a single world across to others.
 
 The config file will look something like this:
 ```
