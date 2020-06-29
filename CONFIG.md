@@ -6,7 +6,7 @@ Warning: Group manager overwrites its config files on reload, if you make manual
 
 Contents
 ---|
-1. [config.yml](#config.yml)
+1. [config.yml](#config-2)
 2. [Mirroring](#mirroring)
 3. [group.yml](#group)
 4. [user.yml](#user)
@@ -31,7 +31,7 @@ The directory structure when you first generate the config files will look somet
                     groups.yml
                     users.yml
 
-## config.yml
+## config
 Located at: plugins/GroupManager/config.yml
 
 This config file is used when you have multiple worlds. It is used to copy the permissions from a single world across to others.
@@ -117,7 +117,7 @@ Here is an example of how to use mirroring in GM
 ```
 In this example you would be expected to maintain several sets of config files. Skylands and Skylands2 will share the Skylands folder. Mainworld, and the MainWorld_nether will share a folder. Hardcore will use the groups files from MainWorld but will have its own user file, and all other worlds will use the Hardcore user file and Mainworld groups file.
 
-## group.yml
+## group
 Located at: plugins/GroupManager/worlds/<worldname>/group.yml
 
 This is the main and most important config file. This is where you declare the groups for which you are going to be using. The example config file is a little too big to post here, but it will be automatically generated the first time you start GM.
@@ -170,7 +170,7 @@ This example has a couple of notable characteristics worth pointing out and is q
 
 The default configuration has many more such groups with an array of permissions, and uses something called global groups. This is used to make multiple world configs simpler, more details below.
 
-## user.yml
+## user
 
 Located at: plugins/GroupManager/worlds/<worldname>/user.yml
 
@@ -201,7 +201,7 @@ This example has a couple of notable characteristics worth pointing out and is q
     The permissions section lists any permissions in addition to group. In this example 'ElgarL' gets a the extra permission to be able to /heal.
     The last line of each user stipulates which group the user belongs too.
 
-## globalgroups.yml
+## globalgroups
 
 Located at: plugins/GroupManager/globalgroups.yml
 
