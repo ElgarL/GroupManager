@@ -1,4 +1,4 @@
-## Config
+# Config
 
 This page details the default and basic configuration of the Group Manager config files.
 
