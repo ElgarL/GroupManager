@@ -108,7 +108,7 @@ Contents
 
 ## Rule of Thumb
 
-Group Manager commands follow a fairly standard syntax:  
+GroupManager commands follow a fairly standard syntax:  
 
     man [u/g] [add/del/list/check] [p/i/v/sub]
 
@@ -118,139 +118,163 @@ man - GroupManager
 
 ## User Management
 
-- /manuadd: Move a player to desired group (adds them to the file if it doesn't exist).
+- /manuadd  
+Move a player to a desired group (adds them to the users file if they doesn't exist).
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.manuadd
 ```
-- /manudel: Remove any user specific configuration. Make him default group.
+- /manudel  
+Remove any user specific configuration. Make them the default group.
 ```
 syntax: <command> <player>  
 permission: groupmanager.manudel
 ```
-- /manuaddsub: Add a group to a player's subgroup list.
+- /manuaddsub  
+Add a group to a player's subgroup list.
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.manuaddsub
 ```
-- /manudelsub: Remove a group from a player's subgroup list.
+- /manudelsub  
+Remove a group from a player's subgroup list.
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.manudelsub
 ```
-- /manpromote: Allows promoting a player up the inheritance tree. This command will only allow the user to move the player between groups they inherit.  
+- /manpromote  
+Promotes a player up an inheritance tree. This command will only allow the user to move the player between groups that inherit.  
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.manpromote
 ```
-- /mandemote: Allows demoting a player down the inheritance tree. This command will only allow the user to move the player between groups they inherit.  
+- /mandemote  
+Demotes a player down an inheritance tree. This command will only allow the user to move the player between groups they inherit.  
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.mandemote
 ```
-- /manwhois: Tell the group that this user belongs to.  
+- /manwhois  
+Display the group that this user belongs to.  
 ```
 syntax: <command> <player>  
 permission: groupmanager.manwhois
 ```
 ## User Permissions
 
-- /manuaddp: Add permission directly to the player.
+- /manuaddp  
+Add permissions directly to the player. You can add multiple permissions with a single command.
 ```
-syntax: <command> <player> <permission>
+syntax: <command> <player> <permission> [permission2] [permission3]...
 permission: groupmanager.manuaddp
 ```
-- /manudelp: Removes permission directly from the player.
+- /manudelp  
+Removes permissions directly from the player. You can remove multiple permissions with a single command.
 ```
-syntax: <command> <player> <permission>
+syntax: <command> <player> <permission> [permission2] [permission3]...
 permission: groupmanager.manudelp
 ```
-- /manulistp: List all permissions from a player.
+- /manulistp  
+List all the permissions a player has.
 ```
 syntax: <command> <player>
 permission: groupmanager.manulistp
 ```
-- /manucheckp: Verify if user has a permission, and where it comes from.
+- /manucheckp  
+Verify if user has a permission, and where it comes from.
 ```
 syntax: <command> <player> <permission>
 permission: groupmanager.manucheckp
 ```
 ## User Variables
 
-- /manuaddv: Add, or replaces, a variable to a user (like prefix or suffix).
+- /manuaddv  
+Add, or replaces, a variable on a user (like prefix or suffix).
 ```
 syntax: <command> <user> <variable> <value>
 permission: groupmanager.manuaddv
 ```
-- /manudelv: Remove a variable from a user.
+- /manudelv  
+Remove a variable from a user.
 ```
 syntax: <command> <user> <variable>
 permission: groupmanager.manudelv
 ```
-- /manulistv: List variables a user has (like prefix or suffix).
+- /manulistv  
+List all variables a user has (like prefix or suffix).
 ```
 syntax: <command> <user>
 permission: groupmanager.manulistv
 ```
-- /manucheckv: Verify a value of a variable of user, and where it comes from.
+- /manucheckv  
+Verify the value of a variable of user, and where it comes from.
 ```
 syntax: <command> <user> <variable>
 permission: groupmanager.manucheckv
 ```
 ## Group Management
 
-Note the availability here for effecting globalgroups with the g: prefix.
+_Note the availability here for effecting globalgroups with the g: prefix._
 
-- /mangadd: Add group to the system.
+- /mangadd  
+Add a new group to the system.
 ```
 syntax: <command> <group>
 syntax: <command> <g:group>
 permission: groupmanager.mangadd
 ```
-- /mangdel: Removes a group from the system (all its users become default).
+- /mangdel  
+Removes a group from the system (all its users become default).
 ```
 syntax: <command> <group>
 syntax: <command> <g:group>
 permission: groupmanager.mangdel
 ```
-- /mangaddi: Add a group to another group inheritance list.
+- /mangaddi  
+Add a group to another groups inheritance list.
 ```
 syntax: <command> <group1> <group2>
 permission: groupmanager.mangaddi
 ```
-- /mangdeli: Remove a group from another group inheritance list.
+- /mangdeli  
+Remove a group from another groups inheritance list.
 ```
 syntax: <command> <group1> <group2>
 permission: groupmanager.mangdeli
 ```
-- /listgroups: List the groups available.
+- /listgroups  
+List the groups available.
 ```
 syntax: <command>
 permission: groupmanager.listgroups
 ```
 ## Group Permissions
 
-Note the availability here for effecting globalgroups with the g: prefix.
+_Note the availability here for effecting globalgroups with the g: prefix._
 
-- /mangaddp: Add permission to a group.
+- /mangaddp  
+Add permissions to a group. You can add multiple permissions with a single command.
 ```
-syntax: <command> <group> <permission>
-syntax: <command> <g:group> <permission>
+syntax: <command> <group> <permission> [permission2] [permission3]...
+syntax: <command> <g:group> <permission> [permission2] [permission3]...
 permission: groupmanager.mangaddp
 ```
-- /mangdelp: Removes permission from a group.
+- /mangdelp  
+Removes permission from a group. You can remove multiple permissions with a single command.
 ```
-syntax: <command> <group> <permission>
-syntax: <command> <g:group> <permission>
+syntax: <command> <group> <permission> [permission2] [permission3]...
+syntax: <command> <g:group> <permission> [permission2] [permission3]...
 permission: groupmanager.mangdelp
 ```
-- /manglistp: Lists all permissions from a group.
+- /manglistp  
+Lists all permissions from a group.
 ```
 syntax: <command> <group>
 syntax: <command> <g:group>
 permission: groupmanager.manglistp
 ```
-- /mangcheckp: Check if group has a permission, and where it comes from.
+- /mangcheckp  
+Check if the group has a permission, and where it comes from.
 ```
 syntax: <command> <group> <permission>
 syntax: <command> <g:group> <permission>
@@ -258,64 +282,76 @@ permission: groupmanager.mangcheckp
 ```
 ## Group Variables
 
-- /mangaddv: Add, or replaces, a variable to a group (like prefix or suffix).
+- /mangaddv  
+Add, or replaces, a variable on a group (like prefix or suffix).
 ```
 syntax: <command> <group> <variable> <value>
 permission: groupmanager.mangaddv
 ```
-- /mangdelv: Remove a variable from a group.
+- /mangdelv  
+Remove a variable from a group.
 ```
 syntax: <command> <group> <variable>
 permission: groupmanager.mangdelv
 ```
-- /manglistv: List variables a group has (like prefix or suffix).
+- /manglistv  
+List the variables a group has (like prefix or suffix).
 ```
 syntax: <command> <group>
 permission: groupmanager.manglistv
 ```
-- /mangcheckv: Verify a value of a variable of group, and where it comes from.
+- /mangcheckv  
+Verify the value of a variable of group, and where it comes from.
 ```
 syntax: <command> <group> <variable>
 permission: groupmanager.mangckeckv
 ```
 ## Utility Commands
 
-- /mansave: Save all permissions on file.
+- /mansave  
+Save all permissions on file.
 ```
 syntax: <command>
 permission: groupmanager.mansave
 ```
-- /manload: Reload current world and config.yml, or load given world.
+- /manload  
+Reload current world and config.yml, or load given world. [world] is an optional parameter.
 ```
 syntax: <command> [world]
 permission: groupmanager.manload
 ```
-- /mantogglevalidate: Toggle on/off the validating if player is online.
+- /mantogglevalidate  
+Toggle on/off the validating if player is online.
 ```
 syntax: <command>
 permission: groupmanager.mantogglevalidate
 ```
-- /mantogglesave: Toggle on/off the autosave.
+- /mantogglesave  
+Toggle on/off the autosave. Use with **EXTREME** caution!
 ```
 syntax: <command>
 permission: groupmanager.mantogglesave
 ```
-- /manworld: Prints the selected world name.
+- /manworld  
+Prints the selected world name.
 ```
 syntax: <command>
 permission: groupmanager.manworld
 ```
-- /manselect: Select a world to work with next commands.
+- /manselect  
+Select a world to work with next commands.
 ```
 syntax: <command> <world>
 permission: groupmanager.manselect
 ```
-- /manclear: Clear world selection. Next commands will work on your world.
+- /manclear  
+Clear world selection. Next commands will work on your world.
 ```
 syntax: <command>
 permission: groupmanager.manclear
 ```
-- /mancheckw: Obtain the paths to each file a world is storing it's data in (users/groups).
+- /mancheckw  
+Obtain the paths to each file a world is storing it's data in (users/groups).
 ```
 syntax: <command> <world>
 permission: groupmanager.mancheckw
