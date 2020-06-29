@@ -159,14 +159,15 @@ groups:
 ```
 This example has a couple of notable characteristics worth pointing out and is quite useful for most servers:
 
-    Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
-    The 2nd line gives the group name, this should be '<name>:'.
-    The 3rd line stipulates that this will be the group that users join automatically, there can only be one of these per config file.
-    The next section lists all the permissions you want to give to a user, in this case it is only the most basic commands.
-    The inheritance section would allow you to build on another user, simply list the group you want to inherit from like the permissions node above.
-    The prefix can be shown before the players name, in this case it is a colour code and would make the user a different colour.
-    The build toggle is used by some plugins, in this example people in the default group would not be able to build.
-    The "default" group, has an example of negative permissions, to specifically revoke a permission you simply add a '-' before the beginning of the permission, in this example revoking the 'essentials.help.factions' permission. The line above is an example of wildcard permissions, which means people in the default group will see all plugins command help, except for factions.
+Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
+**YAML also requires the use of spaces and not tabs when indenting.**
+The 2nd line gives the group name, this should be '<name>:'.
+The 3rd line stipulates that this will be the group that users join automatically, there can only be one default group per groups.yml file.
+The next section lists all the permissions you want to give to a user, in this case it is only the most basic commands.
+The inheritance section would allow you to build on another group, simply list the group you want to inherit the permission nodes from.
+The prefix can be shown before the players name, in this case it is a colour code and would make the user a different colour.
+The build toggle is used by some plugins, in this example people in the default group would not be able to build.
+The "default" group, has an example of negative permissions, to specifically revoke a permission you simply add a '-' before the beginning of the permission, in this example revoking the 'essentials.help.factions' permission. The line above is an example of wildcard permissions, which means people in the default group will see all plugins command help, except for factions.
 
 The default configuration has many more such groups with an array of permissions, and uses something called global groups. This is used to make multiple world configs simpler, more details below.
 
@@ -174,7 +175,7 @@ The default configuration has many more such groups with an array of permissions
 
 Located at: plugins/GroupManager/worlds/<worldname>/user.yml
 
-This is you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the ingame commands.
+This is where you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the ingame commands (asnd safer).
 
 The config file will look something like this:
 ```
@@ -205,8 +206,8 @@ The group line of each user stipulates which group the user belongs too.
 
 Located at: plugins/GroupManager/globalgroups.yml
 
-This file is used to make predefined permission 'sets'. The groups in this file will never be given directly to a user, and simply be added to a real groups inheritance.
+This file is used to make predefined permission 'sets'. The groups in this file will never be given directly to a user, and simply be added to a world groups inheritance.
 
 The point of global groups, is to make it easier to manage servers with multiple worlds. Instead of having to copy the permissions from each world, every time you make a change, you can simply make a global 'mod' group, and list all your normal mod permissions there. That way, you simply add 'g:mod' to the inheritance of the mod groups in each world, and that mod group gets all the permissions from the global file.
 
-The use of the global groups file is mostly optional. You can delete most the groups out of this file, and move the permissions to the groups.yml, as long as you leave the top line of the global groups file. Doing so, is down to personal preference, the main thing is to make sure that if you rename or move any groups in global groups, you also update the name in the inheritance of each world.
+The use of the global groups file is mostly optional. You can delete most the groups from this file, and move the permissions to the groups.yml, as long as you leave the top line of the global groups file. Doing so, is down to personal preference, the main thing is to make sure that if you rename or move any groups in global groups, you also update the name in the inheritance of each world.
