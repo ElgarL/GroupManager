@@ -65,6 +65,31 @@ GroupManager supports exception nodes, these will override negative nodes, allow
     -essentials.signs.create.* : Removes access to create every Essentials signs
     +essentials.signs.create.trade : Overrides and gives access to create trade signs
 
+## Example Permissions
+
+There are a number of example (default) permissions files available for GroupManager:  
+[GroupManager Groups](https://github.com/ElgarL/GroupManager/blob/master/resources/groups.yml) :: [GroupManager GlobalGroups](https://github.com/ElgarL/GroupManager/blob/master/resources/globalgroups.yml) 
+
+## Variables
+Group Manager allows you to define variables as well as permissions. These are values which are unique to the group. They are typically used in plugins to alter behaviour, based on groups. There are two major examples of this: the 'prefix' and 'suffix' variable and the 'build' toggle.
+
+**Chat Plugins**  
+Most chat plugins will read the prefix and suffix variable to allow you to give players custom names and colours based on their current group.
+
+Some examples:
+
+    prefix: '[A]' : Produces a simple <[A]User>
+    prefix: '&e' : Produces a coloured <User>
+
+AntiGrief
+
+Some plugins support group based 'antigrief' protection. Like with the chat colours, GroupManager doesn't provide this functionality.
+Typically the build status is given as:
+
+    build: false disables building/destroying of blocks.
+    build: true enables building/destroying of blocks.
+
+
 ___
 ## Welcome to GitHub Pages
  
