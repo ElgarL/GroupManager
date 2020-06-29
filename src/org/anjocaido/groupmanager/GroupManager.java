@@ -163,7 +163,7 @@ public class GroupManager extends JavaPlugin {
 			try {
 				worldsHolder.saveChanges(false);
 			} catch (IllegalStateException ex) {
-				GroupManager.logger.log(Level.WARNING, ex.getMessage());
+				GroupManager.logger.warning(ex.getMessage());
 			}
 		}
 
@@ -181,9 +181,10 @@ public class GroupManager extends JavaPlugin {
 			
 		}
 
-		// EXAMPLE: Custom code, here we just output some info so we can check that all is well
+		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
-		System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is disabled!");
+		GroupManager.logger.warning("version " + pdfFile.getVersion() + " is disabled!");
+
 		
 		if (!restarting)
 			GroupManager.logger.removeHandler(ch);
@@ -241,13 +242,13 @@ public class GroupManager extends JavaPlugin {
 			setLoaded(false);
 
 			/*
-			 *  Initialize the world listener and bukkit permissions
+			 *  Initialize the world listener and Bukkit permissions
 			 *  to handle events and initialize our command handlers
 			 *  if this is a fresh start
 			 *  
 			 *  else
 			 *  
-			 *  Reset bukkit perms.
+			 *  Reset bukkit permissions.
 			 */
 			if (!restarting) {
 				WorldEvents = new GMWorldListener(this);
@@ -266,7 +267,7 @@ public class GroupManager extends JavaPlugin {
 
 			/*
 			 * Schedule a Bukkit Permissions update for 1 tick later.
-			 * All plugins will be loaded by then
+			 * All plug-ins will be loaded by then
 			 */
 
 			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1) {
@@ -277,7 +278,7 @@ public class GroupManager extends JavaPlugin {
 				setLoaded(true);
 			}
 
-			System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
+			GroupManager.logger.info("version " + pdfFile.getVersion() + " is enabled!");
 
 			// Register as a service
 			if (!restarting)
@@ -425,9 +426,9 @@ public class GroupManager extends JavaPlugin {
 
 					try {
 						if (worldsHolder.saveChanges(false))
-							GroupManager.logger.log(Level.INFO, " Data files refreshed.");
+							GroupManager.logger.info("Data files refreshed.");
 					} catch (IllegalStateException ex) {
-						GroupManager.logger.log(Level.WARNING, ex.getMessage());
+						GroupManager.logger.warning(ex.getMessage());
 					}
 				}
 			};
@@ -437,7 +438,7 @@ public class GroupManager extends JavaPlugin {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
 				GroupManager.logger.info("Scheduled Data Saving is set for every " + minutes + " minutes!");
 			} else
-				GroupManager.logger.info("Scheduled Data Saving is Disabled!");
+				GroupManager.logger.warning("Scheduled Data Saving is Disabled!");
 
 			GroupManager.logger.info("Backups will be retained for " + getGMConfig().getBackupDuration() + " hours!");
 		}
@@ -453,7 +454,7 @@ public class GroupManager extends JavaPlugin {
 			} catch (Exception e) {
 			}
 			scheduler = null;
-			GroupManager.logger.info("Scheduled Data Saving is disabled!");
+			GroupManager.logger.warning("Scheduled Data Saving is disabled!");
 		}
 	}
 
