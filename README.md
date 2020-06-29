@@ -97,13 +97,11 @@ GroupManager provides two ways to perform user and group management. Either defi
 Contents
 
     1 Rule of Thumb
-    2 User
         2.1 User Management
-        2.2 Overriding Permissions
+        2.2 Overriding User Permissions
         2.3 User Variables
-    3 Group
         3.1 Group Managament
-        3.2 Permissions
+        3.2 Group Permissions
         3.3 Group Variables
     4 Utility Commands
     5 Non-Command Permissions
@@ -118,7 +116,6 @@ man - GroupManager
 [u/g] - user / group  
 [p/i/v/sub] - permission / inheritance / variable / subgroup  
 
-## User  
 ## User Management
 
 - /manuadd: Move a player to desired group (adds them to the file if it doesn't exist).
@@ -156,8 +153,7 @@ permission: groupmanager.mandemote
 syntax: <command> <player>  
 permission: groupmanager.manwhois
 ```
-
-## Overriding Permissions
+## User Permissions
 
 - /manuaddp: Add permission directly to the player.
 ```
@@ -179,7 +175,6 @@ permission: groupmanager.manulistp
 syntax: <command> <player> <permission>
 permission: groupmanager.manucheckp
 ```
-
 ## User Variables
 
 - /manuaddv: Add, or replaces, a variable to a user (like prefix or suffix).
@@ -202,8 +197,6 @@ permission: groupmanager.manulistv
 syntax: <command> <user> <variable>
 permission: groupmanager.manucheckv
 ```
-
-## Group  
 ## Group Managament
 
 Note the availability here for effecting globalgroups with the g: prefix.
@@ -229,12 +222,13 @@ permission: groupmanager.mangaddi
 ```
 syntax: <command> <group1> <group2>
 permission: groupmanager.mangdeli
+```
 - /listgroups: List the groups available.
+```
 syntax: <command>
 permission: groupmanager.listgroups
 ```
-
-## Permissions
+## Group Permissions
 
 Note the availability here for effecting globalgroups with the g: prefix.
 
@@ -262,7 +256,6 @@ syntax: <command> <group> <permission>
 syntax: <command> <g:group> <permission>
 permission: groupmanager.mangcheckp
 ```
-
 ## Group Variables
 
 - /mangaddv: Add, or replaces, a variable to a group (like prefix or suffix).
@@ -285,7 +278,6 @@ permission: groupmanager.manglistv
 syntax: <command> <group> <variable>
 permission: groupmanager.mangckeckv
 ```
-
 ## Utility Commands
 
 - /mansave: Save all permissions on file.
@@ -330,10 +322,14 @@ permission: groupmanager.mancheckw
 ```
 
 ## Non-Command Permissions
-    groupmanager.op Overrides all inheritance and permissions when performing Group Manager commands
-    groupmanager.notify.self notifies when your rank changes.
-    groupmanager.notify.other notifies when someone's rank changes.
-    groupmanager.noofflineperms Denies all permissions if server is in offline mode.
+    groupmanager.op  
+        Overrides all inheritance and permissions when performing Group Manager commands
+    groupmanager.notify.self  
+        notifies when your rank changes.
+    groupmanager.notify.other  
+        notifies when someone's rank changes.
+    groupmanager.noofflineperms  
+        Denies all permissions if server is in offline mode.
 ___
 ## Welcome to GitHub Pages
  
