@@ -4,18 +4,14 @@ This page details the default and basic configuration of the Group Manager confi
 
 Warning: Group manager overwrites its config files on reload, if you make manual changes be sure to /manload them.
 
-Contents|
----
-    1 After Install
-        1.1 config.yml
-        1.2 Mirroring
-        1.3 group.yml
-        1.4 user.yml
-        1.5 globalgroups.yml
-    2 Permissions
-        2.1 Example Permissions
-    3 Minimal
-    4 Video Tutorial
+Contents
+---|
+1. [config.yml](#config)
+2. [Mirroring](#mirroring)
+3. [group.yml](#group)
+4. [user.yml](#user)
+5. [globalgroups.yml](#globalgroups)
+
 
 ## After Install
 
@@ -95,12 +91,11 @@ settings:
 ```
 
 ## Mirroring
-
 Here is an example of how to use mirroring in GM
-
+```
 # This is an example GroupManager Mirroring system.
 # This will take you into some more complex GM Mirroring.
-```
+
   mirrors:
         MainWorld:
           MainWorld_nether:
@@ -119,7 +114,7 @@ Here is an example of how to use mirroring in GM
           all_unnamed_worlds:
           - users
           - groups
-```  
+```
 In this example you would be expected to maintain several sets of config files. Skylands and Skylands2 will share the Skylands folder. Mainworld, and the MainWorld_nether will share a folder. Hardcore will use the groups files from MainWorld but will have its own user file, and all other worlds will use the Hardcore user file and Mainworld groups file.
 
 ## group.yml
@@ -161,7 +156,7 @@ groups:
       prefix: '&2'
       build: true
       suffix: ''
-```  
+```
 This example has a couple of notable characteristics worth pointing out and is quite useful for most servers:
 
     Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
@@ -175,7 +170,8 @@ This example has a couple of notable characteristics worth pointing out and is q
 
 The default configuration has many more such groups with an array of permissions, and uses something called global groups. This is used to make multiple world configs simpler, more details below.
 
-## user.yml  
+## user.yml
+
 Located at: plugins/GroupManager/worlds/<worldname>/user.yml
 
 This is you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the ingame commands.
@@ -183,7 +179,7 @@ This is you define which user goes into which group. You should remember to make
 The config file will look something like this:
 ```
 users:
-  kimkandor:
+  ElgarL:
     subgroups: []
     permissions:
     - essentials.heal
@@ -200,11 +196,13 @@ users:
 This example has a couple of notable characteristics worth pointing out and is quite useful for most servers:
 
     Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
+    YAML also requires the use of spaces and not tabs when indenting.
     The 2nd line gives the user name, this should be '<name>:'.
-    The permissions section lists any permissions in addition to group. In this example 'kimkandor' gets a the extra permission to be able to /heal herself.
+    The permissions section lists any permissions in addition to group. In this example 'ElgarL' gets a the extra permission to be able to /heal.
     The last line of each user stipulates which group the user belongs too.
 
-## globalgroups.yml  
+## globalgroups.yml
+
 Located at: plugins/GroupManager/globalgroups.yml
 
 This file is used to make predefined permission 'sets'. The groups in this file will never be given directly to a user, and simply be added to a real groups inheritance.
@@ -212,39 +210,3 @@ This file is used to make predefined permission 'sets'. The groups in this file 
 The point of global groups, is to make it easier to manage servers with multiple worlds. Instead of having to copy the permissions from each world, every time you make a change, you can simply make a global 'mod' group, and list all your normal mod permissions there. That way, you simply add 'g:mod' to the inheritance of the mod groups in each world, and that mod group gets all the permissions from the global file.
 
 The use of the global groups file is mostly optional. You can delete most the groups out of this file, and move the permissions to the groups.yml, as long as you leave the top line of the global groups file. Doing so, is down to personal preference, the main thing is to make sure that if you rename or move any groups in global groups, you also update the name in the inheritance of each world.
-
-## Permissions
-At the very core of GroupManager configuration are the permission nodes. These are the entire point of GM, and control exactly what a player can do. Each plugin has its own set of permissions nodes. The default config file with GM reflects some examples.
-
-For other plugins you will need to check the related documentation. More detail on the permissions and details such as wildcard nodes can be found on the GroupManager page.
-
-## Example Permissions
-There are a number of example (default) permissions files available for GroupManager:  
-[Groups](https://github.com/ElgarL/GroupManager/blob/master/resources/groups.yml) :: [GlobalGroups](https://github.com/ElgarL/GroupManager/blob/master/resources/globalgroups.yml) 
-
-## Minimal
-
-It has been asked in the past, what is the most basic config file needed to run a server. The following config is the most basic config we could recommend, and for most servers this will simply not allow enough control, or provide enough commands to the users.
-
-groups:
-  Default:
-    default: true
-    permissions:
-    - essentials.help
-    - essentials.list
-    - essentials.motd
-    - essentials.rules
-    info:
-      prefix: '&5'
-      build: true
-      suffix: ''
-  Admin:
-    default: false
-    permissions:
-    - '*'
-    inheritance:
-    - default
-    info:
-      prefix: '&4'
-      build: true
-      suffix: ''
