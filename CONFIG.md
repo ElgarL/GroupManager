@@ -180,26 +180,26 @@ The config file will look something like this:
 ```
 users:
   ElgarL:
+    group: Default
     subgroups: []
     permissions:
     - essentials.heal
-    group: Default
-  zenexer:
+  KHobbits:
+    group: Moderator
     subgroups: []
     permissions: []
-    group: Mod
-  khobbits:
+  snowleo:
+    group: Builder
     subgroups: []
     permissions: []
-    group: Admin
 ```  
 This example has a couple of notable characteristics worth pointing out and is quite useful for most servers:
 
-    Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
-    YAML also requires the use of spaces and not tabs when indenting.
-    The 2nd line gives the user name, this should be '<name>:'.
-    The permissions section lists any permissions in addition to group. In this example 'ElgarL' gets a the extra permission to be able to /heal.
-    The last line of each user stipulates which group the user belongs too.
+Look at the indentation closely, YAML is very strict that this is correct and will error if it is wrong.
+**YAML also requires the use of spaces and not tabs when indenting.**
+The 2nd line gives the user name or the players UUID. If the player has never logged in it will be a name.
+The permissions section lists any permissions directly assigned to this player. In this example 'ElgarL' gets a the extra permission to be able to /heal.
+The group line of each user stipulates which group the user belongs too.
 
 ## globalgroups
 
