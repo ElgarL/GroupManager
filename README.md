@@ -119,7 +119,7 @@ man - GroupManager
 ## User Management
 
 - /manuadd  
-Move a player to a desired group (adds them to the users file if they doesn't exist).
+Move a player to a desired group (adds them to the users file if they don't already exist).
 ```
 syntax: <command> <player> <group>  
 permission: groupmanager.manuadd
