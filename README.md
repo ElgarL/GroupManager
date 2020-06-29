@@ -1,3 +1,22 @@
+##GroupManager
+
+GroupManager is a plug-in for Sigot/Bukkit based Minecraft servers. It allows you to group permissions together and add players to each group. Each group can have a full inheritance tree of other sub-groups, enabling players to have differing levels of authority and control with a promotion and demotion hierachy.
+
+The most traditional system (shown below) uses group inheritance, starting with new players at the top, and owners on the bottom. On smaller servers you might end up merging the moderator and admin rolls, but most people will have different opinions when it comes to which powers the admin should receive access to, and which powers moderators should receive as well.
+
+```markup
+- Newbie
+    The newbie group contains the very basic permission nodes, and should be safe to give all newly joined players upon login.
+- Player
+    The player group covers all the commands that established players can use. This usually includes commands which involve the economy, basic teleportation, and other basic commands.
+- Moderator
+    The next two groups can be merged or split even further based on your preference. Typically the lowest moderator rank would have access to kick users, and jail a user, while higher ranks could have access to IP ban players, turn invisible, and spawn creative mode items.
+- Admin
+- Owner
+    The owner group usually has access to all permissions/commands, and is usually the only one with commands that control plugins, define groups, and ability to shut down/restart the server.
+```
+
+----------------------------------------------------------------------------------------------
 ## Welcome to GitHub Pages
  
 You can use the [editor on GitHub](https://github.com/ElgarL/GroupManager/edit/gh-pages/README.md) to maintain and preview the content for your website in Markdown files.
