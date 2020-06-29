@@ -1,3 +1,4 @@
+<a href="https://elgarl.github.io/GroupManager/">GroupManager Website</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/COMMANDS.md">GroupManager Commands</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/CONFIG.md">GroupManager Config</a>
 # Config
 
 This page details the configuration of the GroupManager config files.
