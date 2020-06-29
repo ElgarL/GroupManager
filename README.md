@@ -4,7 +4,7 @@ GroupManager is a plug-in for Sigot/Bukkit based Minecraft servers. It allows yo
 
 The most traditional system (shown below) uses group inheritance, starting with new players at the top, and owners on the bottom. On smaller servers you might end up merging the moderator and admin rolls, but most people will have different opinions when it comes to which powers the admin should have access to, and which powers moderators should receive as well.
 
-```markdown
+```
 - **Newbie**
 	The newbie group contains the very basic permission nodes, and should be safe to give all newly
 	joined players upon login.
