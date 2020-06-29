@@ -87,3 +87,5 @@ Typically the build status is given as:
 
     build: false disables building/destroying of blocks.
     build: true enables building/destroying of blocks.
+
+<a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/COMMANDS.md">GroupManager Commands</a>
