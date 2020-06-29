@@ -6,7 +6,7 @@ Warning: Group manager overwrites its config files on reload, if you make manual
 
 Contents
 ---|
-1. [config.yml](#config)
+1. [config.yml](#config.yml)
 2. [Mirroring](#mirroring)
 3. [group.yml](#group)
 4. [user.yml](#user)
