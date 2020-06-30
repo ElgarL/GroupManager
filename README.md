@@ -4,7 +4,7 @@
 <input type="hidden" name="hosted_button_id" value="95VVUXYDUCDH8" />
 <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
 <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
-</form>
+</form>  
 # GroupManager
 
 GroupManager is a plug-in for Sigot/Bukkit based Minecraft servers. It allows you to group permissions together and add players to each group. Each group can have a full inheritance tree of other sub-groups, enabling players to have differing levels of authority and control with a promotion and demotion hierachy.
