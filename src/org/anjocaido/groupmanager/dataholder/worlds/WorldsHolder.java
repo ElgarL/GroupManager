@@ -40,7 +40,7 @@ import org.bukkit.entity.Player;
 
 /**
  * 
- * @author gabrielcouto
+ * @author gabrielcouto, ElgarL
  */
 public class WorldsHolder {
 
@@ -90,11 +90,20 @@ public class WorldsHolder {
 		return mirrorsUser;
 	}
 	
+	/**
+	 * Has data already been loaded for this world?
+	 * 
+	 * @param name
+	 * @return	true if data is found.
+	 */
 	public boolean isWorldKnown(String name) {
 		
 		return worldsData.containsKey(name.toLowerCase());
 	}
 	
+	/**
+	 * Erase any loaded data and perform a fresh load from file.
+	 */
 	public void resetWorldsHolder() {
 		
 		worldsData = new HashMap<String, OverloadedWorldHolder>();
@@ -515,8 +524,8 @@ public class WorldsHolder {
 	}
 
 	/**
-	 * Id does getWorldDataByPlayerName(playerName).
-	 * If it doesnt return null, it will return result.getPermissionsHandler()
+	 * It does getWorldDataByPlayerName(playerName).
+	 * If it doesn't return null, it will return result.getPermissionsHandler()
 	 * 
 	 * @param playerName
 	 * @return null if the player matching gone wrong.
@@ -655,7 +664,7 @@ public class WorldsHolder {
 
 	/**
 	 * Load a world from file.
-	 * If it already been loaded, summon reload method from dataHolder.
+	 * If it has already been loaded, use reload() method from the dataHolder.
 	 * 
 	 * @param worldName
 	 */
@@ -715,7 +724,7 @@ public class WorldsHolder {
 	}
 
 	/**
-	 * Tells if the such world has been mapped.
+	 * Tells if the world has been mapped.
 	 * 
 	 * It will return true if world is a mirror.
 	 * 
