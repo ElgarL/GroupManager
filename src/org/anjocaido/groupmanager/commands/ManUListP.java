@@ -68,13 +68,13 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		// Validating permission
 		// Seems OK
 		auxString = "";
-		for (String perm : auxUser.getPermissionList()) {
+		for (String perm : auxUser.getAllPermissionList()) {
 			auxString += perm + ", ";
 		}
 		if (auxString.lastIndexOf(",") > 0) {
 			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + "The player '" + auxUser.getLastName() + "' has following permissions: " + ChatColor.WHITE + auxString);
-			sender.sendMessage(ChatColor.YELLOW + "And all permissions from group: " + auxUser.getGroupName());
+			sender.sendMessage(ChatColor.YELLOW + "The player '" + auxUser.getLastName() + "' has the following permissions: " + ChatColor.WHITE + auxString);
+			sender.sendMessage(ChatColor.YELLOW + "And all permissions from the group: " + auxUser.getGroupName());
 			auxString = "";
 			for (String subGroup : auxUser.subGroupListStringCopy()) {
 				auxString += subGroup + ", ";

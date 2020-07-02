@@ -17,6 +17,8 @@
  */
 package org.anjocaido.groupmanager.commands;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +26,7 @@ import java.util.UUID;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
+import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -75,6 +78,24 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", "");
+			String[] split = null;
+			Instant timed = null;
+			Long period = null;
+			/*
+			 * check for a timed permission
+			 */
+			if (auxString.contains("|")) {
+				split = auxString.split("\\|");
+
+				period = Tasks.parsePeriod(split[1]);
+				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				auxString = split[0];
+				
+				if (period == 0) {
+					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' <permission>|1d1h1m");
+					continue;
+				}
+			}
 		
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
@@ -88,8 +109,15 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 				continue;
 			}
 			// Seems Ok
-			auxUser.addPermission(auxString);
-			sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to player '" + auxUser.getLastName() + "' permissions.");
+			
+			if (period != null) {
+				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
+				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions with a duration of " + period + " minutes.");
+				
+			} else {
+				auxUser.addPermission(auxString);
+				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to player '" + auxUser.getLastName() + "' permissions.");
+			}
 		}
 
 		// If the player is online, this will create new data for the user.

@@ -62,7 +62,7 @@ public class ManGListP extends BaseCommand implements TabCompleter {
 
 		// Seems OK
 		auxString = "";
-		for (String perm : auxGroup.getPermissionList()) {
+		for (String perm : auxGroup.getAllPermissionList()) {
 			auxString += perm + ", ";
 		}
 		if (auxString.lastIndexOf(",") > 0) {

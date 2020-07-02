@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * 
@@ -102,6 +103,9 @@ public class Group extends DataUnit implements Cloneable {
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
 		}
+		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+			clone.addTimedPermission(perm.getKey(), perm.getValue());
+		}
 		clone.variables = ((GroupVariables) variables).clone(clone);
 		//clone.flagAsChanged();
 		return clone;
@@ -129,6 +133,9 @@ public class Group extends DataUnit implements Cloneable {
 		}
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
+		}
+		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		clone.variables = variables.clone(clone);
 		clone.flagAsChanged(); //use this to make the new dataSource save the new group

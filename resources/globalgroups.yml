@@ -14,7 +14,7 @@ groups:
 
 # Permission nodes for GroupManager
 # by ElgarL, snowleo, continued from gabrielcouto's original
-# http://wiki.ess3.net
+# https://elgarl.github.io/GroupManager/
 
   g:groupmanager_default:
     permissions:
@@ -94,9 +94,9 @@ groups:
     - bukkit.command.whitelist.reload
     - bukkit.command.whitelist.remove
 
-# Permission nodes for Essentials
-# by ementalo, snowleo, and KHobbits
-# http://dev.bukkit.org/server-mods/essentials/
+# Permission nodes for EssentialsX
+# by md678685 
+# https://www.spigotmc.org/resources/essentialsx.9089/
 
   g:essentials_default:
     permissions:
@@ -254,75 +254,79 @@ groups:
     - -essentials.plugin
     - essentials.*
 
-# Permission nodes for Towny by ElgarL
-# http://dev.bukkit.org/server-mods/towny-advanced/
-
+# Permission nodes for Towny by Llmdl
+# https://www.spigotmc.org/resources/towny-advanced.72694/
+# Materials https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
   g:towny_default:
     permissions:
     - towny.chat.local
 
   g:towny_builder:
     permissions:
-    - towny.wild.build.6
-    - towny.wild.destroy.6
-    - towny.wild.destroy.14
-    - towny.wild.destroy.15
-    - towny.wild.destroy.16
-    - towny.wild.build.17
-    - towny.wild.destroy.17
-    - towny.wild.destroy.18
-    - towny.wild.destroy.21
-    - towny.wild.destroy.31
-    - towny.wild.destroy.37
-    - towny.wild.destroy.38
-    - towny.wild.destroy.39
-    - towny.wild.destroy.40
-    - towny.wild.destroy.50
-    - towny.wild.destroy.56
-    - towny.wild.destroy.73
-    - towny.wild.destroy.74
-    - towny.wild.destroy.78
-    - towny.wild.destroy.81
-    - towny.wild.destroy.82
-    - towny.wild.destroy.83
-    - towny.wild.destroy.86
-    - towny.wild.destroy.103
-    - towny.wild.destroy.106
-    - towny.wild.destroy.111
-    - towny.wild.destroy.115
+    - towny.wild.build.OAK_SAPLING
+    - towny.wild.destroy.OAK_SAPLING
+    - towny.wild.destroy.GOLD_ORE
+    - towny.wild.destroy.IRON_ORE
+    - towny.wild.destroy.COAL_ORE
+    - towny.wild.build.OAK_LOG
+    - towny.wild.destroy.OAK_LOG
+    - towny.wild.destroy.OAK_LEAVES
+    - towny.wild.destroy.LAPIS_ORE
+    - towny.wild.destroy.TALL_GRASS
+    - towny.wild.destroy.LEGACY_YELLOW_FLOWER
+    - towny.wild.destroy.LEGACY_RED_FLOWER
+    - towny.wild.destroy.BROWN_MUSHROOM
+    - towny.wild.destroy.RED_MUSHROOM
+    - towny.wild.destroy.TORCH
+    - towny.wild.destroy.DIAMOND_ORE
+    - towny.wild.destroy.REDSTONE_ORE
+    - towny.wild.destroy.LEGACY_GLOWING_REDSTONE_ORE
+    - towny.wild.destroy.SNOW
+    - towny.wild.destroy.CACTUS
+    - towny.wild.destroy.CLAY
+    - towny.wild.destroy.SUGAR_CANE
+    - towny.wild.destroy.PUMPKIN
+    - towny.wild.destroy.MELON
+    - towny.wild.destroy.VINE
+    - towny.wild.destroy.LILY_PAD
+    - towny.wild.destroy.NETHER_WART
 
   g:towny_moderator:
     permissions:
     - towny.chat.mod
-    - towny.wild.switch.64
-    - towny.wild.build.83
-    - towny.wild.build.86
-    - towny.wild.build.103
-    - towny.wild.build.111
-    - towny.wild.build.115
+    - towny.wild.switch.minecraft:wooden_door
+    - towny.wild.build.minecraft:SUGAR_CANE
+    - towny.wild.build.minecraft:PUMPKIN
+    - towny.wild.build.minecraft:MELON
+    - towny.wild.build.minecraft:LILY_PAD
+    - towny.wild.build.minecraft:NETHER_WART
 
   g:towny_admin:
     permissions:
     - towny.admin
-    - -towny.wild.destroy.119
-    - -towny.wild.destroy.120
+    - -towny.wild.destroy.minecraft:END_PORTAL
+    - -towny.wild.destroy.minecraft:END_PORTAL_FRAME
     - towny.chat.admin
 
-# Permission nodes for VanishNoPacket by mbaxter
-# http://dev.bukkit.org/server-mods/vanish/
+# Permission nodes for SuperVanish by MyzelYam 
+# https://www.spigotmc.org/resources/supervanish-be-invisible.1331/
 
   g:vanish_moderator:
     permissions:
-    - vanish.vanish
-    - vanish.smokin
-    - vanish.nofollow
-    - vanish.nopickup
-    - vanish.preventincomingdamage
-    - vanish.hooks.dynmap.alwayshidden
+    - sv.use.1
+    - sv.toggleitems
+    - sv.login
+    - sv.logout
+    - sv.see.1
+    - sv.keepfly
     - vanish.hooks.essentials.hide
 
   g:vanish_admin:
     permissions:
-    - vanish.silentjoin
-    - vanish.silentquit
-    - vanish.silentchests
+    - sv.others
+    - sv.reload
+    - sv.list
+    - sv.recreatefiles
+    - sv.use.2
+    - sv.see.2
+    - sv.notoggle

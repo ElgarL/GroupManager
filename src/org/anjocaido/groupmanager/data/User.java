@@ -26,6 +26,8 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -70,8 +72,13 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroupListStringCopy());
 		
+		// Clone permissions
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
+		}
+		// Clone timed permissions.
+		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		// clone.variables = this.variables.clone();
 		// clone.flagAsChanged();
@@ -101,8 +108,14 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroupListStringCopy());
 				
+		// Clone permissions
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
+		}
+		
+		// Clone timed permissions.
+		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		
 		clone.variables = this.variables.clone(this);
@@ -122,8 +135,14 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroupListStringCopy());
 		
+		// Clone permissions
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
+		}
+		
+		// Clone timed permissions.
+		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		
 		clone.variables = this.variables.clone(this);
@@ -167,10 +186,8 @@ public class User extends DataUnit implements Cloneable {
 		
 	}
 
-
 	/**
-	 * @param group
-	 *            the group to set
+	 * @param group the group to set
 	 */
 	public void setGroup(Group group) {
 

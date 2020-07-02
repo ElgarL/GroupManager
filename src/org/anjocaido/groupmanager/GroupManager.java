@@ -98,6 +98,7 @@ public class GroupManager extends JavaPlugin {
 	
 	private File backupFolder;
 	private Runnable commiter;
+	private Runnable cleanup;
 	private ScheduledThreadPoolExecutor scheduler;
 	private static Map<String, ArrayList<User>> overloadedUsers = new HashMap<String, ArrayList<User>>();
 	private static Map<String, String> selectedWorlds = new HashMap<String, String>();
@@ -419,6 +420,9 @@ public class GroupManager extends JavaPlugin {
 
 		if (worldsHolder != null) {
 			disableScheduler();
+			/*
+			 * Thread to handle saving data.
+			 */
 			commiter = new Runnable() {
 
 				@Override
@@ -432,14 +436,33 @@ public class GroupManager extends JavaPlugin {
 					}
 				}
 			};
-			scheduler = new ScheduledThreadPoolExecutor(1);
+			/*
+			 * Thread for purging expired permissions.
+			 */
+			cleanup = new Runnable() {
+
+				@Override
+				public void run() {
+
+					try {
+						
+						worldsHolder.purgeExpiredPerms();
+					} catch (IllegalStateException ex) {
+						GroupManager.logger.warning(ex.getMessage());
+					}
+				}
+			};
+			
+			scheduler = new ScheduledThreadPoolExecutor(2);
 			long minutes = (long) getGMConfig().getSaveInterval();
+			
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
+				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
 				GroupManager.logger.info("Scheduled Data Saving is set for every " + minutes + " minutes!");
 			} else
 				GroupManager.logger.warning("Scheduled Data Saving is Disabled!");
-
+			
 			GroupManager.logger.info("Backups will be retained for " + getGMConfig().getBackupDuration() + " hours!");
 		}
 	}

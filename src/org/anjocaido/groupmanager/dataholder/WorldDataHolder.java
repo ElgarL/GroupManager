@@ -36,6 +36,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
@@ -356,8 +357,8 @@ public class WorldDataHolder {
 	 * Remove the group from the list
 	 * 
 	 * @param groupName
-	 * @return true if had something to remove. false the group was default or
-	 *         non-existant
+	 * @return true if something was removed. false the group was default or
+	 *         non-existent
 	 */
 	public boolean removeGroup(String groupName) {
 
@@ -694,11 +695,10 @@ public class WorldDataHolder {
 				throw new IllegalArgumentException("Bad format found in 'permissions' for '" + groupKey + "' in file: " + groupsFile.getPath());
 			}
 
-			if (nodeData == null) {
-				/*
-				 * If no permissions node is found, or it's empty do nothing.
-				 */
-			} else {
+			/*
+			 * If no permissions node is found, or it's empty do nothing.
+			 */
+			if (nodeData != null) {
 				/*
 				 * There is a permission list Which seems to hold some data
 				 */
@@ -713,7 +713,23 @@ public class WorldDataHolder {
 								 * Only add this permission if it's not empty.
 								 */
 								if (!o.toString().isEmpty())
-									thisGrp.addPermission(o.toString());
+									/*
+									 * check for a timed permission
+									 */
+									if (o.toString().contains("|")) {
+										String[] split = o.toString().split("\\|");
+										try {
+											
+											thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
+										} catch (Exception e) {
+											GroupManager.logger.warning("Timed Permission error: " + o.toString());
+										}
+									} else {
+										/*
+										 * add a standard permission
+										 */
+										thisGrp.addPermission(o.toString());
+									}
 
 							} catch (NullPointerException ex) {
 								// Ignore this entry as it's null. It can be
@@ -728,8 +744,25 @@ public class WorldDataHolder {
 					/*
 					 * Only add this permission if it's not empty.
 					 */
-					if (!nodeData.toString().isEmpty())
-						thisGrp.addPermission((String) nodeData);
+					if (!nodeData.toString().isEmpty()) {
+						/*
+						 * check for a timed permission
+						 */
+						if (nodeData.toString().contains("|")) {
+							String[] split = nodeData.toString().split("\\|");
+							try {
+
+								thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
+							} catch (Exception e) {
+								GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+							}
+						} else {
+							/*
+							 * add a standard permission
+							 */
+							thisGrp.addPermission((String) nodeData);
+						}
+					}
 
 				} else {
 					throw new IllegalArgumentException("Unknown type of 'permissions' node(Should be String or List<String>) for group:  " + thisGrp.getName() + " in file: " + groupsFile.getPath());
@@ -954,7 +987,19 @@ public class WorldDataHolder {
 								 * Only add this permission if it's not empty
 								 */
 								if (!o.toString().isEmpty()) {
-									thisUser.addPermission(o.toString());
+									/*
+									 * check for a timed permission
+									 */
+									if (o.toString().contains("|")) {
+										String[] split = o.toString().split("\\|");
+										try {
+											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
+										} catch (Exception e) {
+											GroupManager.logger.warning("TimedPermission error: " + o.toString());
+										}
+									} else {
+										thisUser.addPermission(o.toString());
+									}
 								}
 							}
 						} else if (nodeData instanceof String) {
@@ -963,7 +1008,19 @@ public class WorldDataHolder {
 							 * Only add this permission if it's not empty
 							 */
 							if (!nodeData.toString().isEmpty()) {
-								thisUser.addPermission(nodeData.toString());
+								/*
+								 * check for a timed permission
+								 */
+								if (nodeData.toString().contains("|")) {
+									String[] split = nodeData.toString().split("\\|");
+									try {
+										thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
+									} catch (Exception e) {
+										GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+									}
+								} else {
+									thisUser.addPermission(nodeData.toString());
+								}
 							}
 
 						}
@@ -1090,8 +1147,8 @@ public class WorldDataHolder {
 				}
 
 				aGroupMap.put("inheritance", group.getInherits());
-
-				aGroupMap.put("permissions", group.getPermissionList());
+				
+				aGroupMap.put("permissions", group.getSavePermissionList());
 			}
 		}
 
@@ -1177,7 +1234,7 @@ public class WorldDataHolder {
 				aUserMap.put("subgroups", user.subGroupListStringCopy());
 
 				// PERMISSIONS NODE
-				aUserMap.put("permissions", user.getPermissionList());
+				aUserMap.put("permissions", user.getSavePermissionList());
 
 				// USER INFO NODE - BETA
 				if (user.getVariables().getSize() > 0) {
@@ -1278,7 +1335,7 @@ public class WorldDataHolder {
 		if (users.HaveUsersChanged()) {
 			return true;
 		}
-		synchronized (users.getUsers()) {
+		synchronized (users) {
 			for (User u : users.getUsers().values()) {
 				if (u.isChanged()) {
 					return true;
@@ -1305,7 +1362,7 @@ public class WorldDataHolder {
 		if (groups.HaveGroupsChanged()) {
 			return true;
 		}
-		synchronized (groups.getGroups()) {
+		synchronized (groups) {
 			for (Group g : groups.getGroups().values()) {
 				if (g.isChanged()) {
 					return true;
@@ -1321,7 +1378,7 @@ public class WorldDataHolder {
 	public void removeUsersChangedFlag() {
 
 		setUsersChanged(false);
-		synchronized (getUsers()) {
+		synchronized (users) {
 			for (User u : getUsers().values()) {
 				u.flagAsSaved();
 			}
@@ -1334,9 +1391,28 @@ public class WorldDataHolder {
 	public void removeGroupsChangedFlag() {
 
 		setGroupsChanged(false);
-		synchronized (getGroups()) {
+		synchronized (groups) {
 			for (Group g : getGroups().values()) {
 				g.flagAsSaved();
+			}
+		}
+	}
+	
+	public void purgeTimedPermissions() {
+		
+		synchronized (groups) {
+			
+			for (Group group : getGroups().values()) {
+				if (group.removeExpired())
+					setUsersChanged(true);
+			}
+		}
+		
+		synchronized (users) {
+			
+			for (User user : getUsers().values()) {
+				if (user.removeExpired())
+					setGroupsChanged(true);
 			}
 		}
 	}

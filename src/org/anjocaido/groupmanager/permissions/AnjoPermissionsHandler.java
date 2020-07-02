@@ -138,7 +138,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		Set<String> overrides = new LinkedHashSet<String>();
 
 		// Add the players own permissions.
-		playerPermArray.addAll(populatePerms(ph.getUser(userName).getPermissionList(), includeChildren));
+		playerPermArray.addAll(populatePerms(ph.getUser(userName).getAllPermissionList(), includeChildren));
 
 		ArrayList<String> alreadyProcessed = new ArrayList<String>();
 
@@ -156,7 +156,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
 				} else {
 					// World Groups
-					groupPermArray = populatePerms(ph.getGroup(group).getPermissionList(), includeChildren);
+					groupPermArray = populatePerms(ph.getGroup(group).getAllPermissionList(), includeChildren);
 				}
 
 				// Add all group permissions, unless negated by earlier permissions.
@@ -781,7 +781,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.askedPermission = permission;
 		result.owner = user;
-		for (String access : user.getPermissionList()) {
+		for (String access : user.getAllPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;
@@ -806,7 +806,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.owner = group;
 		result.askedPermission = permission;
-		for (String access : group.getPermissionList()) {
+		for (String access : group.getAllPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;
@@ -892,7 +892,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 * @return PermissionCheckResult
 	 */
 	private PermissionCheckResult checkPermission(User user, String targetPermission, Boolean checkBukkit) {
-
+		 
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.accessLevel = targetPermission;
 		result.resultType = PermissionCheckResult.Type.NOTFOUND;
@@ -901,7 +901,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			// Check Bukkit perms to support plugins which add perms via code
 			// (Heroes).
 			final Player player = user.getBukkitPlayer();
-			//final Permission bukkitPerm = Bukkit.getPluginManager().getPermission(targetPermission);
+
 			if ((player != null) && player.hasPermission(targetPermission)) {
 				result.resultType = PermissionCheckResult.Type.FOUND;
 				result.owner = user;

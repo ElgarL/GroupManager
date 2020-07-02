@@ -28,9 +28,15 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -128,6 +134,47 @@ public abstract class Tasks {
 		date += "-";
 		date += now.get(Calendar.MINUTE);
 		return date;
+	}
+	
+	private static final Pattern periodPattern = Pattern.compile("([0-9]+)([mhd])");
+	
+	public static Long parsePeriod(String period){
+		
+	    if(period == null) return null;
+	    period = period.toLowerCase(Locale.ENGLISH);
+	    Matcher matcher = periodPattern.matcher(period);
+	    Instant instant=Instant.EPOCH;
+	    
+	    while(matcher.find()){
+	        int num = Integer.parseInt(matcher.group(1));
+	        String typ = matcher.group(2);
+	        switch (typ) {
+	        case "m":
+                instant=instant.plus(Duration.ofMinutes(num));
+                break;
+	        case "h":
+	            instant=instant.plus(Duration.ofHours(num));
+	            break;
+	        case "d":
+	            instant=instant.plus(Duration.ofDays(num));
+	            break;
+	        }
+	    }
+	    return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
+	}
+	
+	/**
+	 * Is this time in the past?
+	 * 
+	 * @param expires	long of seconds since Epoch.
+	 * @return	true if it has expired.
+	 */
+	public static boolean isExpired(Long expires) {
+		
+		/*
+		 * Time has expired?
+		 */
+		return Instant.now().isAfter(Instant.ofEpochSecond(expires));
 	}
 
 	public static String getStringListInString(List<String> list) {

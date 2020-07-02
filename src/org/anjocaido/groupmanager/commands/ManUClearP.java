@@ -70,7 +70,7 @@ public class ManUClearP extends BaseCommand implements TabCompleter {
 			sender.sendMessage(ChatColor.RED + "You can't modify a player with same group as you, or higher.");
 			return true;
 		}
-		for (String perm : auxUser.getPermissionList()) {
+		for (String perm : auxUser.getAllPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + "You can't remove a permission you don't have: '" + perm + "'.");

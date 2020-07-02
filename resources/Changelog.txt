@@ -242,3 +242,8 @@ v2.2:
 	- Update for Spigot 1.16.1
 	- Update all command code for Spigot/Bukkits command handler.
 	- Implement full Tab Completion on all commands.
+v2.3:
+    - Added timed permissions. You can also add negated timed permissions to punish bad players who need a timeout.
+        eg. /mangaddp default test.*|1d2h15m
+            /mangaddp owner -test.perm|20m
+            

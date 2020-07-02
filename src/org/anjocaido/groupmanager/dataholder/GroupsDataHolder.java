@@ -82,7 +82,7 @@ public class GroupsDataHolder {
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronized!
+	 * Note: Iteration over this object has to be synchronised!
 	 * @return the groups
 	 */
 	public Map<String, Group> getGroups() {

@@ -17,12 +17,15 @@
  */
 package org.anjocaido.groupmanager.commands;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
+import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -60,11 +63,29 @@ public class ManGAddP extends BaseCommand implements TabCompleter {
 			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
 			return false;
 		}
-		
+
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", "");
-		
+			String[] split = null;
+			Instant timed = null;
+			Long period = null;
+			/*
+			 * check for a timed permission
+			 */
+			if (auxString.contains("|")) {
+				split = auxString.split("\\|");
+
+				period = Tasks.parsePeriod(split[1]);
+				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				auxString = split[0];
+				
+				if (period == 0) {
+					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' <permission>|1d1h1m");
+					continue;
+				}
+			}
+
 			// Validating your permissions
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
@@ -78,8 +99,15 @@ public class ManGAddP extends BaseCommand implements TabCompleter {
 				continue;
 			}
 			// Seems OK
-			auxGroup.addPermission(auxString);
-			sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions.");
+			
+			if (period != null) {
+				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
+				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions with a duration of " + period + " minutes.");
+				
+			} else {
+				auxGroup.addPermission(auxString);
+				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions.");
+			}
 		}
 
 		GroupManager.getBukkitPermissions().updateAllPlayers();

@@ -317,6 +317,23 @@ public class WorldsHolder {
 		if (!mirrorsUser.containsKey(worldName.toLowerCase()))
 			getWorldData(worldName).reloadUsers();
 	}
+	
+	/*
+	 * Never call this. Only access via GM's clean up thread.
+	 */
+	public void purgeExpiredPerms() {
+		
+		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<WorldDataHolder>();
+		for (WorldDataHolder world : worldsData.values()) {
+			
+			if (alreadyDone.contains(world)) {
+				continue;
+			}
+
+			world.purgeTimedPermissions();
+			alreadyDone.add(world);
+		}
+	}
 
 	/**
 	 * Wrapper to retain backwards compatibility

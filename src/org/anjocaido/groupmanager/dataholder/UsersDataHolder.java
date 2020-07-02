@@ -60,7 +60,7 @@ public class UsersDataHolder {
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronized!
+	 * Note: Iteration over this object has to be synchronised!
 	 * @return the users
 	 */
 	public Map<String, User> getUsers() {

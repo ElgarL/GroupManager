@@ -61,7 +61,7 @@ public class ManGClearP extends BaseCommand implements TabCompleter {
 			return true;
 		}
 		
-		for (String perm : auxGroup.getPermissionList()) {
+		for (String perm : auxGroup.getAllPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + "Can't remove a permission you don't have: '" + perm + "'.");
