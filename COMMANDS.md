@@ -71,6 +71,9 @@ permission: groupmanager.manwhois
 ```
 ## User Permissions
 
+When adding permissions you can now set a duration after which they will expire.
+eg /manuaddp towny.wild.*|1d2h32m essentials.afk|10m
+
 - /manuaddp  
 Add permissions directly to the player. You can add multiple permissions with a single command.
 ```
@@ -158,6 +161,9 @@ syntax: <command>
 permission: groupmanager.listgroups
 ```
 ## Group Permissions
+
+When adding permissions you can now set a duration after which they will expire.
+eg /manuaddp towny.wild.*|1d2h32m essentials.afk|10m
 
 _Note the availability here for effecting globalgroups with the g: prefix._
 
