@@ -49,14 +49,16 @@ public class TempList extends BaseCommand {
 		ArrayList<User> removeList = new ArrayList<User>();
 		int count = 0;
 		
-		for (User u : GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase())) {
-			if (!dataHolder.isOverloaded(u.getUUID())) {
-				removeList.add(u);
-			} else {
-				auxString += u.getLastName() + ", ";
-				count++;
+		if (GroupManager.getOverloadedUsers().size() > 0)
+			for (User u : GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase())) {
+				if (!dataHolder.isOverloaded(u.getUUID())) {
+					removeList.add(u);
+				} else {
+					auxString += u.getLastName() + ", ";
+					count++;
+				}
 			}
-		}
+
 		if (count == 0) {
 			sender.sendMessage(ChatColor.YELLOW + "There are no users in overload mode.");
 			return true;
