@@ -20,8 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.data.Group;
-import org.anjocaido.groupmanager.data.User;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -118,10 +116,7 @@ public class ManUAdd extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
 		/*
@@ -129,21 +124,17 @@ public class ManUAdd extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 2) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
-
-			return result;
+			result = tabCompleteGroups(args[1]);
 		}
 		
 		/*
 		 * Populate the third argument of TabComplete with a list of valid world roots.
 		 */
 		if (args.length == 3) {
-			return getWorlds(); 
+			result = getWorlds(); 
 		}
 		
-		return null;
+		return result;
 	}
 
 }

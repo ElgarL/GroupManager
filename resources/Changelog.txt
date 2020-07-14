@@ -248,3 +248,4 @@ v2.3:
             /mangaddp owner -test.perm|20m
 v2.4:
     - Fix an NPE and superperms not updating correctly when adding a timed permission directly to a player (reported by BleuBleue).
+    - Improve TabComplete to narrow matches as you type.

@@ -103,15 +103,14 @@ public class ManGListP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
+			result = tabCompleteGroups(args[0]);
 			
 			/*
 			 * Include global groups.
 			 */
 			for (Group g : GroupManager.getGlobalGroups().getGroupList()) {
-				result.add(g.getName());
+				if (g.getName().toLowerCase().contains(args[0].toLowerCase()))
+					result.add(g.getName());
 			}
 		}
 		return result;

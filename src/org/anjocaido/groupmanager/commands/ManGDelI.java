@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -99,16 +98,17 @@ public class ManGDelI extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
+			result = tabCompleteGroups(args[0]);
 		}
 		/*
 		 * Return a TabComplete for inherited groups.
 		 */
 		if (args.length == 2) {
-				
-			result = dataHolder.getGroup(args[0]).getInherits();
+			try {
+				result = dataHolder.getGroup(args[0]).getInherits();
+			} catch (Exception ex) {
+				// Failed to match first group!
+			}
 
 		}
 		return result;

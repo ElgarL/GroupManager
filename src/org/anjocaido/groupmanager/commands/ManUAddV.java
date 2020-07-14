@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.data.Variables;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -90,13 +89,10 @@ public class ManUAddV extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
-		return null;
+		return result;
 	}
 
 }

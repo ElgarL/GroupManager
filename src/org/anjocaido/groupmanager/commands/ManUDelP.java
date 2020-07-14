@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -118,10 +117,7 @@ public class ManUDelP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
 		if (args.length >= 2) {
@@ -139,7 +135,7 @@ public class ManUDelP extends BaseCommand implements TabCompleter {
 
 		}
 		
-		return null;
+		return result;
 	}
 
 }

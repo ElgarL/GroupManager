@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -122,10 +121,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
 		/*
@@ -136,7 +132,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 			return Arrays.asList("+");
 		}
 		
-		return null;
+		return result;
 	}
 
 }

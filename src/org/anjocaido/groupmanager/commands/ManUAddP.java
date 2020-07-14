@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
@@ -136,19 +135,15 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 		parseSender(sender, alias);
 		
 		List<String> result = new ArrayList<String>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
 		if (args.length == 1) {
-
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
-		return null;
+		return result;
 	}
 
 }

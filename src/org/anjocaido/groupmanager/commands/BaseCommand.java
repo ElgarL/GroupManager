@@ -222,6 +222,45 @@ public abstract class BaseCommand implements CommandExecutor {
 	}
 	
 	/**
+	 * Return any users with partial name matches.
+	 * 
+	 * @param arg partial name to match
+	 * @return
+	 */
+	protected List<String> tabCompleteUsers(String arg) {
+		
+		List<String> result = new ArrayList<String>();
+		arg = arg.toLowerCase();
+		
+		/*
+		 * Return a TabComplete for users.
+		 */
+		for (User user : dataHolder.getUserList()) {
+			if(user.getLastName().toLowerCase().contains(arg))
+				result.add(user.getLastName());
+		}
+		return result;
+	}
+	
+	/**
+	 * Return a List of groups with partial name matches.
+	 * 
+	 * @param arg partial name to match
+	 * @return
+	 */
+	protected List<String> tabCompleteGroups(String arg) {
+		
+		List<String> result = new ArrayList<String>();
+		arg = arg.toLowerCase();
+		
+		for (Group g : dataHolder.getGroupList()) {
+			if (g.getName().toLowerCase().contains(arg.toLowerCase()))
+				result.add(g.getName());
+		}
+		return result;
+	}
+	
+	/**
 	 * Fetch a list of available worlds for tab Complete.
 	 * 
 	 * @return	a List of all root world names.

@@ -98,10 +98,9 @@ public class ManGCheckP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
+			result = tabCompleteGroups(args[0]);
 		}
+		
 		return result;
 	}
 

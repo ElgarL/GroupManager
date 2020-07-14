@@ -117,12 +117,9 @@ public class ManUCheckP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			result = tabCompleteUsers(args[0]);
 		}
 		
-		return null;
+		return result;
 	}
 }

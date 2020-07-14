@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -89,9 +88,7 @@ public class ManGClearP extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
+			result = tabCompleteGroups(args[0]);
 		}
 		return result;
 	}

@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.data.Group;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -87,9 +86,7 @@ public class ManGCheckV extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (Group g : dataHolder.getGroupList()) {
-				result.add(g.getName());
-			}
+			result = tabCompleteGroups(args[0]);
 		}
 		return result;
 	}

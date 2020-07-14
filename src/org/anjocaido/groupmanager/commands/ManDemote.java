@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.data.Group;
-import org.anjocaido.groupmanager.data.User;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -112,10 +111,7 @@ public class ManDemote extends BaseCommand implements TabCompleter {
 		 */
 		if (args.length == 1) {
 
-			for (User user : dataHolder.getUserList()) {
-				result.add(user.getLastName());
-			}
-			return result;
+			return tabCompleteUsers(args[0]);
 		}
 		
 		/*
@@ -135,7 +131,8 @@ public class ManDemote extends BaseCommand implements TabCompleter {
 
 			for (Group g : dataHolder.getGroupList()) {
 				if (permissionHandler.hasGroupInInheritance(auxUser.getGroup(), g.getName()) && !auxUser.getGroup().equals(g))
-					result.add(g.getName());
+					if (g.getName().toLowerCase().contains(args[1].toLowerCase()))
+						result.add(g.getName());
 			}
 
 			return result;
