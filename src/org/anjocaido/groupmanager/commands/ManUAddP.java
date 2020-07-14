@@ -112,7 +112,7 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 			
 			if (period != null) {
 				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions with a duration of " + period + " minutes.");
+				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to player '" + auxUser.getLastName() + "' permissions with a duration of " + period + " minutes.");
 				
 			} else {
 				auxUser.addPermission(auxString);

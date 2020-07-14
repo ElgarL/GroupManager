@@ -246,4 +246,5 @@ v2.3:
     - Added timed permissions. You can also add negated timed permissions to punish bad players who need a timeout.
         eg. /mangaddp default test.*|1d2h15m
             /mangaddp owner -test.perm|20m
-            
+v2.4:
+    - Fix an NPE and superperms not updating correctly when adding a timed permission directly to a player (reported by BleuBleue).
