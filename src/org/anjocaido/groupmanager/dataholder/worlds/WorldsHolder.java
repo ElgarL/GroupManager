@@ -27,10 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
@@ -319,7 +321,7 @@ public class WorldsHolder {
 	}
 	
 	/*
-	 * Never call this. Only access via GM's clean up thread.
+	 * Never call this. The Only access is via GM's clean up thread.
 	 */
 	public void purgeExpiredPerms() {
 		
@@ -332,6 +334,26 @@ public class WorldsHolder {
 
 			world.purgeTimedPermissions();
 			alreadyDone.add(world);
+			
+			/* 
+			 * Update all player permissions if the groups have changed.
+			 */
+			if (world.haveGroupsChanged()) {
+				GroupManager.getBukkitPermissions().updateAllPlayers();
+				
+			} else if (world.haveUsersChanged()) {
+				/*
+				 * Update individual player permissions if changed.
+				 */
+				for (User user: world.getUserList()) {
+					// If the player is online, this will create new data for the user.
+					if (user.getUUID() != null) {
+						Player targetPlayer = plugin.getServer().getPlayer(UUID.fromString(user.getUUID()));
+						if (targetPlayer != null)
+							GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
+					}
+				}
+			}
 		}
 	}
 
@@ -614,7 +636,8 @@ public class WorldsHolder {
 					try {
 						Tasks.copy(template, groupsFile);
 					} catch (IOException ex) {
-						GroupManager.logger.log(Level.SEVERE, null, ex);					}
+						GroupManager.logger.log(Level.SEVERE, null, ex);
+					}
 				}
 			}
 

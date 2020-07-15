@@ -1404,7 +1404,7 @@ public class WorldDataHolder {
 			
 			for (Group group : getGroups().values()) {
 				if (group.removeExpired())
-					setUsersChanged(true);
+					setGroupsChanged(true);
 			}
 		}
 		
@@ -1412,7 +1412,7 @@ public class WorldDataHolder {
 			
 			for (User user : getUsers().values()) {
 				if (user.removeExpired())
-					setGroupsChanged(true);
+					setUsersChanged(true);
 			}
 		}
 	}
