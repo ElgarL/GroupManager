@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,6 +110,7 @@ public class GroupManager extends JavaPlugin {
 	
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
+	private AtomicBoolean lock = new AtomicBoolean(false);
 	
 	private String lastError = "";
 
@@ -428,12 +430,20 @@ public class GroupManager extends JavaPlugin {
 				@Override
 				public void run() {
 
-					try {
-						if (worldsHolder.saveChanges(false))
-							GroupManager.logger.info("Data files refreshed.");
-					} catch (IllegalStateException ex) {
-						GroupManager.logger.warning(ex.getMessage());
-					}
+					boolean active = false;
+					
+					if (isLoaded())
+						try {
+							if (lock.compareAndSet(false, true) && worldsHolder.saveChanges(false)) {
+								active = true;
+								GroupManager.logger.info("Data files refreshed.");
+							}
+						} catch (IllegalStateException ex) {
+							GroupManager.logger.warning(ex.getMessage());
+						} finally {
+							if (active == true)
+								lock.lazySet(false);
+						}
 				}
 			};
 			/*
@@ -444,12 +454,35 @@ public class GroupManager extends JavaPlugin {
 				@Override
 				public void run() {
 
-					try {
-						
-						worldsHolder.purgeExpiredPerms();
-					} catch (IllegalStateException ex) {
-						GroupManager.logger.warning(ex.getMessage());
-					}
+					boolean active = false;
+					
+					if (isLoaded())
+						try {
+							/*
+							 * If we removed any permissions and saving is not disabled
+							 * update our data files so we are not updating perms
+							 * every 60 seconds.
+							 */
+							if (lock.compareAndSet(false, true) && worldsHolder.purgeExpiredPerms()) {
+								
+								active = true;
+								try {
+									if (worldsHolder.saveChanges(false))
+										GroupManager.logger.info("Data files refreshed.");
+								} catch (IllegalStateException ex) {
+									GroupManager.logger.warning(ex.getMessage());
+								}
+								
+							}
+						} catch (IllegalStateException ex) {
+							GroupManager.logger.warning(ex.getMessage());
+						} finally {
+							/*
+							 * Reset the lock if we set it.
+							 */
+							if (active == true)
+								lock.lazySet(false);
+						}
 				}
 			};
 			

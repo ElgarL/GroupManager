@@ -249,3 +249,5 @@ v2.3:
 v2.4:
     - Fix an NPE and superperms not updating correctly when adding a timed permission directly to a player (reported by BleuBleue).
     - Improve TabComplete to narrow matches as you type.
+v2.5:
+    - Make the saving of data Threadsafe.

@@ -1398,6 +1398,10 @@ public class WorldDataHolder {
 		}
 	}
 	
+	/**
+	 * Searches all groups and users for expired permissions
+	 * Removes those perms and flags the object for saving.
+	 */
 	public void purgeTimedPermissions() {
 		
 		synchronized (groups) {

@@ -323,9 +323,11 @@ public class WorldsHolder {
 	/*
 	 * Never call this. The Only access is via GM's clean up thread.
 	 */
-	public void purgeExpiredPerms() {
+	public boolean purgeExpiredPerms() {
 		
 		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<WorldDataHolder>();
+		boolean result = false;
+		
 		for (WorldDataHolder world : worldsData.values()) {
 			
 			if (alreadyDone.contains(world)) {
@@ -340,11 +342,14 @@ public class WorldsHolder {
 			 */
 			if (world.haveGroupsChanged()) {
 				GroupManager.getBukkitPermissions().updateAllPlayers();
+				result = true;
 				
 			} else if (world.haveUsersChanged()) {
 				/*
 				 * Update individual player permissions if changed.
 				 */
+				result = true;
+				
 				for (User user: world.getUserList()) {
 					// If the player is online, this will create new data for the user.
 					if (user.getUUID() != null) {
@@ -355,6 +360,7 @@ public class WorldsHolder {
 				}
 			}
 		}
+		return result;
 	}
 
 	/**
