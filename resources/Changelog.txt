@@ -251,3 +251,4 @@ v2.4:
     - Improve TabComplete to narrow matches as you type.
 v2.5:
     - Make the saving of data Threadsafe.
+    - Add version checking for updates at startup.

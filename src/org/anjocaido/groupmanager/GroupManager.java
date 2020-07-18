@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
+import org.anjocaido.groupmanager.Tasks.UpdateTask;
 import org.anjocaido.groupmanager.commands.ListGroups;
 import org.anjocaido.groupmanager.commands.ManCheckW;
 import org.anjocaido.groupmanager.commands.ManClear;
@@ -286,6 +287,11 @@ public class GroupManager extends JavaPlugin {
 			// Register as a service
 			if (!restarting)
 				this.getServer().getServicesManager().register(WorldsHolder.class, getWorldsHolder(), this, ServicePriority.Lowest);
+			
+			/*
+			 * Version check.
+			 */
+			this.getServer().getScheduler().runTaskLaterAsynchronously(this, new UpdateTask(pdfFile.getVersion()), 1L);
 			
 		} catch (Exception ex) {
 
