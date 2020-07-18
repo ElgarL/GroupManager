@@ -61,10 +61,6 @@ public class UpdateTask implements Runnable {
 				
 				GroupManager.logger.warning("Stable Version: " + newVersionTitle + " is out!" + " You are still running version: " + currentVersionTitle);
 				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.80743/");
-				
-			} else if (currentVersion > newVersion) {
-				
-				GroupManager.logger.info("Stable Version: " + newVersionTitle + " | Current Version: " + currentVersionTitle);
 
 			} else {
 				
