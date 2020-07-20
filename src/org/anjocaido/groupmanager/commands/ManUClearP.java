@@ -51,7 +51,7 @@ public class ManUClearP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manuclearp <player>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuclearp <player>)");
 			return true;
 		}
 		
@@ -79,7 +79,7 @@ public class ManUClearP extends BaseCommand implements TabCompleter {
 				auxUser.removePermission(perm);
 			}
 		}
-		sender.sendMessage(ChatColor.YELLOW + "You removed all permissions from player '" + auxUser.getLastName() + "'.");
+		sender.sendMessage(ChatColor.YELLOW + "You removed all permissions from player: " + auxUser.getLastName());
 
 		// If the player is online, this will create new data for the user.
 		if (auxUser.getUUID() != null) {

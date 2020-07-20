@@ -61,7 +61,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 
 		if (args.length == 1) {
 			
-			return Arrays.asList("Forced");
+			return Arrays.asList("force");
 		}
 		return null;
 	}

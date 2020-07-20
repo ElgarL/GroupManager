@@ -50,7 +50,7 @@ public class ManGAddV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 3) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangaddv <group> <variable> <value>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangaddv <group> <variable> <value>)");
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);

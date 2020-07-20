@@ -50,7 +50,7 @@ public class ManGAddI extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangaddi <group1> <group2>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangaddi <group1> <group2>)");
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);

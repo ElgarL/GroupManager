@@ -50,7 +50,7 @@ public class ManUCheckV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manucheckv <user> <variable>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manucheckv <user> <variable>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {

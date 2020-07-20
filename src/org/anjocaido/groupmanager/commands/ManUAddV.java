@@ -49,7 +49,7 @@ public class ManUAddV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 3) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manuaddv <user> <variable> <value>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuaddv <user> <variable> <value>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {

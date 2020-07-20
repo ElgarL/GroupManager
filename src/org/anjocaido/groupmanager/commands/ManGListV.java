@@ -51,7 +51,7 @@ public class ManGListV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manglistv <group>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manglistv <group>)");
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);

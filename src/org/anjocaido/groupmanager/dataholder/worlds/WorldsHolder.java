@@ -379,7 +379,7 @@ public class WorldsHolder {
 			GroupManager.getGlobalGroups().writeGroups(overwrite);
 		} else {
 			if (GroupManager.getGlobalGroups().getTimeStampGroups() < GroupManager.getGlobalGroups().getGlobalGroupsFile().lastModified()) {
-				System.out.print("Newer GlobalGroups file found (Loading changes)!");
+				GroupManager.logger.log(Level.WARNING,"Newer GlobalGroups file found (Loading changes)!");
 				GroupManager.getGlobalGroups().load();
 			}
 		}

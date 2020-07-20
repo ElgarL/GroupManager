@@ -601,7 +601,7 @@ public class WorldDataHolder {
 				throw new NullPointerException();
 			}
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("The following file couldn't pass on Parser.\n" + groupsFile.getPath(), ex);
+			throw new IllegalArgumentException(String.format("Your %s file is invalid. See console for details.", groupsFile.getPath(), ex));
 		} finally {
 			groupsInputStream.close();
 		}
@@ -617,11 +617,11 @@ public class WorldDataHolder {
 		try {
 			allGroupsNode = (Map<String, Object>) groupsRootDataNode.get("groups");
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Your " + groupsFile.getPath() + " file is invalid. See console for details.", ex);
+			throw new IllegalArgumentException(String.format("Your %s file is invalid. See console for details.", groupsFile.getPath()), ex);
 		}
 
 		if (allGroupsNode == null) {
-			throw new IllegalArgumentException("You have no groups in " + groupsFile.getPath() + ".");
+			throw new IllegalArgumentException("You have no groups in " + groupsFile.getPath());
 		}
 
 		Iterator<String> groupItr = allGroupsNode.keySet().iterator();
@@ -638,7 +638,7 @@ public class WorldDataHolder {
 				// Attempt to fetch the next group name.
 				groupKey = groupItr.next();
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Invalid group name for group entry (" + groupCount + ") in file: " + groupsFile.getPath(), ex);
+				throw new IllegalArgumentException(String.format("Invalid group name for group entry '%s' in file: %s", groupCount, groupsFile.getPath()), ex);
 			}
 
 			/*
@@ -649,7 +649,7 @@ public class WorldDataHolder {
 			try {
 				thisGroupNode = (Map<String, Object>) allGroupsNode.get(groupKey);
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Invalid child nodes for group '" + groupKey + "' in file: " + groupsFile.getPath(), ex);
+				throw new IllegalArgumentException(String.format("Invalid child nodes for group '%s' in file: %s", groupKey, groupsFile.getPath()), ex);
 			}
 
 			/*
@@ -658,7 +658,7 @@ public class WorldDataHolder {
 			Group thisGrp = ph.createGroup(groupKey);
 
 			if (thisGrp == null) {
-				throw new IllegalArgumentException("I think this Group was declared more than once: " + groupKey + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("This Group was declared more than once: %s in file: %s", groupKey, groupsFile.getPath()));
 			}
 
 			// DEFAULT NODE
@@ -667,7 +667,7 @@ public class WorldDataHolder {
 			try {
 				nodeData = thisGroupNode.get("default");
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Bad format found in 'permissions' for group: " + groupKey + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for group: %s in file: %s", "default", groupKey, groupsFile.getPath()));
 			}
 
 			if (nodeData == null) {
@@ -680,7 +680,7 @@ public class WorldDataHolder {
 				 * already claimed that position.
 				 */
 				if (ph.getDefaultGroup() != null) {
-					GroupManager.logger.warning("The group '" + thisGrp.getName() + "' is claiming to be default where '" + ph.getDefaultGroup().getName() + "' already was.");
+					GroupManager.logger.warning(String.format("The group '%s' is claiming to be default where '%s' already was.", thisGrp.getName(), ph.getDefaultGroup().getName()));
 					GroupManager.logger.warning("Overriding first default request in file: " + groupsFile.getPath());
 				}
 				ph.setDefaultGroup(thisGrp);
@@ -692,7 +692,7 @@ public class WorldDataHolder {
 			try {
 				nodeData = thisGroupNode.get("permissions");
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Bad format found in 'permissions' for '" + groupKey + "' in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Invalid formatting found in '%s' for group: %s in file: %s", "permissions", groupKey, groupsFile.getPath()));
 			}
 
 			/*
@@ -737,7 +737,7 @@ public class WorldDataHolder {
 							}
 						}
 					} catch (Exception ex) {
-						throw new IllegalArgumentException("Invalid formatting found in 'permissions' section for group: " + thisGrp.getName() + " in file: " + groupsFile.getPath(), ex);
+						throw new IllegalArgumentException(String.format("Invalid formatting found in '%s' for group: %s in file: %s", "permissions", thisGrp.getName(), groupsFile.getPath()), ex);
 					}
 
 				} else if (nodeData instanceof String) {
@@ -765,7 +765,7 @@ public class WorldDataHolder {
 					}
 
 				} else {
-					throw new IllegalArgumentException("Unknown type of 'permissions' node(Should be String or List<String>) for group:  " + thisGrp.getName() + " in file: " + groupsFile.getPath());
+					throw new IllegalArgumentException(String.format("Unknown type of '%s' node(Should be String or List<String>) for group: %s in file: %s", "permissions", thisGrp.getName(), groupsFile.getPath()));
 				}
 				/*
 				 * Sort all permissions so they are in the correct order for
@@ -780,7 +780,7 @@ public class WorldDataHolder {
 			try {
 				nodeData = thisGroupNode.get("info");
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Bad format found in 'info' section for group: " + groupKey + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for group: %s in file: %s", "info", groupKey, groupsFile.getPath()));
 			}
 
 			if (nodeData == null) {
@@ -788,7 +788,7 @@ public class WorldDataHolder {
 				 * No info section was found, so leave all variables as
 				 * defaults.
 				 */
-				GroupManager.logger.warning("The group '" + thisGrp.getName() + "' has no 'info' section!");
+				GroupManager.logger.warning(String.format("The group '%s' has no 'info' section!", thisGrp.getName()));
 				GroupManager.logger.warning("Using default values: " + groupsFile.getPath());
 
 			} else if (nodeData instanceof Map) {
@@ -797,11 +797,11 @@ public class WorldDataHolder {
 						thisGrp.setVariables((Map<String, Object>) nodeData);
 					}
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Invalid formatting found in 'info' section for group: " + thisGrp.getName() + " in file: " + groupsFile.getPath(), ex);
+					throw new IllegalArgumentException(String.format("Invalid formatting found in '%s' for group: %s in file: %s", "info", thisGrp.getName(), groupsFile.getPath()), ex);
 				}
 
 			} else
-				throw new IllegalArgumentException("Unknown entry found in 'info' section for group: " + thisGrp.getName() + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Unknown entry found in '%s' for group: %s in file: %s", "info", thisGrp.getName(), groupsFile.getPath()));
 
 			// INHERITANCE NODE
 
@@ -809,7 +809,7 @@ public class WorldDataHolder {
 			try {
 				nodeData = thisGroupNode.get("inheritance");
 			} catch (Exception ex) {
-				throw new IllegalArgumentException("Bad format found in 'inheritance' section for group: " + groupKey + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for group: %s in file: %s", "inheritance", groupKey, groupsFile.getPath()));
 			}
 
 			if (nodeData == null || nodeData instanceof List) {
@@ -829,12 +829,12 @@ public class WorldDataHolder {
 						}
 
 					} catch (Exception ex) {
-						throw new IllegalArgumentException("Invalid formatting found in 'inheritance' section for group: " + thisGrp.getName() + " in file: " + groupsFile.getPath(), ex);
+						throw new IllegalArgumentException(String.format("Invalid formatting found in '%s' for group: %s in file: %s", "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
 					}
 
 				}
 			} else
-				throw new IllegalArgumentException("Unknown entry found in 'inheritance' section for group: " + thisGrp.getName() + " in file: " + groupsFile.getPath());
+				throw new IllegalArgumentException(String.format("Unknown entry found in '%s' for group: %s in file: %s", "inheritance", thisGrp.getName(), groupsFile.getPath()));
 
 			// END GROUP
 
@@ -857,7 +857,7 @@ public class WorldDataHolder {
 						if (inheritedGroup != null) {
 							thisGroup.addInherits(inheritedGroup);
 						} else
-							GroupManager.logger.warning("Inherited group '" + inheritedKey + "' not found for group " + thisGroup.getName() + ". Ignoring entry in file: " + groupsFile.getPath());
+							GroupManager.logger.warning(String.format("Inherited group '%s' not found for group %s. Ignoring entry in file: %s", inheritedKey, thisGroup.getName(), groupsFile.getPath()));
 					}
 				}
 		}
@@ -910,7 +910,7 @@ public class WorldDataHolder {
 		try {
 			allUsersNode = (Map<String, Object>) usersRootDataNode.get("users");
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Your " + usersFile.getPath() + " file is invalid. See console for details.", ex);
+			throw new IllegalArgumentException(String.format("Your %s file is invalid. See console for details.", usersFile.getPath()), ex);
 		}
 
 		// Load users if the file is NOT empty
@@ -933,19 +933,19 @@ public class WorldDataHolder {
 						usersKey = node.toString();
 
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Invalid node type for user entry (" + userCount + ") in file: " + usersFile.getPath(), ex);
+					throw new IllegalArgumentException(String.format("Invalid node type for user entry #(%o) in file: %s", userCount, usersFile.getPath()), ex);
 				}
 
 				Map<String, Object> thisUserNode = null;
 				try {
 					thisUserNode = (Map<String, Object>) allUsersNode.get(node);
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found for user: %s in file: %s", usersKey, usersFile.getPath()));
 				}
 
 				User thisUser = ph.createUser(usersKey);
 				if (thisUser == null) {
-					throw new IllegalArgumentException("I think this user was declared more than once: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("This user was declared more than once: %s in file: %s", usersKey, usersFile.getPath()));
 				}
 
 				// LASTNAME NODES
@@ -956,7 +956,7 @@ public class WorldDataHolder {
 					nodeData = thisUserNode.get("lastname");
 					
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found in 'lastname' for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for user: %s in file: %s", "lastname", usersKey, usersFile.getPath()));
 				}
 				
 				if ((nodeData != null) && (nodeData instanceof String)) {
@@ -971,7 +971,7 @@ public class WorldDataHolder {
 				try {
 					nodeData = thisUserNode.get("permissions");
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found in 'permissions' for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for user: %s in file: %s", "permissions", usersKey, usersFile.getPath()));
 				}
 
 				if (nodeData == null) {
@@ -1036,7 +1036,7 @@ public class WorldDataHolder {
 				try {
 					nodeData = thisUserNode.get("info");
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found in 'info' section for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for user: %s in file: %s", "info", usersKey, usersFile.getPath()));
 				}
 
 				if (nodeData == null) {
@@ -1047,7 +1047,7 @@ public class WorldDataHolder {
 					thisUser.setVariables((Map<String, Object>) nodeData);
 
 				} else
-					throw new IllegalArgumentException("Unknown entry found in 'info' section for user: " + thisUser.getLastName() + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Unknown entry found in '%s' for user: %s in file: %s", "info", thisUser.getLastName(), usersFile.getPath()));
 
 				// END INFO NODE
 
@@ -1057,13 +1057,13 @@ public class WorldDataHolder {
 				try {
 					nodeData = thisUserNode.get("group");
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found in 'group' section for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for user: %s in file: %s", "group", usersKey, usersFile.getPath()));
 				}
 
 				if (nodeData != null) {
 					Group hisGroup = ph.getGroup(nodeData.toString());
 					if (hisGroup == null) {
-						GroupManager.logger.warning("There is no group " + thisUserNode.get("group").toString() + ", as stated for player " + thisUser.getLastName() + ": Set to '" + ph.getDefaultGroup().getName() + "' for file: " + usersFile.getPath());
+						GroupManager.logger.warning(String.format("There is no group %s, as stated for player %s: Set to '%s' for file: %s", thisUserNode.get("group").toString(), thisUser.getLastName(), ph.getDefaultGroup().getName(), usersFile.getPath()));
 						hisGroup = ph.getDefaultGroup();
 					}
 					thisUser.setGroup(hisGroup);
@@ -1077,7 +1077,7 @@ public class WorldDataHolder {
 				try {
 					nodeData = thisUserNode.get("subgroups");
 				} catch (Exception ex) {
-					throw new IllegalArgumentException("Bad format found in 'subgroups' for user: " + usersKey + " in file: " + usersFile.getPath());
+					throw new IllegalArgumentException(String.format("Invalid formating found in '%s' for user: %s in file: %s", "subgroups", usersKey, usersFile.getPath()));
 				}
 
 				if (nodeData == null) {
@@ -1087,13 +1087,13 @@ public class WorldDataHolder {
 				} else if (nodeData instanceof List) {
 					for (Object o : ((List) nodeData)) {
 						if (o == null) {
-							GroupManager.logger.warning("Invalid Subgroup data for user: " + thisUser.getLastName() + ". Ignoring entry in file: " + usersFile.getPath());
+							GroupManager.logger.warning(String.format("Invalid Subgroup data for user: %s. Ignoring entry in file: %s", thisUser.getLastName(), usersFile.getPath()));
 						} else {
 							Group subGrp = ph.getGroup(o.toString());
 							if (subGrp != null) {
 								thisUser.addSubGroup(subGrp);
 							} else {
-								GroupManager.logger.warning("Subgroup '" + o.toString() + "' not found for user: " + thisUser.getLastName() + ". Ignoring entry in file: " + usersFile.getPath());
+								GroupManager.logger.warning(String.format("Subgroup '%s' not found for user: %s. Ignoring entry in file: %s", o.toString(), thisUser.getLastName(), usersFile.getPath()));
 							}
 						}
 					}
@@ -1102,7 +1102,7 @@ public class WorldDataHolder {
 					if (subGrp != null) {
 						thisUser.addSubGroup(subGrp);
 					} else {
-						GroupManager.logger.warning("Subgroup '" + nodeData.toString() + "' not found for user: " + thisUser.getLastName() + ". Ignoring entry in file: " + usersFile.getPath());
+						GroupManager.logger.warning(String.format("Subgroup '%s' not found for user: %s. Ignoring entry in file: %s", nodeData.toString(), thisUser.getLastName(), usersFile.getPath()));
 					}
 				}
 			}
@@ -1271,11 +1271,6 @@ public class WorldDataHolder {
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 
-		/*
-		 * FileWriter tx = null; try { tx = new FileWriter(usersFile, false);
-		 * tx.write(yaml.dump(root)); tx.flush(); } catch (Exception e) { }
-		 * finally { try { tx.close(); } catch (IOException ex) { } }
-		 */
 	}
 
 	/**

@@ -48,7 +48,7 @@ public class ManUListV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manulistv <user>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manulistv <user>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -69,7 +69,7 @@ public class ManUListV extends BaseCommand implements TabCompleter {
 		if (auxString.lastIndexOf(",") > 0) {
 			auxString = auxString.substring(0, auxString.lastIndexOf(","));
 		}
-		sender.sendMessage(ChatColor.YELLOW + "Variables of user " + auxUser.getLastName() + ": ");
+		sender.sendMessage(ChatColor.YELLOW + String.format("Variables of user %s: ", auxUser.getLastName()));
 		sender.sendMessage(auxString + ".");
 		sender.sendMessage(ChatColor.YELLOW + "Plus all variables from group: " + auxUser.getGroupName());
 

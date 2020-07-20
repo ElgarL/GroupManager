@@ -51,7 +51,7 @@ public class ManUDelP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manudelp <player> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudelp <player> <permission> [permission2] [permission3]...)");
 			return true;
 		}
 		

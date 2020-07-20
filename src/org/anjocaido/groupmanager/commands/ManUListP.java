@@ -51,7 +51,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if ((args.length == 0) || (args.length > 2)) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manulistp <player> (+))");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manulistp <player> (+))");
 			return true;
 		}
 
@@ -72,7 +72,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		}
 		if (auxString.lastIndexOf(",") > 0) {
 			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + "The player '" + auxUser.getLastName() + "' has the following permissions: " + ChatColor.WHITE + auxString);
+			sender.sendMessage(ChatColor.YELLOW + String.format("The player '%s' has the following permissions: %s" + ChatColor.WHITE, auxUser.getLastName(), auxString));
 			sender.sendMessage(ChatColor.YELLOW + "And all permissions from the group: " + auxUser.getGroupName());
 			auxString = "";
 			for (String subGroup : auxUser.subGroupListStringCopy()) {
@@ -83,7 +83,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 				sender.sendMessage(ChatColor.YELLOW + "And all permissions from subgroups: " + auxString);
 			}
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + "The player '" + auxUser.getLastName() + "' has no specific permissions.");
+			sender.sendMessage(ChatColor.YELLOW + String.format("The player '%s' has no specific permissions.", auxUser.getLastName()));
 			sender.sendMessage(ChatColor.YELLOW + "Only all permissions from group: " + auxUser.getGroupName());
 			auxString = "";
 			for (String subGroup : auxUser.subGroupListStringCopy()) {

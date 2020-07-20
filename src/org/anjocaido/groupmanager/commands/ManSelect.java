@@ -45,7 +45,7 @@ public class ManSelect extends BaseCommand implements TabCompleter {
 	protected boolean parseCommand(@NotNull String[] args) {
 
 		if (args.length < 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manselect <world>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manselect <world>)");
 			sender.sendMessage(ChatColor.YELLOW + "Worlds available: ");
 			ArrayList<OverloadedWorldHolder> worlds = plugin.getWorldsHolder().allWorldsDataList();
 			auxString = "";
@@ -62,7 +62,7 @@ public class ManSelect extends BaseCommand implements TabCompleter {
 		auxString = "";
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null) {
-				GroupManager.logger.warning("Bukkit gave invalid arguments array! Cmd: " + this.getClass().getSimpleName() + " args.length: " + args.length);
+				GroupManager.logger.warning(String.format("Bukkit gave invalid arguments array! Cmd: %s args.length: %o", this.getClass().getSimpleName(), args.length));
 				return false;
 			}
 			auxString += args[i];

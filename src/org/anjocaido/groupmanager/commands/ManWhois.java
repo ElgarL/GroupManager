@@ -49,7 +49,7 @@ public class ManWhois extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manwhois <player>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manwhois <player>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {

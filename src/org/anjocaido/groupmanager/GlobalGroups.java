@@ -133,7 +133,7 @@ public class GlobalGroups {
 			GGroups = (Map<String, Object>) GGroupYAML.load(new UnicodeReader(groupsInputStream));
 			groupsInputStream.close();
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("The following file couldn't pass on Parser.\n" + GlobalGroupsFile.getPath(), ex);
+			throw new IllegalArgumentException(String.format("The following file is corrupt: %s", GlobalGroupsFile.getPath()), ex);
 		}
 
 		// Clear out old groups
@@ -147,7 +147,7 @@ public class GlobalGroups {
 				allGroups = (Map<String, Object>) GGroups.get("groups");
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				throw new IllegalArgumentException("Your " + GlobalGroupsFile.getPath() + " file is invalid. See console for details.", ex);
+				throw new IllegalArgumentException(String.format("The following file is corrupt: %s", GlobalGroupsFile.getPath()), ex);
 			}
 
 			// Load each groups permissions list.
@@ -167,7 +167,7 @@ public class GlobalGroups {
 						// Attempt to fetch the next group name.
 						groupName = groupItr.next();
 					} catch (Exception ex) {
-						throw new IllegalArgumentException("Invalid group name for GlobalGroup entry (" + groupCount + ") in file: " + GlobalGroupsFile.getPath(), ex);
+						throw new IllegalArgumentException(String.format("Invalid group name for GlobalGroup entry #[%d] in file: %s", groupCount, GlobalGroupsFile.getPath()), ex);
 					}
 
 					/*
@@ -180,7 +180,7 @@ public class GlobalGroups {
 					try {
 						element = ((Map<String, Object>)allGroups.get(groupName)).get("permissions");
 					} catch ( Exception ex) {
-						throw new IllegalArgumentException("The GlobalGroup ' " + groupName + "' is formatted incorrectly: ", ex);
+						throw new IllegalArgumentException(String.format("The GlobalGroup '%s' is formatted incorrectly. ", groupName), ex);
 					}
 
 					if (element != null)
@@ -191,13 +191,13 @@ public class GlobalGroups {
 										newGroup.addPermission(node);
 								}
 							} catch (ClassCastException ex) {
-								throw new IllegalArgumentException("Invalid permission node for global group:  " + groupName, ex);
+								throw new IllegalArgumentException(String.format("Invalid permission node in global group: %s", groupName), ex);
 							}
 						} else if (element instanceof String) {
 							if ((element != null) && !((String)element).isEmpty())
 							newGroup.addPermission((String) element);
 						} else
-							throw new IllegalArgumentException("Unknown type of permission node for global group:  " + groupName);
+							throw new IllegalArgumentException(String.format("Unknown type of permission node in global group: %s", groupName));
 
 //					// Info nodes
 //					try {
@@ -277,14 +277,14 @@ public class GlobalGroups {
 				setTimeStampGroups(GlobalGroupsFile.lastModified());
 			} else {
 				// Newer file found.
-				GroupManager.logger.log(Level.WARNING, "Newer GlobalGroups file found, but we have local changes!");
+				GroupManager.logger.log(Level.WARNING, "A newer GlobalGroups file was found, but we have local changes!");
 				throw new IllegalStateException("Unable to save unless you issue a '/mansave force'");
 			}
 			removeGroupsChangedFlag();
 		} else {
 			// Check for newer file as no local changes.
 			if (getTimeStampGroups() < GlobalGroupsFile.lastModified()) {
-				System.out.print("Newer GlobalGroups file found (Loading changes)!");
+				GroupManager.logger.log(Level.WARNING, "A newer GlobalGroups file was found (Loading changes)!");
 				// Backup GlobalGroups file
 				backupFile();
 				load();

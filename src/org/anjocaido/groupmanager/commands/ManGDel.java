@@ -49,7 +49,7 @@ public class ManGDel extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangdel <group>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangdel <group>)");
 			return false;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);

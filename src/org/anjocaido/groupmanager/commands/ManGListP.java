@@ -50,7 +50,7 @@ public class ManGListP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manglistp <group>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manglistp <group>)");
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
@@ -67,25 +67,25 @@ public class ManGListP extends BaseCommand implements TabCompleter {
 		}
 		if (auxString.lastIndexOf(",") > 0) {
 			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + "The group '" + auxGroup.getName() + "' has following permissions: " + ChatColor.WHITE + auxString);
+			sender.sendMessage(ChatColor.YELLOW + String.format("The group '%s' has the following permissions: ", auxGroup.getName()) + ChatColor.WHITE + auxString);
 			auxString = "";
 			for (String grp : auxGroup.getInherits()) {
 				auxString += grp + ", ";
 			}
 			if (auxString.lastIndexOf(",") > 0) {
 				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "And all permissions from groups: " + auxString);
+				sender.sendMessage(ChatColor.YELLOW + "and all permissions from groups: " + auxString);
 			}
 
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + "The group '" + auxGroup.getName() + "' has no specific permissions.");
+			sender.sendMessage(ChatColor.YELLOW + String.format("The group '%s' has no specific permissions.", auxGroup.getName()));
 			auxString = "";
 			for (String grp : auxGroup.getInherits()) {
 				auxString += grp + ", ";
 			}
 			if (auxString.lastIndexOf(",") > 0) {
 				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "Only all permissions from groups: " + auxString);
+				sender.sendMessage(ChatColor.YELLOW + "and all permissions from groups: " + auxString);
 			}
 
 		}

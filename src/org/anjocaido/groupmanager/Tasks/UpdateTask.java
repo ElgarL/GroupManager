@@ -50,7 +50,6 @@ public class UpdateTask implements Runnable {
 	public void run() {
 
 		try {
-			GroupManager.logger.info("Checking for Updates ... ");
 			newVersion = updateCheck();
 			
 			/*
@@ -59,7 +58,7 @@ public class UpdateTask implements Runnable {
 			 */
 			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) {
 				
-				GroupManager.logger.warning("Stable Version: " + newVersionTitle + " is out!" + " You are still running version: " + currentVersionTitle);
+				GroupManager.logger.warning(String.format("Stable Version: %s is out! You are still running version: %s", newVersionTitle, currentVersionTitle));
 				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.80743/");
 
 			} else {

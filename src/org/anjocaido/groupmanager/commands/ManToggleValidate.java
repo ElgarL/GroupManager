@@ -40,8 +40,8 @@ public class ManToggleValidate extends BaseCommand {
 		
 		sender.sendMessage(ChatColor.YELLOW + "Validate if player is online, now set to: " + Boolean.toString(plugin.isValidateOnlinePlayer()));
 		if (!plugin.isValidateOnlinePlayer()) {
-			sender.sendMessage(ChatColor.GOLD + "From now on you can edit players that are not connected... BUT:");
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "From now on you should type the whole name of the player, correctly.");
+			sender.sendMessage(ChatColor.GOLD + "From now on you can edit offline players... BUT:");
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "You should type the whole name of the player, correctly.");
 		}
 		return true;
 	}

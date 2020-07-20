@@ -89,7 +89,7 @@ public class GMConfiguration {
 			configInputStream.close();
 
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("The following file couldn't pass on Parser.\n" + configFile.getPath(), ex);
+			throw new IllegalArgumentException(String.format("The following file is corrupt: %s", configFile.getPath()), ex);
 		}
 
 		/*
@@ -101,19 +101,19 @@ public class GMConfiguration {
 			try {
 				allowCommandBlocks = (Boolean) config.get("allow_commandblocks");
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'allow_commandblocks' node. Using default settings", ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex);
 			}
 			
 			try {
 				opOverride = (Boolean) config.get("opOverrides");
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'opOverrides' node. Using default settings", ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex);
 			}
 			
 			try {
 				toggleValidate = (Boolean) config.get("validate_toggle");
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'validate_toggle' node. Using default settings", ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex);
 			}
 
 			/*
@@ -125,17 +125,17 @@ public class GMConfiguration {
 				try {
 					saveInterval = (Integer) save.get("minutes");
 				} catch (Exception ex) {
-					GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'minutes' node. Using default setting", ex);
+					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex);
 				}
 				
 				try {
 					backupDuration = (Integer) save.get("hours");
 				} catch (Exception ex) {
-					GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'hours' node. Using default setting", ex);
+					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex);
 				}
 				
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, "Missing or corrupt 'data' node. Using default settings", ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex);
 			}
 
 			
@@ -165,11 +165,16 @@ public class GMConfiguration {
 		plugin.setValidateOnlinePlayer(isToggleValidate());
 	}
 	
+	private String nodeError(String node) {
+		
+		return String.format("Missing or corrupt '%s' node. Using default settings", node);
+	}
+	
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> getElement(String element, Map<String, Object> map) {
 		
 		if (!map.containsKey(element)) {
-			throw new IllegalArgumentException("The config.yml has no '" + element + ".\n");
+			throw new IllegalArgumentException(String.format("The config.yml has no '%s'.", element));
 		}
 		
 		return (Map<String, Object>) map.get(element);

@@ -51,7 +51,7 @@ public class ManUCheckP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manucheckp <player> <permission>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manucheckp <player> <permission>)");
 			return true;
 		}
 		

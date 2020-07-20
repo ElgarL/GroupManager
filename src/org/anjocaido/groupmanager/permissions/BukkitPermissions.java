@@ -47,7 +47,7 @@ import org.bukkit.plugin.PluginManager;
 
 /**
  * 
- * BukkitPermissions overrides to force GM reponses to Superperms
+ * BukkitPermissions overrides to force GM responses to Superperms
  * 
  * @author ElgarL
  */

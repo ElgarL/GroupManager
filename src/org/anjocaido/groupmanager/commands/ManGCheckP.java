@@ -50,7 +50,7 @@ public class ManGCheckP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangcheckp <group> <permission>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangcheckp <group> <permission>)");
 			return true;
 		}
 		

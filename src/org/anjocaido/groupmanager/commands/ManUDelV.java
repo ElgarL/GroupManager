@@ -49,7 +49,7 @@ public class ManUDelV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manudelv <user> <variable>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudelv <user> <variable>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {

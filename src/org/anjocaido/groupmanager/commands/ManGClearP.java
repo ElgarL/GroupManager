@@ -50,7 +50,7 @@ public class ManGClearP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/mangclearp <group>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangclearp <group>)");
 			return true;
 		}
 		

@@ -161,7 +161,7 @@ public abstract class DataUnit {
 		else
 			source = testSource.getName();
 
-		GroupManager.logger.finest("DataSource: " + source + " - DataUnit: " + getUUID() + " flagged as changed!");
+		GroupManager.logger.finest(String.format("DataSource: %s - DataUnit: %s flagged as ", source, getUUID()) + "changed!");
 		// for(StackTraceElement st: Thread.currentThread().getStackTrace()){
 		// GroupManager.logger.finest(st.toString());
 		// }
@@ -184,7 +184,7 @@ public abstract class DataUnit {
 		else
 			source = testSource.getName();
 
-		GroupManager.logger.finest("DataSource: " + source + " - DataUnit: " + getUUID() + " flagged as saved!");
+		GroupManager.logger.finest(String.format("DataSource: %s - DataUnit: %s flagged as ", source, getUUID()) + "saved!");
 		changed = false;
 	}
 
@@ -239,7 +239,7 @@ public abstract class DataUnit {
 				Map<String, Long> clone = new HashMap<String, Long>(timedPermissions);
 				clone.put(permission, expires);
 				timedPermissions = Collections.unmodifiableMap(clone);
-				GroupManager.logger.info("Timed: " + permission + " - expires: " + expires);
+				GroupManager.logger.info(String.format("Timed: %s - expires: %o", permission, expires));
 			}
 			flagAsChanged();
 		}
@@ -378,7 +378,7 @@ public abstract class DataUnit {
 					if (clone.remove(perm.getKey()) != null) {
 						//changed = true;
 						expired = true;
-						GroupManager.logger.info("Timed Permission removed from : " + getLastName() + " : " + perm.getKey());
+						GroupManager.logger.info(String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey()));
 					}
 				}
 			}

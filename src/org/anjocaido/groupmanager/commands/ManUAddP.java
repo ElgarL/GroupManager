@@ -54,7 +54,7 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manuaddp <player> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuaddp <player> <permission> [permission2] [permission3]...)");
 			return true;
 		}
 		
@@ -91,7 +91,7 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 				auxString = split[0];
 				
 				if (period == 0) {
-					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' <permission>|1d1h1m");
+					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' eg. <permission>|1d1h1m");
 					continue;
 				}
 			}

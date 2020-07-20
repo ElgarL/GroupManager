@@ -37,10 +37,10 @@ public class ManToggleSave extends BaseCommand {
 
 		if (!plugin.isSchedulerRunning()) {
 			plugin.enableScheduler();
-			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is enabled!");
+			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is " + "enabled!");
 		} else {
 			plugin.disableScheduler();
-			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is disabled!");
+			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is " + "disabled!");
 		}
 		return true;
 	}

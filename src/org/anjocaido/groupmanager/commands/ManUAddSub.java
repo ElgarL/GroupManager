@@ -51,7 +51,7 @@ public class ManUAddSub extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manuaddsub <player> <group>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuaddsub <player> <group>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {

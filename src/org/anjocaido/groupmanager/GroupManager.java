@@ -187,7 +187,7 @@ public class GroupManager extends JavaPlugin {
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
-		GroupManager.logger.warning("version " + pdfFile.getVersion() + " is disabled!");
+		GroupManager.logger.warning(String.format("version %s is disabled!", pdfFile.getVersion()));
 
 		
 		if (!restarting)
@@ -234,7 +234,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			PluginDescriptionFile pdfFile = this.getDescription();
 			if (worldsHolder == null) {
-				GroupManager.logger.severe("Can't enable " + pdfFile.getName() + " version " + pdfFile.getVersion() + ", bad loading!");
+				GroupManager.logger.severe(String.format("Can't enable %s version %s, bad loading!", pdfFile.getName(), pdfFile.getVersion()));
 				this.getServer().getPluginManager().disablePlugin(this);
 				throw new IllegalStateException("An error ocurred while loading GroupManager");
 			}
@@ -282,7 +282,7 @@ public class GroupManager extends JavaPlugin {
 				setLoaded(true);
 			}
 
-			GroupManager.logger.info("version " + pdfFile.getVersion() + " is enabled!");
+			GroupManager.logger.info(String.format("version %s is enabled!", pdfFile.getVersion()));
 
 			// Register as a service
 			if (!restarting)
@@ -369,7 +369,7 @@ public class GroupManager extends JavaPlugin {
 		lastError = ex.getMessage();
 
 		GroupManager.logger.severe("====================================================");
-		GroupManager.logger.severe("= ERROR REPORT START - " + this.getDescription().getVersion() + " =");
+		GroupManager.logger.severe(String.format("= ERROR REPORT START - %s =", this.getDescription().getVersion()));
 		GroupManager.logger.severe("====================================================");
 		GroupManager.logger.severe("=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ===");
 		GroupManager.logger.severe("= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER =");
@@ -382,7 +382,7 @@ public class GroupManager extends JavaPlugin {
 		// Append this error to the error log.
 		try {
 			String error = "=============================== GM ERROR LOG ===============================\n";
-			error += "= ERROR REPORT START - " + this.getDescription().getVersion() + " =\n\n";
+			error += String.format("= ERROR REPORT START - %s =\n\n", this.getDescription().getVersion());
 			
 			error += Tasks.getStackTraceAsString(ex);
 			error += "\n============================================================================\n";
@@ -497,11 +497,11 @@ public class GroupManager extends JavaPlugin {
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
 				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
-				GroupManager.logger.info("Scheduled Data Saving is set for every " + minutes + " minutes!");
+				GroupManager.logger.info(String.format("Scheduled Data Saving is set for every %o minutes!", minutes));
 			} else
 				GroupManager.logger.warning("Scheduled Data Saving is Disabled!");
 			
-			GroupManager.logger.info("Backups will be retained for " + getGMConfig().getBackupDuration() + " hours!");
+			GroupManager.logger.info(String.format("Backups will be retained for %d hours!", getGMConfig().getBackupDuration()));
 		}
 	}
 
@@ -542,7 +542,7 @@ public class GroupManager extends JavaPlugin {
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has direct access to that permission.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has direct access to that permission.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 				return true;
 			}
@@ -551,13 +551,13 @@ public class GroupManager extends JavaPlugin {
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has an exception for this node.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has an exception for this node.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 				return true;
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has a matching negated node.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has a matching negated node.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 				return true;
 			}
@@ -566,17 +566,17 @@ public class GroupManager extends JavaPlugin {
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has an exception for this node.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has an exception for this node.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has a matching negated node.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has a matching negated node.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.FOUND))
 			{
-				sender.sendMessage(ChatColor.RED + "The " + type + " already has direct access to that permission.");
+				sender.sendMessage(ChatColor.RED + String.format("The %s already has direct access to that permission.", type));
 				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
 				
 				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.

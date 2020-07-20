@@ -177,7 +177,7 @@ public abstract class BaseCommand implements CommandExecutor {
 
 		if ((dataHolder != null) && (permissionHandler != null)) {
 			GroupManager.getSelectedWorlds().put(sender.getName(), dataHolder.getName());
-			sender.sendMessage(ChatColor.RED + "Couldn't retrieve your world. Default world '" + plugin.getWorldsHolder().getDefaultWorld().getName() + "' selected.");
+			sender.sendMessage(ChatColor.RED + String.format("Couldn't retrieve your world. Default world '%s' selected.", plugin.getWorldsHolder().getDefaultWorld().getName()));
 			return true;
 		}
 

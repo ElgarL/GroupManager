@@ -50,7 +50,7 @@ public class ManUDel extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count! (/manudel <player>)");
+			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudel <player>)");
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
