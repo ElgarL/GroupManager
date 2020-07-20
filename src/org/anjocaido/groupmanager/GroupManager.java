@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -111,7 +111,7 @@ public class GroupManager extends JavaPlugin {
 	
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
-	private AtomicBoolean lock = new AtomicBoolean(false);
+	private ReentrantLock saveLock = new ReentrantLock();
 	
 	private String lastError = "";
 
@@ -435,25 +435,24 @@ public class GroupManager extends JavaPlugin {
 
 				@Override
 				public void run() {
-
-					boolean active = false;
 					
 					if (isLoaded())
+						
 						try {
-							if (lock.compareAndSet(false, true) && worldsHolder.saveChanges(false)) {
+							// obtain a lock so we are the only thread saving (blocking).
+							saveLock.lock();
+							
+							if (worldsHolder.saveChanges(false)) {
 								
-								// flag this as our lock so we release it later.
-								active = true;
 								GroupManager.logger.info("Data files refreshed.");
 							}
 						} catch (IllegalStateException ex) {
 							GroupManager.logger.warning(ex.getMessage());
 						} finally {
 							/*
-							 * Reset the lock if we set it.
+							 * Release the lock.
 							 */
-							if (active == true)
-								lock.lazySet(false);
+							saveLock.unlock();
 						}
 				}
 			};
@@ -464,20 +463,19 @@ public class GroupManager extends JavaPlugin {
 
 				@Override
 				public void run() {
-
-					boolean active = false;
 					
 					if (isLoaded())
 						try {
+							// obtain a lock so we are the only thread saving (blocking).
+							saveLock.lock();
+							
 							/*
 							 * If we removed any permissions and saving is not disabled
 							 * update our data files so we are not updating perms
 							 * every 60 seconds.
 							 */
-							if (lock.compareAndSet(false, true) && worldsHolder.purgeExpiredPerms()) {
+							if (worldsHolder.purgeExpiredPerms()) {
 								
-								// flag this as our lock so we release it later.
-								active = true;
 								if (worldsHolder.saveChanges(false))
 										GroupManager.logger.info("Data files refreshed.");
 								
@@ -486,10 +484,9 @@ public class GroupManager extends JavaPlugin {
 							GroupManager.logger.warning(ex.getMessage());
 						} finally {
 							/*
-							 * Reset the lock if we set it.
+							 * Release the lock.
 							 */
-							if (active == true)
-								lock.lazySet(false);
+							saveLock.unlock();
 						}
 				}
 			};
