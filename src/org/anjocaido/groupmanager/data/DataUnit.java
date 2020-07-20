@@ -368,22 +368,25 @@ public abstract class DataUnit {
 	 */
 	public boolean removeExpired() {
 		
+		boolean expired = false;
+		
 		synchronized(timedPermissions) {	
 			
 			SortedMap<String, Long> clone = new TreeMap<String, Long>(timedPermissions);
 			for (Entry<String, Long> perm : timedPermissions.entrySet()) {
 				if (Tasks.isExpired(perm.getValue())) {
 					if (clone.remove(perm.getKey()) != null) {
-						changed = true;
+						//changed = true;
+						expired = true;
 						GroupManager.logger.info("Timed Permission removed from : " + getLastName() + " : " + perm.getKey());
 					}
 				}
 			}
 			
-			if (changed)
+			if (expired)
 				timedPermissions = Collections.unmodifiableSortedMap(clone);
 		}
 		
-		return changed;
+		return expired;
 	}
 }

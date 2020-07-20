@@ -441,12 +441,17 @@ public class GroupManager extends JavaPlugin {
 					if (isLoaded())
 						try {
 							if (lock.compareAndSet(false, true) && worldsHolder.saveChanges(false)) {
+								
+								// flag this as our lock so we release it later.
 								active = true;
 								GroupManager.logger.info("Data files refreshed.");
 							}
 						} catch (IllegalStateException ex) {
 							GroupManager.logger.warning(ex.getMessage());
 						} finally {
+							/*
+							 * Reset the lock if we set it.
+							 */
 							if (active == true)
 								lock.lazySet(false);
 						}
@@ -471,6 +476,7 @@ public class GroupManager extends JavaPlugin {
 							 */
 							if (lock.compareAndSet(false, true) && worldsHolder.purgeExpiredPerms()) {
 								
+								// flag this as our lock so we release it later.
 								active = true;
 								try {
 									if (worldsHolder.saveChanges(false))

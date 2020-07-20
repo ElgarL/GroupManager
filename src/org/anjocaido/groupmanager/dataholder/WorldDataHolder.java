@@ -1402,23 +1402,31 @@ public class WorldDataHolder {
 	 * Searches all groups and users for expired permissions
 	 * Removes those perms and flags the object for saving.
 	 */
-	public void purgeTimedPermissions() {
+	public boolean purgeTimedPermissions() {
+		
+		boolean expired = false;
 		
 		synchronized (groups) {
 			
 			for (Group group : getGroups().values()) {
-				if (group.removeExpired())
+				if (group.removeExpired()) {
 					setGroupsChanged(true);
+					expired = true;
+				}
 			}
 		}
 		
 		synchronized (users) {
 			
 			for (User user : getUsers().values()) {
-				if (user.removeExpired())
+				if (user.removeExpired()) {
 					setUsersChanged(true);
+					expired = true;
+				}
 			}
 		}
+		
+		return expired;
 	}
 
 	/**

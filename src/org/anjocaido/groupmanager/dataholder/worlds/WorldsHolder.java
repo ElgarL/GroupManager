@@ -334,20 +334,10 @@ public class WorldsHolder {
 				continue;
 			}
 
-			world.purgeTimedPermissions();
-			alreadyDone.add(world);
-			
-			/* 
-			 * Update all player permissions if the groups have changed.
+			/*
+			 * Update individual player permissions if changed.
 			 */
-			if (world.haveGroupsChanged()) {
-				GroupManager.getBukkitPermissions().updateAllPlayers();
-				result = true;
-				
-			} else if (world.haveUsersChanged()) {
-				/*
-				 * Update individual player permissions if changed.
-				 */
+			if (world.purgeTimedPermissions()) {
 				result = true;
 				
 				for (User user: world.getUserList()) {
@@ -359,6 +349,9 @@ public class WorldsHolder {
 					}
 				}
 			}
+			
+			alreadyDone.add(world);
+
 		}
 		return result;
 	}
