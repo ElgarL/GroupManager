@@ -478,12 +478,8 @@ public class GroupManager extends JavaPlugin {
 								
 								// flag this as our lock so we release it later.
 								active = true;
-								try {
-									if (worldsHolder.saveChanges(false))
+								if (worldsHolder.saveChanges(false))
 										GroupManager.logger.info("Data files refreshed.");
-								} catch (IllegalStateException ex) {
-									GroupManager.logger.warning(ex.getMessage());
-								}
 								
 							}
 						} catch (IllegalStateException ex) {
