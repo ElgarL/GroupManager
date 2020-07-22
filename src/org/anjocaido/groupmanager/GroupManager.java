@@ -136,18 +136,6 @@ public class GroupManager extends JavaPlugin {
 	public void onEnable() {
 		
 		/*
-		 * Register Metrics
-		 */
-		try {
-		    @SuppressWarnings("unused")
-			Metrics metrics = new Metrics(this, 7982);
-		    
-		    //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
-		} catch (Exception e) {
-			System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
-		}
-		
-		/*
 		 * Initialize the event handler
 		 */
 		setGMEventHandler(new GroupManagerEventHandler(this));
@@ -306,6 +294,20 @@ public class GroupManager extends JavaPlugin {
 			 */
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 
+		}
+		
+		if (!restarting) {
+			
+			/*
+			 * Register Metrics
+			 */
+			try {
+				Metrics metrics = new Metrics(this, 7982);
+			    
+			    metrics.addCustomChart(new Metrics.SimplePie("Language", () -> GroupManager.getGMConfig().getLanguage()));
+			} catch (Exception e) {
+				System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
+			}
 		}
 	}
 	
