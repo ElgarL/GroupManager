@@ -45,7 +45,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 
 		boolean forced = false;
 
-		if ((args.length == 1) && (args[0].equalsIgnoreCase(Messages.getString("COMMAND_FORCE")))) //$NON-NLS-1$
+		if ((args.length == 1) && (args[0].equalsIgnoreCase("force"))) //$NON-NLS-1$
 			forced = true;
 
 		try {
@@ -73,7 +73,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 
 		if (args.length == 1) {
 			
-			return Arrays.asList(Messages.getString("COMMAND_FORCE")); //$NON-NLS-1$
+			return Arrays.asList("force"); //$NON-NLS-1$
 		}
 		return null;
 	}
