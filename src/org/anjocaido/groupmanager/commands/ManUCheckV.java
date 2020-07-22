@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public class ManUCheckV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manucheckv <user> <variable>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCHECKV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -74,18 +75,18 @@ public class ManUCheckV extends BaseCommand implements TabCompleter {
 						continue;
 				}
 			if (auxGroup2 == null) {
-				sender.sendMessage(ChatColor.YELLOW + "The user doesn't have access to that variable!");
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("ERROR_USER_NO_ACCESS_VARIABLE")); //$NON-NLS-1$
 				return true;
 			}
 		}
 		// Seems OK
 		if (auxUser.getVariables().hasVar(auxString)) {
-			sender.sendMessage(ChatColor.YELLOW + "The value of variable '" + ChatColor.GOLD + args[1] + ChatColor.YELLOW + "' is: '" + ChatColor.GREEN + auxUser.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE + "'");
-			sender.sendMessage(ChatColor.YELLOW + "This user own directly the variable");
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_VALUE"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxUser.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE)); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_HAS_VARIABLE_DIRECT"));
 		}
-		sender.sendMessage(ChatColor.YELLOW + "The value of variable '" + ChatColor.GOLD + args[1] + ChatColor.YELLOW + "' is: '" + ChatColor.GREEN + auxGroup2.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE + "'");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_VALUE"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxGroup2.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE)); //$NON-NLS-1$
 		if (!auxGroup.equals(auxGroup2)) {
-			sender.sendMessage(ChatColor.YELLOW + "And the value was inherited from group: " + ChatColor.GREEN + auxGroup2.getName());
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("VARIABLE_INHERITED") + ChatColor.GREEN + auxGroup2.getName()); //$NON-NLS-1$
 		}
 
 		return true;

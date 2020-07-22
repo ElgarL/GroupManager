@@ -25,6 +25,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
@@ -106,11 +107,17 @@ public abstract class BaseCommand implements CommandExecutor {
 		isOpOverride = GroupManager.getGMConfig().isOpOverride();
 		isAllowCommandBlocks = GroupManager.getGMConfig().isAllowCommandBlocks();
 		
+		// Prevent all commands other than /manload if we are in an error state.
+		if (!plugin.getLastError().isEmpty() && !alias.equalsIgnoreCase("manload")) { //$NON-NLS-1$
+			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_ERROR")); //$NON-NLS-1$
+			return false;
+		}
+		
 		// PREVENT GM COMMANDS BEING USED ON COMMANDBLOCKS
 		if (sender instanceof BlockCommandSender && !isAllowCommandBlocks) {
 			Block block = ((BlockCommandSender)sender).getBlock();
-			GroupManager.logger.warning(ChatColor.RED + "GM Commands can not be called from CommandBlocks");
-			GroupManager.logger.warning(ChatColor.RED + "Location: " + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ());
+			GroupManager.logger.warning(ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
+			GroupManager.logger.warning(ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		  	return false;
 		}
 
@@ -118,24 +125,14 @@ public abstract class BaseCommand implements CommandExecutor {
 		if (sender instanceof Player) {
 			senderPlayer = (Player) sender;
 
-			if (!plugin.getLastError().isEmpty() && !alias.equalsIgnoreCase("manload")) {
-				sender.sendMessage(ChatColor.RED + "All commands are locked due to an error. " + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Check plugins/groupmanager/error.log or console" + ChatColor.RESET + "" + ChatColor.RED + " and then try a '/manload'.");
-				return false;
-			}
-
 			senderUser = plugin.getWorldsHolder().getWorldData(senderPlayer).getUser(senderPlayer.getUniqueId().toString());
 			senderGroup = senderUser.getGroup();
-			isOpOverride = (isOpOverride && (senderPlayer.isOp() || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op")));
+			isOpOverride = (isOpOverride && (senderPlayer.isOp() || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op"))); //$NON-NLS-1$
 
-			if (isOpOverride || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias)) {
+			if (isOpOverride || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias)) { //$NON-NLS-1$
 				playerCanDo = true;
 			}
 		} else {
-
-			if (!plugin.getLastError().isEmpty() && !alias.equalsIgnoreCase("manload")) {
-				sender.sendMessage(ChatColor.RED + "All commands are locked due to an error. " + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Check plugins/groupmanager/error.log or console" + ChatColor.RESET + "" + ChatColor.RED + " and then try a '/manload'.");
-				return false;
-			}
 
 			isConsole = true;
 		}
@@ -160,7 +157,7 @@ public abstract class BaseCommand implements CommandExecutor {
 		this.sender = sender;
 		
 		if (!isConsole && !playerCanDo) {
-			sender.sendMessage(ChatColor.RED + "You are not allowed to use that command.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_NOT_PERMITTED"));
 			return false;
 		}
 		
@@ -177,12 +174,12 @@ public abstract class BaseCommand implements CommandExecutor {
 
 		if ((dataHolder != null) && (permissionHandler != null)) {
 			GroupManager.getSelectedWorlds().put(sender.getName(), dataHolder.getName());
-			sender.sendMessage(ChatColor.RED + String.format("Couldn't retrieve your world. Default world '%s' selected.", plugin.getWorldsHolder().getDefaultWorld().getName()));
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("DEFAULT_WORLD_SELECTED"), plugin.getWorldsHolder().getDefaultWorld().getName()));
 			return true;
 		}
 
-		sender.sendMessage(ChatColor.RED + "Couldn't retrieve your world. World selection is needed.");
-		sender.sendMessage(ChatColor.RED + "Use /manselect <world>");
+		sender.sendMessage(ChatColor.RED + Messages.getString("WORLD_SELECTION_NEEDED"));
+		sender.sendMessage(ChatColor.RED + Messages.getString("USE_MANSELECT"));
 		return false;
 
 	}
@@ -206,14 +203,14 @@ public abstract class BaseCommand implements CommandExecutor {
 			match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
 			
 			if (match == null) {
-				sender.sendMessage(ChatColor.RED + "Player not found!");
+				sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
 				return null;
 			}
 			
 			return match;
 				
 		} else if (players.size() > 1) {
-			sender.sendMessage(ChatColor.RED + "Too many matches found!");
+			sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
 			return null;
 		}
 

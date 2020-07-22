@@ -17,6 +17,7 @@
  */
 package org.anjocaido.groupmanager.commands;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,10 +38,10 @@ public class ManToggleSave extends BaseCommand {
 
 		if (!plugin.isSchedulerRunning()) {
 			plugin.enableScheduler();
-			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is " + "enabled!");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("AUTOSAVE_ENABLE"));
 		} else {
 			plugin.disableScheduler();
-			sender.sendMessage(ChatColor.YELLOW + "The auto-saving is " + "disabled!");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("AUTOSAVE_DISABLE"));
 		}
 		return true;
 	}

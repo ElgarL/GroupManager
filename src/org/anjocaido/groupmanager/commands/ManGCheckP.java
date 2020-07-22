@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -50,38 +51,38 @@ public class ManGCheckP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangcheckp <group> <permission>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGCHECKP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
 		auxString = args[1];
-		if (auxString.startsWith("'") && auxString.endsWith("'"))
+		if (auxString.startsWith("'") && auxString.endsWith("'")) //$NON-NLS-1$ //$NON-NLS-2$
 		{
 			auxString = auxString.substring(1, auxString.length() - 1);
 		}
 		
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[0])); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		permissionResult = permissionHandler.checkGroupPermissionWithInheritance(auxGroup, auxString);
 		if (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND)) {
-			sender.sendMessage(ChatColor.YELLOW + "The group doesn't have access to that permission");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("ERROR_GROUP_NO_ACCESS_PERMISSION")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
-		// auxString = permissionHandler.checkUserOnlyPermission(auxUser, args[1]);
+		
 		if (permissionResult.owner instanceof Group) {
 			if (permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION)) {
-				sender.sendMessage(ChatColor.YELLOW + "The group inherits the negation permission from group: " + permissionResult.owner.getLastName());
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUP_INHERITS_NEGATION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 			} else if (permissionResult.resultType.equals(PermissionCheckResult.Type.EXCEPTION)) {
-				sender.sendMessage(ChatColor.YELLOW + "The group inherits an Exception permission from group: " + permissionResult.owner.getLastName());
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUP_INHERITS_EXCEPTION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 			} else {
-				sender.sendMessage(ChatColor.YELLOW + "The group inherits the permission from group: " + permissionResult.owner.getLastName());
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUP_INHERITS_PERMISSION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 			}
-			sender.sendMessage(ChatColor.YELLOW + "Permission Node: " + permissionResult.accessLevel);
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("PERMISSION_NODE"), permissionResult.accessLevel)); //$NON-NLS-1$
 
 		}
 		return true;

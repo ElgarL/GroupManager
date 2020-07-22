@@ -33,6 +33,7 @@ import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.events.GMGroupEvent;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.yaml.snakeyaml.DumperOptions;
@@ -114,12 +115,12 @@ public class GlobalGroups {
 
 		// READ globalGroups FILE
 		if (GlobalGroupsFile == null)
-			GlobalGroupsFile = new File(plugin.getDataFolder(), "globalgroups.yml");
+			GlobalGroupsFile = new File(plugin.getDataFolder(), "globalgroups.yml"); //$NON-NLS-1$
 
 		if (!GlobalGroupsFile.exists()) {
 			try {
 				// Create a new file if it doesn't exist.
-				Tasks.copy(plugin.getResource("globalgroups.yml"), GlobalGroupsFile);
+				Tasks.copy(plugin.getResource("globalgroups.yml"), GlobalGroupsFile); //$NON-NLS-1$
 			} catch (IOException ex) {
 				GroupManager.logger.log(Level.SEVERE, null, ex);
 			}
@@ -133,7 +134,7 @@ public class GlobalGroups {
 			GGroups = (Map<String, Object>) GGroupYAML.load(new UnicodeReader(groupsInputStream));
 			groupsInputStream.close();
 		} catch (Exception ex) {
-			throw new IllegalArgumentException(String.format("The following file is corrupt: %s", GlobalGroupsFile.getPath()), ex);
+			throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), GlobalGroupsFile.getPath()), ex); //$NON-NLS-1$
 		}
 
 		// Clear out old groups
@@ -144,10 +145,10 @@ public class GlobalGroups {
 			Map<String, Object> allGroups = new HashMap<String, Object>();
 
 			try {
-				allGroups = (Map<String, Object>) GGroups.get("groups");
+				allGroups = (Map<String, Object>) GGroups.get("groups"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				// ex.printStackTrace();
-				throw new IllegalArgumentException(String.format("The following file is corrupt: %s", GlobalGroupsFile.getPath()), ex);
+				throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), GlobalGroupsFile.getPath()), ex); //$NON-NLS-1$
 			}
 
 			// Load each groups permissions list.
@@ -167,7 +168,7 @@ public class GlobalGroups {
 						// Attempt to fetch the next group name.
 						groupName = groupItr.next();
 					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format("Invalid group name for GlobalGroup entry #[%d] in file: %s", groupCount, GlobalGroupsFile.getPath()), ex);
+						throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.INVALID_GROUP_NAME"), groupCount, GlobalGroupsFile.getPath()), ex); //$NON-NLS-1$
 					}
 
 					/*
@@ -178,9 +179,9 @@ public class GlobalGroups {
 
 					// Permission nodes
 					try {
-						element = ((Map<String, Object>)allGroups.get(groupName)).get("permissions");
+						element = ((Map<String, Object>)allGroups.get(groupName)).get("permissions"); //$NON-NLS-1$
 					} catch ( Exception ex) {
-						throw new IllegalArgumentException(String.format("The GlobalGroup '%s' is formatted incorrectly. ", groupName), ex);
+						throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.BAD_FORMATTED"), groupName), ex); //$NON-NLS-1$
 					}
 
 					if (element != null)
@@ -191,30 +192,13 @@ public class GlobalGroups {
 										newGroup.addPermission(node);
 								}
 							} catch (ClassCastException ex) {
-								throw new IllegalArgumentException(String.format("Invalid permission node in global group: %s", groupName), ex);
+								throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.INVALID_PERMISSION_NODE"), groupName), ex); //$NON-NLS-1$
 							}
 						} else if (element instanceof String) {
 							if ((element != null) && !((String)element).isEmpty())
 							newGroup.addPermission((String) element);
 						} else
-							throw new IllegalArgumentException(String.format("Unknown type of permission node in global group: %s", groupName));
-
-//					// Info nodes
-//					try {
-//						element = ((Map<String, Object>)allGroups.get(groupName)).get("info");
-//					} catch ( Exception ex) {
-//						throw new IllegalArgumentException("The GlobalGroup ' " + groupName + "' is formatted incorrectly: ", ex);
-//					}
-//
-//					if (element != null)
-//						if (element instanceof MemorySection) {
-//							Map<String, Object> vars = new HashMap<String, Object>();
-//							for (String key : ((MemorySection) element).getKeys(false)) {
-//								vars.put(key, ((MemorySection) element).get(key));
-//							}
-//							newGroup.setVariables(vars);
-//						} else
-//							throw new IllegalArgumentException("Unknown type of info node for global group:  " + groupName);
+							throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.UNKNOWN_PERMISSION_TYPE"), groupName)); //$NON-NLS-1$
 
 					// Push a new group
 					addGroup(newGroup);
@@ -242,7 +226,7 @@ public class GlobalGroups {
 				Map<String, Object> root = new HashMap<String, Object>();
 
 				Map<String, Object> groupsMap = new HashMap<String, Object>();
-				root.put("groups", groupsMap);
+				root.put("groups", groupsMap); //$NON-NLS-1$
 				synchronized(groups) {
 				for (String groupKey : groups.keySet()) {
 					Group group = groups.get(groupKey);
@@ -251,16 +235,8 @@ public class GlobalGroups {
 					Map<String, Object> aGroupMap = new HashMap<String, Object>();
 					groupsMap.put(group.getName(), aGroupMap);
 
-//					// Info nodes
-//					Map<String, Object> infoMap = new HashMap<String, Object>();
-//					aGroupMap.put("info", infoMap);
-//
-//					for (String infoKey : group.getVariables().getVarKeyList()) {
-//						infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
-//					}
-
 					// Permission nodes
-					aGroupMap.put("permissions", group.getPermissionList());
+					aGroupMap.put("permissions", group.getPermissionList()); //$NON-NLS-1$
 				}
 				}
 
@@ -269,7 +245,7 @@ public class GlobalGroups {
 					opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 					final Yaml yaml = new Yaml(opt);
 					try {
-						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(GlobalGroupsFile), "UTF-8"));
+						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(GlobalGroupsFile), "UTF-8")); //$NON-NLS-1$
 					} catch (UnsupportedEncodingException ex) {
 					} catch (FileNotFoundException ex) {
 					}
@@ -277,14 +253,14 @@ public class GlobalGroups {
 				setTimeStampGroups(GlobalGroupsFile.lastModified());
 			} else {
 				// Newer file found.
-				GroupManager.logger.log(Level.WARNING, "A newer GlobalGroups file was found, but we have local changes!");
-				throw new IllegalStateException("Unable to save unless you issue a '/mansave force'");
+				GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.ERROR_NEWER_GG_FOUND")); //$NON-NLS-1$
+				throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 			}
 			removeGroupsChangedFlag();
 		} else {
 			// Check for newer file as no local changes.
 			if (getTimeStampGroups() < GlobalGroupsFile.lastModified()) {
-				GroupManager.logger.log(Level.WARNING, "A newer GlobalGroups file was found (Loading changes)!");
+				GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.WARN_NEWER_GG_FOUND_LOADING")); //$NON-NLS-1$
 				// Backup GlobalGroups file
 				backupFile();
 				load();
@@ -300,7 +276,7 @@ public class GlobalGroups {
 	 */
 	private void backupFile() {
 
-		File backupFile = new File(plugin.getBackupFolder(), "bkp_ggroups_" + Tasks.getDateString() + ".yml");
+		File backupFile = new File(plugin.getBackupFolder(), "bkp_ggroups_" + Tasks.getDateString() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			Tasks.copy(GlobalGroupsFile, backupFile);
 		} catch (IOException ex) {
@@ -409,9 +385,9 @@ public class GlobalGroups {
 
 		if (tempGroup.hasSamePermissionNode(permissionNode))
 			result.resultType = PermissionCheckResult.Type.FOUND;
-		if (tempGroup.hasSamePermissionNode("-" + permissionNode))
+		if (tempGroup.hasSamePermissionNode("-" + permissionNode)) //$NON-NLS-1$
 			result.resultType = PermissionCheckResult.Type.NEGATION;
-		if (tempGroup.hasSamePermissionNode("+" + permissionNode))
+		if (tempGroup.hasSamePermissionNode("+" + permissionNode)) //$NON-NLS-1$
 			result.resultType = PermissionCheckResult.Type.EXCEPTION;
 
 		return result;

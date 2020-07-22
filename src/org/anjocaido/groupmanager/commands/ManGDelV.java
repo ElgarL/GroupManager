@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,27 +51,27 @@ public class ManGDelV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangdelv <group> <variable>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGDELV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		if (auxGroup.isGlobal()) {
-			sender.sendMessage(ChatColor.RED + "GlobalGroups do NOT support Info Nodes.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GG_DO_NOT_SUPPORT_INFO_NODES")); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		if (!auxGroup.getVariables().hasVar(args[1])) {
-			sender.sendMessage(ChatColor.RED + "The group doesn't have directly that variable!");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GROUP_NO_ACCESS_VARIABLE_DIRECT")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		auxGroup.getVariables().removeVar(args[1]);
-		sender.sendMessage(ChatColor.YELLOW + "Variable " + ChatColor.GOLD + args[1] + ChatColor.YELLOW + " removed from the group " + ChatColor.GREEN + auxGroup.getName());
-
+		sender.sendMessage(String.format(ChatColor.YELLOW + Messages.getString("VARIABLE_REMOVED_FROM_GROUP"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxGroup.getLastName()));
+		
 		return true;
 	}
 	

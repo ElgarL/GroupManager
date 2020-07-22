@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public class ManUDel extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudel <player>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDEL_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -64,12 +65,12 @@ public class ManUDel extends BaseCommand implements TabCompleter {
 		}
 		// Validating permission
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player with same permissions as you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		dataHolder.removeUser(auxUser.getUUID());
-		sender.sendMessage(ChatColor.YELLOW + "You changed player '" + auxUser.getLastName() + "' to default settings.");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_DEFAULT"), auxUser.getLastName())); //$NON-NLS-1$
 
 		// If the player is online, this will create new data for the user.
 		if (auxUser.getUUID() != null) {

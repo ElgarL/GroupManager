@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -45,35 +46,35 @@ public class ManSelect extends BaseCommand implements TabCompleter {
 	protected boolean parseCommand(@NotNull String[] args) {
 
 		if (args.length < 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manselect <world>)");
-			sender.sendMessage(ChatColor.YELLOW + "Worlds available: ");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANSELECT_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("WORLDS_AVAILABLE")); //$NON-NLS-1$
 			ArrayList<OverloadedWorldHolder> worlds = plugin.getWorldsHolder().allWorldsDataList();
-			auxString = "";
+			auxString = ""; //$NON-NLS-1$
 			for (int i = 0; i < worlds.size(); i++) {
 				auxString += worlds.get(i).getName();
 				if ((i + 1) < worlds.size()) {
-					auxString += ", ";
+					auxString += ", "; //$NON-NLS-1$
 				}
 			}
 			sender.sendMessage(ChatColor.YELLOW + auxString);
 			return false;
 		}
 		
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null) {
-				GroupManager.logger.warning(String.format("Bukkit gave invalid arguments array! Cmd: %s args.length: %o", this.getClass().getSimpleName(), args.length));
+				GroupManager.logger.warning(String.format(Messages.getString("ERROR_BUKKIT_INVALID_ARGUMENTS"), this.getClass().getSimpleName(), args.length)); //$NON-NLS-1$
 				return false;
 			}
 			auxString += args[i];
 			if (i < (args.length - 1)) {
-				auxString += " ";
+				auxString += " "; //$NON-NLS-1$
 			}
 		}
 		dataHolder = plugin.getWorldsHolder().getWorldData(auxString);
 		permissionHandler = dataHolder.getPermissionsHandler();
 		GroupManager.getSelectedWorlds().put(sender.getName(), dataHolder.getName());
-		sender.sendMessage(ChatColor.YELLOW + "You have selected world '" + dataHolder.getName() + "'.");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("YOU_HAVE_SELECTED_WORLD"), dataHolder.getName())); //$NON-NLS-1$
 
 		return true;
 	}

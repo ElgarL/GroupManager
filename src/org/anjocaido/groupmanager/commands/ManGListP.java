@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,42 +51,42 @@ public class ManGListP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manglistp <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGLISTP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 
 		// Seems OK
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (String perm : auxGroup.getAllPermissionList()) {
-			auxString += perm + ", ";
+			auxString += perm + ", "; //$NON-NLS-1$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + String.format("The group '%s' has the following permissions: ", auxGroup.getName()) + ChatColor.WHITE + auxString);
-			auxString = "";
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_HAS_PERMISSIONS"), auxGroup.getName(), ChatColor.WHITE + auxString)); //$NON-NLS-1$
+			auxString = ""; //$NON-NLS-1$
 			for (String grp : auxGroup.getInherits()) {
-				auxString += grp + ", ";
+				auxString += grp + ", "; //$NON-NLS-1$
 			}
-			if (auxString.lastIndexOf(",") > 0) {
-				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "and all permissions from groups: " + auxString);
+			if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+				auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_GROUPS"), auxString)); //$NON-NLS-1$
 			}
 
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + String.format("The group '%s' has no specific permissions.", auxGroup.getName()));
-			auxString = "";
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_NO_SPECIFIC_PERMISSIONS"), auxGroup.getName())); //$NON-NLS-1$
+			auxString = ""; //$NON-NLS-1$
 			for (String grp : auxGroup.getInherits()) {
-				auxString += grp + ", ";
+				auxString += grp + ", "; //$NON-NLS-1$
 			}
-			if (auxString.lastIndexOf(",") > 0) {
-				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "and all permissions from groups: " + auxString);
+			if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+				auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_GROUPS"), auxString)); //$NON-NLS-1$
 			}
 
 		}

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -50,27 +51,27 @@ public class ManGClearP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangclearp <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGCLEARP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		
 		for (String perm : auxGroup.getAllPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "Can't remove a permission you don't have: '" + perm + "'.");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), perm)); //$NON-NLS-1$
 			}
 			else
 			{
 				auxGroup.removePermission(perm);
 			}
 		}
-		sender.sendMessage(ChatColor.YELLOW + "You removed all permissions from group '" + auxGroup.getName() + "'.");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_ALL_PERMISSIONS_GROUP"), auxGroup.getName())); //$NON-NLS-1$
 
 		GroupManager.getBukkitPermissions().updateAllPlayers();
 

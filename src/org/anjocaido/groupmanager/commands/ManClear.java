@@ -18,6 +18,7 @@
 package org.anjocaido.groupmanager.commands;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,11 +38,11 @@ public class ManClear extends BaseCommand {
 	protected boolean parseCommand(@NotNull String[] args) {
 
 		if (args.length != 0) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS")); //$NON-NLS-1$
 			return false;
 		}
 		GroupManager.getSelectedWorlds().remove(sender.getName());
-		sender.sendMessage(ChatColor.YELLOW + "You have removed your world selection. Working with current world (if possible).");
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("REMOVED_WORLD_SELECTION")); //$NON-NLS-1$
 
 		return true;
 	}

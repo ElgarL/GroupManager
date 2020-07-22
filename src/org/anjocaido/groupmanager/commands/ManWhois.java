@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,7 +50,7 @@ public class ManWhois extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manwhois <player>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANWHOIS_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -61,24 +62,24 @@ public class ManWhois extends BaseCommand implements TabCompleter {
 			auxUser = dataHolder.getUser(args[0]);
 		}
 		// Seems OK
-		sender.sendMessage(ChatColor.YELLOW + "Name: " + ChatColor.GREEN + auxUser.getLastName());
-		sender.sendMessage(ChatColor.YELLOW + "Group: " + ChatColor.GREEN + auxUser.getGroup().getName());
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("NAME") + ChatColor.GREEN + auxUser.getLastName()); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUP") + ChatColor.GREEN + auxUser.getGroup().getName()); //$NON-NLS-1$
 		// Compile a list of subgroups
 		auxString = "";
 		for (String subGroup : auxUser.subGroupListStringCopy()) {
-			auxString += subGroup + ", ";
+			auxString += subGroup + ", "; //$NON-NLS-1$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + "subgroups: " + auxString);
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("SUBGROUPS") + auxString); //$NON-NLS-1$
 		}
 
-		sender.sendMessage(ChatColor.YELLOW + "Overloaded: " + ChatColor.GREEN + dataHolder.isOverloaded(auxUser.getUUID()));
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("OVERLOADED") + ChatColor.GREEN + dataHolder.isOverloaded(auxUser.getUUID())); //$NON-NLS-1$
 		auxGroup = dataHolder.surpassOverload(auxUser.getUUID()).getGroup();
 		if (!auxGroup.equals(auxUser.getGroup())) {
-			sender.sendMessage(ChatColor.YELLOW + "Original Group: " + ChatColor.GREEN + auxGroup.getName());
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("ORIGINAL_GROUP") + ChatColor.GREEN + auxGroup.getName()); //$NON-NLS-1$
 		}
-		// victim.permissions.add(args[1]);
+		
 		return true;
 	}
 	

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -50,39 +51,39 @@ public class ManGDelP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangdelp <group> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGDELP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		for (int i = 1; i < args.length; i++)
 		{
-			auxString = args[i].replace("'", "");
+			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		
 			// Validating your permissions
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "Can't remove a permission you don't have: '" + auxString + "'");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkGroupOnlyPermission(auxGroup, auxString);
 			if (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND)) {
-				sender.sendMessage(ChatColor.YELLOW + "The group doesn't have direct access to that permission: '" + auxString + "'");
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_GROUP_NO_ACCESS_PERMISSION_DIRECT"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			if (!auxGroup.hasSamePermissionNode(auxString)) {
-				sender.sendMessage(ChatColor.RED + "This permission node doesn't match any node.");
-				sender.sendMessage(ChatColor.RED + "But might match node: " + permissionResult.accessLevel);
+				sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_NO_MATCHING_PERMISSION_NODE")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("POSSIBLE_MATCH"), permissionResult.accessLevel)); //$NON-NLS-1$
 				continue;
 			}
 			// Seems OK
 			auxGroup.removePermission(auxString);
-			sender.sendMessage(ChatColor.YELLOW + "You removed '" + auxString + "' from group '" + auxGroup.getName() + "' permissions.");
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_GROUP"), auxString, auxGroup.getName())); //$NON-NLS-1$
 		}
 
 		GroupManager.getBukkitPermissions().updateAllPlayers();

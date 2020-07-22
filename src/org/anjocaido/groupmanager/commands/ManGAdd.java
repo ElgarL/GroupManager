@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -48,17 +49,17 @@ public class ManGAdd extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangadd <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGADD_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup != null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group already exists!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_ALREADY_EXISTS"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		auxGroup = dataHolder.createGroup(args[0]);
-		sender.sendMessage(ChatColor.YELLOW + "You created a group named: " + auxGroup.getName());
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("CREATED_GROUP"), auxGroup.getName())); //$NON-NLS-1$
 
 		return true;
 	}

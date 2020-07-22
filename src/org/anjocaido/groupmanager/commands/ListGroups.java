@@ -19,6 +19,7 @@ package org.anjocaido.groupmanager.commands;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,22 +44,22 @@ public class ListGroups extends BaseCommand {
 				return true;
 		}
 		// WORKING
-		auxString = "";
-		String auxString2 = "";
+		auxString = ""; //$NON-NLS-1$
+		String auxString2 = ""; //$NON-NLS-1$
 		for (Group g : dataHolder.getGroupList()) {
-			auxString += g.getName() + ", ";
+			auxString += g.getName() + ", "; //$NON-NLS-1$
 		}
 		for (Group g : GroupManager.getGlobalGroups().getGroupList()) {
-			auxString2 += g.getName() + ", ";
+			auxString2 += g.getName() + ", "; //$NON-NLS-1$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
 		}
-		if (auxString2.lastIndexOf(",") > 0) {
-			auxString2 = auxString2.substring(0, auxString2.lastIndexOf(","));
+		if (auxString2.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString2 = auxString2.substring(0, auxString2.lastIndexOf(",")); //$NON-NLS-1$
 		}
-		sender.sendMessage(ChatColor.YELLOW + "Groups Available: " + ChatColor.WHITE + auxString);
-		sender.sendMessage(ChatColor.YELLOW + "GlobalGroups Available: " + ChatColor.WHITE + auxString2);
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUPS_AVAILABLE") + ChatColor.WHITE + auxString); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("GG_AVALIABLE") + ChatColor.WHITE + auxString2); //$NON-NLS-1$
 
 		return true;
 	}

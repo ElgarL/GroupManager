@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,7 +52,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if ((args.length == 0) || (args.length > 2)) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manulistp <player> (+))");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANULISTP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 
@@ -66,32 +67,33 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		}
 		// Validating permission
 		// Seems OK
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (String perm : auxUser.getAllPermissionList()) {
-			auxString += perm + ", ";
+			auxString += perm + ", "; //$NON-NLS-1$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + String.format("The player '%s' has the following permissions: %s" + ChatColor.WHITE, auxUser.getLastName(), auxString));
-			sender.sendMessage(ChatColor.YELLOW + "And all permissions from the group: " + auxUser.getGroupName());
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_HAS_PERMISSIONS"), auxUser.getLastName(), ChatColor.WHITE + auxString)); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_GROUPS"), auxUser.getGroupName())); //$NON-NLS-1$
 			auxString = "";
 			for (String subGroup : auxUser.subGroupListStringCopy()) {
 				auxString += subGroup + ", ";
 			}
 			if (auxString.lastIndexOf(",") > 0) {
 				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "And all permissions from subgroups: " + auxString);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_SUBGROUPS"), auxString)); //$NON-NLS-1$
 			}
 		} else {
-			sender.sendMessage(ChatColor.YELLOW + String.format("The player '%s' has no specific permissions.", auxUser.getLastName()));
-			sender.sendMessage(ChatColor.YELLOW + "Only all permissions from group: " + auxUser.getGroupName());
-			auxString = "";
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_NO_SPECIFIC_PERMISSIONS"), auxUser.getLastName())); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_GROUPS"), auxUser.getGroupName())); //$NON-NLS-1$
+			
+			auxString = ""; //$NON-NLS-1$
 			for (String subGroup : auxUser.subGroupListStringCopy()) {
-				auxString += subGroup + ", ";
+				auxString += subGroup + ", "; //$NON-NLS-1$
 			}
-			if (auxString.lastIndexOf(",") > 0) {
+			if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
 				auxString = auxString.substring(0, auxString.lastIndexOf(","));
-				sender.sendMessage(ChatColor.YELLOW + "And all permissions from subgroups: " + auxString);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_SUBGROUPS"), auxString)); //$NON-NLS-1$
 			}
 		}
 
@@ -99,7 +101,7 @@ public class ManUListP extends BaseCommand implements TabCompleter {
 		if ((args.length == 2) && (args[1].equalsIgnoreCase("+"))) {
 			targetPlayer = BukkitWrapper.getInstance().getPlayer(auxUser.getLastName());
 			if (targetPlayer != null) {
-				sender.sendMessage(ChatColor.YELLOW + "Superperms reports: ");
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("SUPER_PERMS_REPORTS")); //$NON-NLS-1$
 				for (String line : GroupManager.getBukkitPermissions().listPerms(targetPlayer))
 					sender.sendMessage(ChatColor.YELLOW + line);
 

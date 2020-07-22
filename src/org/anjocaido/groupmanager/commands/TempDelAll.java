@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,14 +55,14 @@ public class TempDelAll extends BaseCommand {
 			}
 		}
 		if (count == 0) {
-			sender.sendMessage(ChatColor.YELLOW + "There are no users in overload mode.");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_OVERLOAD")); //$NON-NLS-1$
 			return true;
 		}
 		if (GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()) == null) {
 			GroupManager.getOverloadedUsers().put(dataHolder.getName().toLowerCase(), new ArrayList<User>());
 		}
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).clear();
-		sender.sendMessage(ChatColor.YELLOW + " " + count + "All users in overload mode are now normal again.");
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("EMPTY_OVERLOAD")); //$NON-NLS-1$
 
 		return true;
 	}

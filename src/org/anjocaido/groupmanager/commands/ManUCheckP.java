@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,11 +52,11 @@ public class ManUCheckP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manucheckp <player> <permission>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCHECKP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
-		auxString = args[1].replace("'", "");
+		auxString = args[1].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
@@ -72,34 +73,34 @@ public class ManUCheckP extends BaseCommand implements TabCompleter {
 
 		if (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND)) {
 			// No permissions found in GM so fall through and check Bukkit.
-			sender.sendMessage(ChatColor.YELLOW + "The player doesn't have access to that permission");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("ERROR_USER_NO_ACCESS_PERMISSION")); //$NON-NLS-1$
 
 		} else {
 			// This permission was found in groupmanager.
 			if (permissionResult.owner instanceof User) {
 				if (permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION)) {
-					sender.sendMessage(ChatColor.YELLOW + "The user has directly a negation node for that permission.");
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_HAS_NEGATION_DIRECT")); //$NON-NLS-1$
 				} else if (permissionResult.resultType.equals(PermissionCheckResult.Type.EXCEPTION)) {
-					sender.sendMessage(ChatColor.YELLOW + "The user has directly an Exception node for that permission.");
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_HAS_EXCEPTION_DIRECT")); //$NON-NLS-1$
 				} else {
-					sender.sendMessage(ChatColor.YELLOW + "The user has directly this permission.");
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_HAS_PERMISSION_DIRECT")); //$NON-NLS-1$
 				}
-				sender.sendMessage(ChatColor.YELLOW + "Permission Node: " + permissionResult.accessLevel);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("PERMISSION_NODE"), permissionResult.accessLevel)); //$NON-NLS-1$
 			} else if (permissionResult.owner instanceof Group) {
 				if (permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION)) {
-					sender.sendMessage(ChatColor.YELLOW + "The user inherits a negation permission from group: " + permissionResult.owner.getLastName());
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_INHERITS_NEGATION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 				} else if (permissionResult.resultType.equals(PermissionCheckResult.Type.EXCEPTION)) {
-					sender.sendMessage(ChatColor.YELLOW + "The user inherits an Exception permission from group: " + permissionResult.owner.getLastName());
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_INHERITS_EXCEPTION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 				} else {
-					sender.sendMessage(ChatColor.YELLOW + "The user inherits the permission from group: " + permissionResult.owner.getLastName());
+					sender.sendMessage(ChatColor.YELLOW + Messages.getString("USER_INHERITS_PERMISSION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
 				}
-				sender.sendMessage(ChatColor.YELLOW + "Permission Node: " + permissionResult.accessLevel);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("PERMISSION_NODE"), permissionResult.accessLevel)); //$NON-NLS-1$
 			}
 		}
 
 		// superperms
 		if (targetPlayer != null) {
-			sender.sendMessage(ChatColor.YELLOW + "SuperPerms reports Node: " + targetPlayer.hasPermission(args[1]) + ((!targetPlayer.hasPermission(args[1]) && targetPlayer.isPermissionSet(args[1])) ? " (Negated)": ""));
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("SUPER_PERMS_REPORTS") + targetPlayer.hasPermission(args[1]) + ((!targetPlayer.hasPermission(args[1]) && targetPlayer.isPermissionSet(args[1])) ? Messages.getString("NEGATED"): "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		return true;

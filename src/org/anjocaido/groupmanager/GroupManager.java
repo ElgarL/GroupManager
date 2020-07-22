@@ -76,6 +76,7 @@ import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
 import org.anjocaido.groupmanager.events.GroupManagerEventHandler;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.metrics.Metrics;
 import org.anjocaido.groupmanager.permissions.BukkitPermissions;
 import org.anjocaido.groupmanager.utils.GMLoggerHandler;
@@ -113,7 +114,7 @@ public class GroupManager extends JavaPlugin {
 	private static GMConfiguration config;
 	private ReentrantLock saveLock = new ReentrantLock();
 	
-	private String lastError = "";
+	private String lastError = ""; //$NON-NLS-1$
 
 	private static GlobalGroups globalGroups;
 
@@ -143,7 +144,7 @@ public class GroupManager extends JavaPlugin {
 		    
 		    //metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
 		} catch (Exception e) {
-			System.err.println("[GroupManager] Error setting up metrics");
+			System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
 		}
 		
 		/*
@@ -187,7 +188,7 @@ public class GroupManager extends JavaPlugin {
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
-		GroupManager.logger.warning(String.format("version %s is disabled!", pdfFile.getVersion()));
+		GroupManager.logger.warning(String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
 		
 		if (!restarting)
@@ -202,7 +203,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			overloadedUsers = new HashMap<String, ArrayList<User>>();
 			selectedWorlds = new HashMap<String, String>();
-			lastError = "";
+			lastError = ""; //$NON-NLS-1$
 			
 			/*
 			 * Setup our logger if we are not restarting.
@@ -234,9 +235,9 @@ public class GroupManager extends JavaPlugin {
 			 */
 			PluginDescriptionFile pdfFile = this.getDescription();
 			if (worldsHolder == null) {
-				GroupManager.logger.severe(String.format("Can't enable %s version %s, bad loading!", pdfFile.getName(), pdfFile.getVersion()));
+				GroupManager.logger.severe(String.format(Messages.getString("GroupManager.CANT_ENABLE"), pdfFile.getName(), pdfFile.getVersion())); //$NON-NLS-1$
 				this.getServer().getPluginManager().disablePlugin(this);
-				throw new IllegalStateException("An error ocurred while loading GroupManager");
+				throw new IllegalStateException(Messages.getString("GroupManager.ERROR_LOADING")); //$NON-NLS-1$
 			}
 
 			/*
@@ -275,14 +276,14 @@ public class GroupManager extends JavaPlugin {
 			 */
 
 			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1) {
-				GroupManager.logger.severe("Could not schedule superperms Update.");
+				GroupManager.logger.severe(Messages.getString("GroupManager.ERROR_SCHEDULING_SUPERPERMS")); //$NON-NLS-1$
 				/*
 				 * Flag that we are now loaded and should start processing events.
 				 */
 				setLoaded(true);
 			}
 
-			GroupManager.logger.info(String.format("version %s is enabled!", pdfFile.getVersion()));
+			GroupManager.logger.info(String.format(Messages.getString("GroupManager.ENABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
 			// Register as a service
 			if (!restarting)
@@ -310,48 +311,48 @@ public class GroupManager extends JavaPlugin {
 	
 	private void initCommands() {
 		
-		getCommand("listgroups").setExecutor(new ListGroups());
-		getCommand("mancheckw").setExecutor(new ManCheckW());
-		getCommand("manclear").setExecutor(new ManClear());
-		getCommand("mandemote").setExecutor(new ManDemote());
-		getCommand("mangadd").setExecutor(new ManGAdd());
-		getCommand("mangaddi").setExecutor(new ManGAddI());
-		getCommand("mangaddp").setExecutor(new ManGAddP());
-		getCommand("mangaddv").setExecutor(new ManGAddV());
-		getCommand("mangcheckp").setExecutor(new ManGCheckP());
-		getCommand("mangcheckv").setExecutor(new ManGCheckV());
-		getCommand("mangclearp").setExecutor(new ManGClearP());
-		getCommand("mangdel").setExecutor(new ManGDel());
-		getCommand("mangdeli").setExecutor(new ManGDelI());
-		getCommand("mangdelp").setExecutor(new ManGDelP());
-		getCommand("mangdelv").setExecutor(new ManGDelV());
-		getCommand("manglistp").setExecutor(new ManGListP());
-		getCommand("manglistv").setExecutor(new ManGListV());
-		getCommand("manload").setExecutor(new ManLoad());
-		getCommand("manpromote").setExecutor(new ManPromote());
-		getCommand("mansave").setExecutor(new ManSave());
-		getCommand("manselect").setExecutor(new ManSelect());
-		getCommand("mantogglesave").setExecutor(new ManToggleSave());
-		getCommand("mantogglevalidate").setExecutor(new ManToggleValidate());
-		getCommand("manuadd").setExecutor(new ManUAdd());
-		getCommand("manuaddp").setExecutor(new ManUAddP());
-		getCommand("manuaddsub").setExecutor(new ManUAddSub());
-		getCommand("manuaddv").setExecutor(new ManUAddV());
-		getCommand("manucheckp").setExecutor(new ManUCheckP());
-		getCommand("manucheckv").setExecutor(new ManUCheckV());
-		getCommand("manuclearp").setExecutor(new ManUClearP());
-		getCommand("manudel").setExecutor(new ManUDel());
-		getCommand("manudelsub").setExecutor(new ManUDelSub());
-		getCommand("manudelp").setExecutor(new ManUDelP());
-		getCommand("manudelv").setExecutor(new ManUDelV());
-		getCommand("manulistp").setExecutor(new ManUListP());
-		getCommand("manulistv").setExecutor(new ManUListV());
-		getCommand("manwhois").setExecutor(new ManWhois());
-		getCommand("manworld").setExecutor(new ManWorld());
-		getCommand("tempadd").setExecutor(new TempAdd());
-		getCommand("tempdel").setExecutor(new TempDel());
-		getCommand("tempdelall").setExecutor(new TempDelAll());
-		getCommand("templist").setExecutor(new TempList());
+		getCommand("listgroups").setExecutor(new ListGroups()); //$NON-NLS-1$
+		getCommand("mancheckw").setExecutor(new ManCheckW()); //$NON-NLS-1$
+		getCommand("manclear").setExecutor(new ManClear()); //$NON-NLS-1$
+		getCommand("mandemote").setExecutor(new ManDemote()); //$NON-NLS-1$
+		getCommand("mangadd").setExecutor(new ManGAdd()); //$NON-NLS-1$
+		getCommand("mangaddi").setExecutor(new ManGAddI()); //$NON-NLS-1$
+		getCommand("mangaddp").setExecutor(new ManGAddP()); //$NON-NLS-1$
+		getCommand("mangaddv").setExecutor(new ManGAddV()); //$NON-NLS-1$
+		getCommand("mangcheckp").setExecutor(new ManGCheckP()); //$NON-NLS-1$
+		getCommand("mangcheckv").setExecutor(new ManGCheckV()); //$NON-NLS-1$
+		getCommand("mangclearp").setExecutor(new ManGClearP()); //$NON-NLS-1$
+		getCommand("mangdel").setExecutor(new ManGDel()); //$NON-NLS-1$
+		getCommand("mangdeli").setExecutor(new ManGDelI()); //$NON-NLS-1$
+		getCommand("mangdelp").setExecutor(new ManGDelP()); //$NON-NLS-1$
+		getCommand("mangdelv").setExecutor(new ManGDelV()); //$NON-NLS-1$
+		getCommand("manglistp").setExecutor(new ManGListP()); //$NON-NLS-1$
+		getCommand("manglistv").setExecutor(new ManGListV()); //$NON-NLS-1$
+		getCommand("manload").setExecutor(new ManLoad()); //$NON-NLS-1$
+		getCommand("manpromote").setExecutor(new ManPromote()); //$NON-NLS-1$
+		getCommand("mansave").setExecutor(new ManSave()); //$NON-NLS-1$
+		getCommand("manselect").setExecutor(new ManSelect()); //$NON-NLS-1$
+		getCommand("mantogglesave").setExecutor(new ManToggleSave()); //$NON-NLS-1$
+		getCommand("mantogglevalidate").setExecutor(new ManToggleValidate()); //$NON-NLS-1$
+		getCommand("manuadd").setExecutor(new ManUAdd()); //$NON-NLS-1$
+		getCommand("manuaddp").setExecutor(new ManUAddP()); //$NON-NLS-1$
+		getCommand("manuaddsub").setExecutor(new ManUAddSub()); //$NON-NLS-1$
+		getCommand("manuaddv").setExecutor(new ManUAddV()); //$NON-NLS-1$
+		getCommand("manucheckp").setExecutor(new ManUCheckP()); //$NON-NLS-1$
+		getCommand("manucheckv").setExecutor(new ManUCheckV()); //$NON-NLS-1$
+		getCommand("manuclearp").setExecutor(new ManUClearP()); //$NON-NLS-1$
+		getCommand("manudel").setExecutor(new ManUDel()); //$NON-NLS-1$
+		getCommand("manudelsub").setExecutor(new ManUDelSub()); //$NON-NLS-1$
+		getCommand("manudelp").setExecutor(new ManUDelP()); //$NON-NLS-1$
+		getCommand("manudelv").setExecutor(new ManUDelV()); //$NON-NLS-1$
+		getCommand("manulistp").setExecutor(new ManUListP()); //$NON-NLS-1$
+		getCommand("manulistv").setExecutor(new ManUListV()); //$NON-NLS-1$
+		getCommand("manwhois").setExecutor(new ManWhois()); //$NON-NLS-1$
+		getCommand("manworld").setExecutor(new ManWorld()); //$NON-NLS-1$
+		getCommand("tempadd").setExecutor(new TempAdd()); //$NON-NLS-1$
+		getCommand("tempdel").setExecutor(new TempDel()); //$NON-NLS-1$
+		getCommand("tempdelall").setExecutor(new TempDelAll()); //$NON-NLS-1$
+		getCommand("templist").setExecutor(new TempList()); //$NON-NLS-1$
 
 	}
 
@@ -368,26 +369,26 @@ public class GroupManager extends JavaPlugin {
 
 		lastError = ex.getMessage();
 
-		GroupManager.logger.severe("====================================================");
-		GroupManager.logger.severe(String.format("= ERROR REPORT START - %s =", this.getDescription().getVersion()));
-		GroupManager.logger.severe("====================================================");
-		GroupManager.logger.severe("=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ===");
-		GroupManager.logger.severe("= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER =");
-		GroupManager.logger.severe("====================================================");
+		GroupManager.logger.severe("===================================================="); //$NON-NLS-1$
+		GroupManager.logger.severe(String.format("= ERROR REPORT START - %s =", this.getDescription().getVersion())); //$NON-NLS-1$
+		GroupManager.logger.severe("===================================================="); //$NON-NLS-1$
+		GroupManager.logger.severe("=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ==="); //$NON-NLS-1$
+		GroupManager.logger.severe("= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER ="); //$NON-NLS-1$
+		GroupManager.logger.severe("===================================================="); //$NON-NLS-1$
 		GroupManager.logger.severe(lastError);
-		GroupManager.logger.severe("====================================================");
-		GroupManager.logger.severe("= ERROR REPORT ENDED =");
-		GroupManager.logger.severe("====================================================");
+		GroupManager.logger.severe("===================================================="); //$NON-NLS-1$
+		GroupManager.logger.severe("= ERROR REPORT ENDED ="); //$NON-NLS-1$
+		GroupManager.logger.severe("===================================================="); //$NON-NLS-1$
 
 		// Append this error to the error log.
 		try {
-			String error = "=============================== GM ERROR LOG ===============================\n";
-			error += String.format("= ERROR REPORT START - %s =\n\n", this.getDescription().getVersion());
+			String error = "=============================== GM ERROR LOG ===============================\n"; //$NON-NLS-1$
+			error += String.format("= ERROR REPORT START - %s =\n\n", this.getDescription().getVersion()); //$NON-NLS-1$
 			
 			error += Tasks.getStackTraceAsString(ex);
-			error += "\n============================================================================\n";
+			error += "\n============================================================================\n"; //$NON-NLS-1$
 
-			Tasks.appendStringToFile(error, (getDataFolder() + System.getProperty("file.separator") + "ERROR.LOG"));
+			Tasks.appendStringToFile(error, (getDataFolder() + System.getProperty("file.separator") + "ERROR.LOG")); //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (IOException e) {
 			// Failed to write file.
 			e.printStackTrace();
@@ -413,7 +414,7 @@ public class GroupManager extends JavaPlugin {
 
 	private void prepareBackupFolder() {
 
-		backupFolder = new File(this.getDataFolder(), "backup");
+		backupFolder = new File(this.getDataFolder(), "backup"); //$NON-NLS-1$
 		if (!backupFolder.exists()) {
 			getBackupFolder().mkdirs();
 		}
@@ -422,6 +423,7 @@ public class GroupManager extends JavaPlugin {
 	private void prepareConfig() {
 
 		config = new GMConfiguration(this);
+		config.load();
 	}
 
 	public void enableScheduler() {
@@ -440,11 +442,11 @@ public class GroupManager extends JavaPlugin {
 						
 						try {
 							// obtain a lock so we are the only thread saving (blocking).
-							saveLock.lock();
+							getSaveLock().lock();
 							
 							if (worldsHolder.saveChanges(false)) {
 								
-								GroupManager.logger.info("Data files refreshed.");
+								GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 							}
 						} catch (IllegalStateException ex) {
 							GroupManager.logger.warning(ex.getMessage());
@@ -452,7 +454,7 @@ public class GroupManager extends JavaPlugin {
 							/*
 							 * Release the lock.
 							 */
-							saveLock.unlock();
+							getSaveLock().unlock();
 						}
 				}
 			};
@@ -467,7 +469,7 @@ public class GroupManager extends JavaPlugin {
 					if (isLoaded())
 						try {
 							// obtain a lock so we are the only thread saving (blocking).
-							saveLock.lock();
+							getSaveLock().lock();
 							
 							/*
 							 * If we removed any permissions and saving is not disabled
@@ -477,7 +479,7 @@ public class GroupManager extends JavaPlugin {
 							if (worldsHolder.purgeExpiredPerms()) {
 								
 								if (worldsHolder.saveChanges(false))
-										GroupManager.logger.info("Data files refreshed.");
+										GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 								
 							}
 						} catch (IllegalStateException ex) {
@@ -486,7 +488,7 @@ public class GroupManager extends JavaPlugin {
 							/*
 							 * Release the lock.
 							 */
-							saveLock.unlock();
+							getSaveLock().unlock();
 						}
 				}
 			};
@@ -497,11 +499,11 @@ public class GroupManager extends JavaPlugin {
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
 				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
-				GroupManager.logger.info(String.format("Scheduled Data Saving is set for every %o minutes!", minutes));
+				GroupManager.logger.info(String.format(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_SET"), minutes)); //$NON-NLS-1$
 			} else
-				GroupManager.logger.warning("Scheduled Data Saving is Disabled!");
+				GroupManager.logger.warning(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
 			
-			GroupManager.logger.info(String.format("Backups will be retained for %d hours!", getGMConfig().getBackupDuration()));
+			GroupManager.logger.info(String.format(Messages.getString("GroupManager.BACKUPS_RETAINED_MSG"), getGMConfig().getBackupDuration())); //$NON-NLS-1$
 		}
 	}
 
@@ -515,7 +517,7 @@ public class GroupManager extends JavaPlugin {
 			} catch (Exception e) {
 			}
 			scheduler = null;
-			GroupManager.logger.warning("Scheduled Data Saving is disabled!");
+			GroupManager.logger.warning(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
 		}
 	}
 
@@ -538,27 +540,27 @@ public class GroupManager extends JavaPlugin {
 	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
 		
 		
-		if (newPerm.startsWith("+"))
+		if (newPerm.startsWith("+")) //$NON-NLS-1$
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has direct access to that permission.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 				return true;
 			}
 		}
-		else if (newPerm.startsWith("-"))
+		else if (newPerm.startsWith("-")) //$NON-NLS-1$
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has an exception for this node.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 				return true;
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has a matching negated node.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 				return true;
 			}
 		}
@@ -566,18 +568,18 @@ public class GroupManager extends JavaPlugin {
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has an exception for this node.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has a matching negated node.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 			}
 			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.FOUND))
 			{
-				sender.sendMessage(ChatColor.RED + String.format("The %s already has direct access to that permission.", type));
-				sender.sendMessage(ChatColor.RED + "Node: " + oldPerm.accessLevel);
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
 				
 				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.
 				return (oldPerm.accessLevel.equalsIgnoreCase(newPerm));
@@ -608,10 +610,24 @@ public class GroupManager extends JavaPlugin {
 
 		for (Player test : Bukkit.getServer().getOnlinePlayers()) {
 			if (!test.equals(player)) {
-				if (test.hasPermission("groupmanager.notify.other"))
-					test.sendMessage(ChatColor.YELLOW + name + " was" + msg);
-			} else if ((player != null) && ((player.hasPermission("groupmanager.notify.self")) || (player.hasPermission("groupmanager.notify.other"))))
-				player.sendMessage(ChatColor.YELLOW + "You were" + msg);
+				if (test.hasPermission("groupmanager.notify.other")) { //$NON-NLS-1$
+					/*
+					 * Notify others (with the permission node
+					 * 'groupmanager.notify.other') of a group change.
+					 * 
+					 * %s was moved to the group %s in world %s.
+					 */
+					test.sendMessage(ChatColor.YELLOW + name + Messages.getString("PLAYER_WAS") + msg); //$NON-NLS-1$
+				}
+			} else if ((player != null) && ((player.hasPermission("groupmanager.notify.self")) || (player.hasPermission("groupmanager.notify.other")))) { //$NON-NLS-1$ //$NON-NLS-2$
+				/*
+				 * Notify the player (if they have the permission node
+				 * 'groupmanager.notify.self') of their group change.
+				 * 
+				 * You were moved to the group %s in world %s.
+				 */
+				player.sendMessage(ChatColor.YELLOW + Messages.getString("YOU_WERE") + msg); //$NON-NLS-1$
+			}
 		}
 
 	}
@@ -653,6 +669,15 @@ public class GroupManager extends JavaPlugin {
 		GroupManager.isLoaded = isLoaded;
 	}
 	
+	
+	/**
+	 * @return the saveLock
+	 */
+	public ReentrantLock getSaveLock() {
+	
+		return saveLock;
+	}
+
 	/**
 	 * @return true if the scheduler is running.
 	 */

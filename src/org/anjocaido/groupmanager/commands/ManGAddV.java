@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.data.Variables;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,21 +51,21 @@ public class ManGAddV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 3) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangaddv <group> <variable> <value>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGADDV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[0])); //$NON-NLS-1$
 			return true;
 		}
 		if (auxGroup.isGlobal()) {
-			sender.sendMessage(ChatColor.RED + "GlobalGroups do NOT support Info Nodes.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GG_DO_NOT_SUPPORT_INFO_NODES")); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		// Seems OK
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (int i = 2; i < args.length; i++) {
 			auxString += args[i];
 			if ((i + 1) < args.length) {
@@ -72,9 +73,9 @@ public class ManGAddV extends BaseCommand implements TabCompleter {
 			}
 		}
 		
-		auxString = auxString.replace("'", "");
+		auxString = auxString.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		auxGroup.getVariables().addVar(args[1], Variables.parseVariableValue(auxString));
-		sender.sendMessage(ChatColor.YELLOW + "Variable " + ChatColor.GOLD + args[1] + ChatColor.YELLOW + ":'" + ChatColor.GREEN + auxString + ChatColor.YELLOW + "' added to the group " + auxGroup.getName());
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_GROUP"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxGroup.getName())); //$NON-NLS-1$
 
 		return true;
 	}

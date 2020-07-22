@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -56,14 +57,14 @@ public class UpdateTask implements Runnable {
 			 * A newer version is available or
 			 * we are on a snapshot of the new build.
 			 */
-			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) {
+			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) { //$NON-NLS-1$
 				
-				GroupManager.logger.warning(String.format("Stable Version: %s is out! You are still running version: %s", newVersionTitle, currentVersionTitle));
-				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.80743/");
+				GroupManager.logger.warning(String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle)); //$NON-NLS-1$
+				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.80743/"); //$NON-NLS-1$
 
 			} else {
 				
-				GroupManager.logger.info("No new version available");
+				GroupManager.logger.info(Messages.getString("UpdateTask.WE_ARE_UP_TO_DATE")); //$NON-NLS-1$
 			}
 		} catch (Exception e) {
 			// ignore exceptions
@@ -74,10 +75,10 @@ public class UpdateTask implements Runnable {
 	public double updateCheck() {
 		
         try {
-            URL url = new URL("https://api.github.com/repos/ElgarL/GroupManager/releases/latest");
+            URL url = new URL("https://api.github.com/repos/ElgarL/GroupManager/releases/latest"); //$NON-NLS-1$
             URLConnection conn = url.openConnection();
             conn.setReadTimeout(5000);
-            conn.addRequestProperty("User-Agent", "GroupManager Update Check");
+            conn.addRequestProperty("User-Agent", "GroupManager Update Check"); //$NON-NLS-1$ //$NON-NLS-2$
             conn.setDoOutput(true);
             
             final JsonReader reader = new JsonReader(new InputStreamReader(conn.getInputStream()));
@@ -125,7 +126,7 @@ public class UpdateTask implements Runnable {
 						
 						String name = reader.nextName();
                         
-                        if (name.equalsIgnoreCase("name")) {
+                        if (name.equalsIgnoreCase("name")) { //$NON-NLS-1$
                         	newVersionTitle = reader.nextString();
                         }
 						break;
@@ -166,7 +167,7 @@ public class UpdateTask implements Runnable {
             return parseVersion(newVersionTitle);
             
         } catch (Exception e) {
-        	GroupManager.logger.info("There was an issue attempting to check for the latest version.");
+        	GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
         	e.printStackTrace();
         }
         /*
@@ -184,14 +185,14 @@ public class UpdateTask implements Runnable {
 	private Double parseVersion(String version) {
 		
 		try {
-			version = version.split(" ")[0].split("-")[0].trim();
+			version = version.split(" ")[0].split("-")[0].trim(); //$NON-NLS-1$ //$NON-NLS-2$
 			
-			if (version.startsWith("v"))
-					version = version.replaceFirst("v", "");
+			if (version.startsWith("v")) //$NON-NLS-1$
+					version = version.replaceFirst("v", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			return Double.valueOf(version);
 		} catch (Exception e) {
-			GroupManager.logger.info("There was an issue parsing the version string.");
+			GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
         	e.printStackTrace();
 		}
 		

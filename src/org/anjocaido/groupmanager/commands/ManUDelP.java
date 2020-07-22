@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,7 +52,7 @@ public class ManUDelP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudelp <player> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
@@ -67,31 +68,31 @@ public class ManUDelP extends BaseCommand implements TabCompleter {
 		
 		for (int i = 1; i < args.length; i++)
 		{
-			auxString = args[i].replace("'", "");
+			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		
 			if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-				sender.sendMessage(ChatColor.RED + "You can't modify a player with same group as you, or higher.");
+				sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 				continue;
 			}
 			// Validating your permissions
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "You can't remove a permission you don't have: '" + auxString + "'");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkUserOnlyPermission(auxUser, auxString);
 			if (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND)) {
-				sender.sendMessage(ChatColor.RED + "The user doesn't have direct access to that permission: '" + auxString + "'");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_USER_NO_ACCESS_PERMISSION_DIRECT"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			if (!auxUser.hasSamePermissionNode(auxString)) {
-				sender.sendMessage(ChatColor.RED + "This permission node doesn't match any node.");
-				sender.sendMessage(ChatColor.RED + "But might match node: " + permissionResult.accessLevel);
+				sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_NO_MATCHING_PERMISSION_NODE")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("POSSIBLE_MATCH"), permissionResult.accessLevel)); //$NON-NLS-1$
 				continue;
 			}
 			auxUser.removePermission(auxString);
-			sender.sendMessage(ChatColor.YELLOW + "You removed '" + auxString + "' from player '" + auxUser.getLastName() + "' permissions.");
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_PLAYER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 		}
 		// Seems OK
 

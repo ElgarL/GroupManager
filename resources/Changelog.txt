@@ -252,3 +252,4 @@ v2.4:
 v2.5:
     - Make the saving of data Threadsafe.
     - Add version checking for updates at startup.
+    - Externalise all text to allow for localisation.

@@ -15,33 +15,35 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.anjocaido.groupmanager.Tasks;
+package org.anjocaido.groupmanager.localization;
+
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.localization.Messages;
 
-/*
- * 
- * Created by ElgarL
- */
+public class Messages {
 
-public class BukkitPermsUpdateTask implements Runnable {
+	private static String BUNDLE_NAME = "languages.english"; //$NON-NLS-1$
 
-	public BukkitPermsUpdateTask() {
+	private static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
 
-		super();
+	private Messages() {
+		
 	}
 
-	@Override
-	public void run() {
+	public static String getString(String key) {
 
-		// Signal loaded and update BukkitPermissions.
-		GroupManager.setLoaded(true);
-		GroupManager.getBukkitPermissions().collectPermissions();
-		GroupManager.getBukkitPermissions().updateAllPlayers();
-
-		GroupManager.logger.info(Messages.getString("BukkitPermsUpdateTask.BUKKIT_PERMISSIONS_UPDATED")); //$NON-NLS-1$
-
+		try {
+			return RESOURCE_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
+		}
 	}
-
+	
+	public static void setLanguage() {
+		
+		BUNDLE_NAME = "languages." + GroupManager.getGMConfig().getLanguage();
+		RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+	}
 }

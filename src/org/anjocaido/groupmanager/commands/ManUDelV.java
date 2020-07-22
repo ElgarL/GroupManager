@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,7 +50,7 @@ public class ManUDelV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudelv <user> <variable>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -63,12 +64,12 @@ public class ManUDelV extends BaseCommand implements TabCompleter {
 		}
 		// Validating permission
 		if (!auxUser.getVariables().hasVar(args[1])) {
-			sender.sendMessage(ChatColor.RED + "The user doesn't have directly that variable!");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_USER_NO_ACCESS_VARIABLE_DIRECT")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		auxUser.getVariables().removeVar(args[1]);
-		sender.sendMessage(ChatColor.YELLOW + "Variable " + ChatColor.GOLD + args[1] + ChatColor.YELLOW + " removed from the user " + ChatColor.GREEN + auxUser.getLastName());
+		sender.sendMessage(String.format(ChatColor.YELLOW + Messages.getString("VARIABLE_REMOVED_FROM_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxUser.getLastName())); //$NON-NLS-1$
 
 		return true;
 	}

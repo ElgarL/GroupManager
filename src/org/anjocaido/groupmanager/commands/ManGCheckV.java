@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,27 +50,27 @@ public class ManGCheckV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangcheckv <group> <variable>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGCHECKV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		if (auxGroup.isGlobal()) {
-			sender.sendMessage(ChatColor.RED + "GlobalGroups do NOT support Info Nodes.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GG_DO_NOT_SUPPORT_INFO_NODES")); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		auxGroup2 = permissionHandler.nextGroupWithVariable(auxGroup, args[1]);
 		if (auxGroup2 == null) {
-			sender.sendMessage(ChatColor.RED + "The group doesn't have access to that variable!");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GROUP_NO_ACCESS_VARIABLE")); //$NON-NLS-1$
 		}
 		// Seems OK
-		sender.sendMessage(ChatColor.YELLOW + "The value of variable '" + ChatColor.GOLD + args[1] + ChatColor.YELLOW + "' is: '" + ChatColor.GREEN + auxGroup2.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE + "'");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_VALUE"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxGroup2.getVariables().getVarObject(args[1]).toString() + ChatColor.WHITE)); //$NON-NLS-1$
 		if (!auxGroup.equals(auxGroup2)) {
-			sender.sendMessage(ChatColor.YELLOW + "And the value was inherited from group: " + ChatColor.GREEN + auxGroup2.getName());
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("VARIABLE_INHERITED") + ChatColor.GREEN + auxGroup2.getName()); //$NON-NLS-1$
 		}
 
 		return true;

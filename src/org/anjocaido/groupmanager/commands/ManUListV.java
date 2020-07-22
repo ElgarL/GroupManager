@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -48,7 +49,7 @@ public class ManUListV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manulistv <user>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANULISTV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -61,17 +62,17 @@ public class ManUListV extends BaseCommand implements TabCompleter {
 		}
 		// Validating permission
 		// Seems OK
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (String varKey : auxUser.getVariables().getVarKeyList()) {
 			Object o = auxUser.getVariables().getVarObject(varKey);
-			auxString += ChatColor.GOLD + varKey + ChatColor.WHITE + ":'" + ChatColor.GREEN + o.toString() + ChatColor.WHITE + "', ";
+			auxString += ChatColor.GOLD + varKey + ChatColor.WHITE + ":'" + ChatColor.GREEN + o.toString() + ChatColor.WHITE + "', "; //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
 		}
-		sender.sendMessage(ChatColor.YELLOW + String.format("Variables of user %s: ", auxUser.getLastName()));
-		sender.sendMessage(auxString + ".");
-		sender.sendMessage(ChatColor.YELLOW + "Plus all variables from group: " + auxUser.getGroupName());
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLES_OF_USER"), auxUser.getLastName()));
+		sender.sendMessage(auxString + "."); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLES_ALL_GROUPS"), auxUser.getGroupName()));
 
 		return true;
 	}

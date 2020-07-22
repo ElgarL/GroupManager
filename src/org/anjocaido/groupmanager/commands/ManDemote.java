@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public class ManDemote extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mandemote <player> <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANDEMOTE_SYNTAX"));
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -63,38 +64,38 @@ public class ManDemote extends BaseCommand implements TabCompleter {
 		}
 		auxGroup = dataHolder.getGroup(args[1]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[1] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[1])); //$NON-NLS-1$
 			return true;
 		}
 		if (auxGroup.isGlobal()) {
-			sender.sendMessage(ChatColor.RED + "Players may not be members of GlobalGroups directly.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_PLAYERS_NOT_MEMBERS_OF_GG")); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player with same permissions as you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		if (!isConsole && !isOpOverride && (permissionHandler.hasGroupInInheritance(auxGroup, senderGroup.getName()))) {
-			sender.sendMessage(ChatColor.RED + "The destination group can't be the same as yours, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_DESTINATION_HIGHER_THAN_YOURS")); //$NON-NLS-1$
 			return true;
 		}
 		if (!isConsole && !isOpOverride && (!permissionHandler.inGroup(senderUser.getUUID(), auxUser.getGroupName()) || !permissionHandler.inGroup(senderUser.getUUID(), auxGroup.getName()))) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player involving a group that you don't inherit.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_YOU_DO_NOT_INHERIT")); //$NON-NLS-1$
 			return true;
 		}
 		if (!permissionHandler.hasGroupInInheritance(auxUser.getGroup(), auxGroup.getName()) && !permissionHandler.hasGroupInInheritance(auxGroup, auxUser.getGroupName())) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player using groups with different inheritage line.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_DIFFERENT_INHERITANCE_LINES")); //$NON-NLS-1$
 			return true;
 		}
 		if (permissionHandler.hasGroupInInheritance(auxGroup, auxUser.getGroupName())) {
-			sender.sendMessage(ChatColor.RED + "The new group must be a lower rank.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_NEW_GROUP_NOT_LOWER")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		auxUser.setGroup(auxGroup);
 		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
-			sender.sendMessage(ChatColor.YELLOW + "You changed " + auxUser.getLastName() + " group to " + auxGroup.getName() + ".");
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
 
 		return true;
 	}

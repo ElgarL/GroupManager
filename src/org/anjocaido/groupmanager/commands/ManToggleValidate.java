@@ -17,6 +17,7 @@
  */
 package org.anjocaido.groupmanager.commands;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,10 +39,10 @@ public class ManToggleValidate extends BaseCommand {
 		// Toggle validation of player names.
 		plugin.setValidateOnlinePlayer(!plugin.isValidateOnlinePlayer());
 		
-		sender.sendMessage(ChatColor.YELLOW + "Validate if player is online, now set to: " + Boolean.toString(plugin.isValidateOnlinePlayer()));
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("VALIDATE_STATUS") + Boolean.toString(plugin.isValidateOnlinePlayer()));
 		if (!plugin.isValidateOnlinePlayer()) {
-			sender.sendMessage(ChatColor.GOLD + "From now on you can edit offline players... BUT:");
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "You should type the whole name of the player, correctly.");
+			sender.sendMessage(ChatColor.GOLD + Messages.getString("VALIDATE_1"));
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + Messages.getString("VALIDATE_2"));
 		}
 		return true;
 	}

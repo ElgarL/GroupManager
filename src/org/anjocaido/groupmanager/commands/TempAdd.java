@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,7 +52,7 @@ public class TempAdd extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/tempadd <player>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("TEMPADD_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -64,7 +65,7 @@ public class TempAdd extends BaseCommand implements TabCompleter {
 		}
 		// Validating permission
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "Can't modify player with same permissions than you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
@@ -73,7 +74,7 @@ public class TempAdd extends BaseCommand implements TabCompleter {
 		}
 		dataHolder.overloadUser(auxUser.getUUID());
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).add(dataHolder.getUser(auxUser.getUUID()));
-		sender.sendMessage(ChatColor.YELLOW + "Player set to overload mode!");
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("PLAYER_OVERLOADED")); //$NON-NLS-1$
 
 		return true;
 	}

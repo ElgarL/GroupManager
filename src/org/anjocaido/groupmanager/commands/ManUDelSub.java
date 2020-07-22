@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public class ManUDelSub extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manudelsub <user> <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -64,18 +65,18 @@ public class ManUDelSub extends BaseCommand implements TabCompleter {
 		}
 		auxGroup = dataHolder.getGroup(args[1]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[1] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[1])); //$NON-NLS-1$
 			return true;
 		}
 
 		// Validating permission
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player with same permissions as you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
 		auxUser.removeSubGroup(auxGroup);
-		sender.sendMessage(ChatColor.YELLOW + "You removed subgroup '" + auxGroup.getName() + "' from player '" + auxUser.getLastName() + "' list.");
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_REMOVED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 
 		// If the player is online, this will create new data for the user.
 		if (auxUser.getUUID() != null) {

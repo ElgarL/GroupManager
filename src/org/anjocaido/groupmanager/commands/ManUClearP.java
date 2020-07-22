@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,7 +52,7 @@ public class ManUClearP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuclearp <player>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCLEARP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
@@ -66,20 +67,20 @@ public class ManUClearP extends BaseCommand implements TabCompleter {
 		}
 		// Validating your permissions
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "You can't modify a player with same group as you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		for (String perm : auxUser.getAllPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "You can't remove a permission you don't have: '" + perm + "'.");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), perm)); //$NON-NLS-1$
 			}
 			else
 			{
 				auxUser.removePermission(perm);
 			}
 		}
-		sender.sendMessage(ChatColor.YELLOW + "You removed all permissions from player: " + auxUser.getLastName());
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_ALL_PERMISSIONS_PLAYER"), auxUser.getLastName())); //$NON-NLS-1$
 
 		// If the player is online, this will create new data for the user.
 		if (auxUser.getUUID() != null) {

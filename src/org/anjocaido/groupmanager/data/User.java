@@ -25,6 +25,8 @@ import java.util.List;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
+import org.anjocaido.groupmanager.localization.Messages;
+
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -220,7 +222,7 @@ public class User extends DataUnit implements Cloneable {
 			boolean notify = (!oldGroup.equalsIgnoreCase(defaultGroupName)) || ((oldGroup.equalsIgnoreCase(defaultGroupName)) && (!this.group.equalsIgnoreCase(defaultGroupName)));
 
 			if (notify)
-				GroupManager.notify(this.getLastName(), String.format(" moved to the group %s in %s.", group.getName(), this.getDataSource().getName()));
+				GroupManager.notify(this.getLastName(), String.format(Messages.getString("MOVED_TO_GROUP"), group.getName(), this.getDataSource().getName()));
 
 			if (updatePerms)
 				GroupManager.getGMEventHandler().callEvent(this, Action.USER_GROUP_CHANGED);

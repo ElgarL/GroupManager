@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,37 +52,37 @@ public class ManGListV extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manglistv <group>)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGLISTV_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
 			return true;
 		}
 		if (auxGroup.isGlobal()) {
-			sender.sendMessage(ChatColor.RED + "GlobalGroups do NOT support Info Nodes.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_GG_DO_NOT_SUPPORT_INFO_NODES")); //$NON-NLS-1$
 			return true;
 		}
 		// Validating permission
 		// Seems OK
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		for (String varKey : auxGroup.getVariables().getVarKeyList()) {
 			Object o = auxGroup.getVariables().getVarObject(varKey);
-			auxString += ChatColor.GOLD + varKey + ChatColor.WHITE + ":'" + ChatColor.GREEN + o.toString() + ChatColor.WHITE + "', ";
+			auxString += ChatColor.GOLD + varKey + ChatColor.WHITE + ":'" + ChatColor.GREEN + o.toString() + ChatColor.WHITE + "', "; //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
 		}
-		sender.sendMessage(ChatColor.YELLOW + "Variables of group " + auxGroup.getName() + ": ");
-		sender.sendMessage(auxString + ".");
-		auxString = "";
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLES_OF_GROUP"), auxGroup.getName()));
+		sender.sendMessage(auxString + "."); //$NON-NLS-1$
+		auxString = ""; //$NON-NLS-1$
 		for (String grp : auxGroup.getInherits()) {
-			auxString += grp + ", ";
+			auxString += grp + ", "; //$NON-NLS-1$
 		}
-		if (auxString.lastIndexOf(",") > 0) {
-			auxString = auxString.substring(0, auxString.lastIndexOf(","));
-			sender.sendMessage(ChatColor.YELLOW + "Plus all variables from groups: " + auxString);
+		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
+			auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLES_ALL_GROUPS"), auxString)); //$NON-NLS-1$
 		}
 
 		return true;

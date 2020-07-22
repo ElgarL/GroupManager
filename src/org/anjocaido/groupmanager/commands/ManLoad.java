@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.events.GMSystemEvent;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -50,15 +51,15 @@ public class ManLoad extends BaseCommand implements TabCompleter {
 		if (args.length > 0) {
 
 			if (!plugin.getLastError().isEmpty()) {
-				sender.sendMessage(ChatColor.RED + "All commands are locked due to an error. " + ChatColor.BOLD + "" + ChatColor.UNDERLINE + "Check plugins/groupmanager/error.log or console" + ChatColor.RESET + "" + ChatColor.RED + " and then try a '/manload'.");
+				sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_ERROR")); //$NON-NLS-1$
 				return true;
 			}
 
-			auxString = "";
+			auxString = ""; //$NON-NLS-1$
 			for (int i = 0; i < args.length; i++) {
 				auxString += args[i];
 				if ((i + 1) < args.length) {
-					auxString += " ";
+					auxString += " "; //$NON-NLS-1$
 				}
 			}
 
@@ -67,7 +68,7 @@ public class ManLoad extends BaseCommand implements TabCompleter {
 			GroupManager.getGlobalGroups().load();
 			plugin.getWorldsHolder().loadWorld(auxString);
 
-			sender.sendMessage("The request to reload world '" + auxString + "' was attempted.");
+			sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
 
 			GroupManager.setLoaded(true);
 
@@ -85,7 +86,7 @@ public class ManLoad extends BaseCommand implements TabCompleter {
 			plugin.onDisable(true);
 			plugin.onEnable(true);
 
-			sender.sendMessage("All settings and worlds were reloaded!");
+			sender.sendMessage(Messages.getString("RELOADED")); //$NON-NLS-1$
 		}
 
 		/**

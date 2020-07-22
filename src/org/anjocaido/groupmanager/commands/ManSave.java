@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.Arrays;
 import java.util.List;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,14 +45,25 @@ public class ManSave extends BaseCommand implements TabCompleter {
 
 		boolean forced = false;
 
-		if ((args.length == 1) && (args[0].equalsIgnoreCase("force")))
+		if ((args.length == 1) && (args[0].equalsIgnoreCase(Messages.getString("COMMAND_FORCE")))) //$NON-NLS-1$
 			forced = true;
 
 		try {
+			/*
+			 * Obtain a lock so we can save.
+			 */
+			plugin.getSaveLock().lock();
+			
 			plugin.getWorldsHolder().saveChanges(forced);
-			sender.sendMessage(ChatColor.YELLOW + "All changes were saved.");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+			
 		} catch (IllegalStateException ex) {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			
+		} finally {
+			// Release lock.
+			if(plugin.getSaveLock().isHeldByCurrentThread())
+				plugin.getSaveLock().unlock();
 		}
 		return true;
 	}
@@ -61,7 +73,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 
 		if (args.length == 1) {
 			
-			return Arrays.asList("force");
+			return Arrays.asList(Messages.getString("COMMAND_FORCE")); //$NON-NLS-1$
 		}
 		return null;
 	}

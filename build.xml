@@ -41,12 +41,15 @@
 		<copy todir="${env.BUILD}" >  
 		    <fileset dir="./resources" includes="**" />
 		</copy>
+		<!-- Include everything from the languages folder -->
+		<copy todir="${env.BUILD}/languages" >  
+			<fileset dir="./src/languages" includes="**" />
+		</copy>
 		<!-- Update the version in the plugin.yml -->
 		<replace file="${env.BUILD}/plugin.yml" token="{BUILD_VER}" value="${env.BUILD_VER}"/>
 		<!-- Build the jar file -->
-		<jar basedir="${env.BUILD}" destfile="${env.LIB}/GroupManager.jar">
-			<fileset dir="./src" />
-		</jar>
+		<jar basedir="${env.BUILD}" destfile="${env.LIB}/GroupManager.jar"/>
+
 		<!-- Copy the jar file to a test server -->
 		<copy file="${env.LIB}/GroupManager.jar" tofile="${env.TEST}\plugins\GroupManager.jar" overwrite="true" />
 	</target>

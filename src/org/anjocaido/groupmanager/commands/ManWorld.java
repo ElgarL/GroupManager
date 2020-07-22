@@ -18,6 +18,7 @@
 package org.anjocaido.groupmanager.commands;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,14 +40,14 @@ public class ManWorld extends BaseCommand {
 		auxString = GroupManager.getSelectedWorlds().get(sender.getName());
 		
 		if (auxString != null) {
-			sender.sendMessage(ChatColor.YELLOW + String.format("You have the world '%s' in your selection.", dataHolder.getName()));
+			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("YOU_HAVE_SELECTED_WORLD"), dataHolder.getName()));
 		} else {
 			if (dataHolder == null) {
-				sender.sendMessage(ChatColor.YELLOW + "There is no world selected. And no world is available now.");
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_WORLD_AVAILABLE"));
 			} else {
-				sender.sendMessage(ChatColor.YELLOW + "You don't have a world in your selection..");
-				sender.sendMessage(ChatColor.YELLOW + "Working with the direct world where your player is.");
-				sender.sendMessage(ChatColor.YELLOW + String.format("Your world now uses permissions of world name: '%s' ", dataHolder.getName()));
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_WORLD_SELECTED"));
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("USING_WORLD"));
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USING_PERMISSIONS_OF_WORLD"), dataHolder.getName()));
 			}
 		}
 

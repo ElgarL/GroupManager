@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
@@ -54,34 +55,34 @@ public class ManGAddP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/mangaddp <group> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + "'" + args[0] + "' Group doesnt exist!");
+			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[0])); //$NON-NLS-1$
 			return false;
 		}
 
 		for (int i = 1; i < args.length; i++)
 		{
-			auxString = args[i].replace("'", "");
+			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			String[] split = null;
 			Instant timed = null;
 			Long period = null;
 			/*
 			 * check for a timed permission
 			 */
-			if (auxString.contains("|")) {
-				split = auxString.split("\\|");
+			if (auxString.contains("|")) { //$NON-NLS-1$
+				split = auxString.split("\\|"); //$NON-NLS-1$
 
 				period = Tasks.parsePeriod(split[1]);
 				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
 				auxString = split[0];
 				
 				if (period == 0) {
-					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' eg. <permission>|1d1h1m");
+					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_INVALID_DURATION"), auxString) + Messages.getString("MANGADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 					continue;
 				}
 			}
@@ -89,12 +90,12 @@ public class ManGAddP extends BaseCommand implements TabCompleter {
 			// Validating your permissions
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "You can't add a permission you don't have: '" + auxString + "'");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_ADD_PERMISSION"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkGroupOnlyPermission(auxGroup, auxString);
-			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "group")) 
+			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "group")) //$NON-NLS-1$
 			{
 				continue;
 			}
@@ -102,11 +103,11 @@ public class ManGAddP extends BaseCommand implements TabCompleter {
 			
 			if (period != null) {
 				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions with a duration of " + period + " minutes.");
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_GROUP_TIMED"), auxString, auxGroup.getName(), period)); //$NON-NLS-1$
 				
 			} else {
 				auxGroup.addPermission(auxString);
-				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to group '" + auxGroup.getName() + "' permissions.");
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_GROUP"), auxString, auxGroup.getName())); //$NON-NLS-1$
 			}
 		}
 

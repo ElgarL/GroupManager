@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -35,12 +36,13 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  */
 public class GMConfiguration {
 	
+	private String language = "english";
 	private boolean allowCommandBlocks = false;
 	private boolean opOverride = true;
 	private boolean toggleValidate = true;
 	private Integer saveInterval = 10;
 	private Integer backupDuration = 24;
-	private String loggerLevel = "OFF";
+	private String loggerLevel = "OFF"; //$NON-NLS-1$
 	private Map<String, Object> mirrorsMap;
 	
 
@@ -54,14 +56,15 @@ public class GMConfiguration {
 		/*
 		 * Set defaults
 		 */
+		language = "english"; //$NON-NLS-1$
 		allowCommandBlocks = false;
 		opOverride = true;
 		toggleValidate = true;
 		saveInterval = 10;
 		backupDuration = 24;
-		loggerLevel = "OFF";
+		loggerLevel = "OFF"; //$NON-NLS-1$
 				
-		load();
+		//load();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,13 +74,13 @@ public class GMConfiguration {
 			plugin.getDataFolder().mkdirs();
 		}
 
-		File configFile = new File(plugin.getDataFolder(), "config.yml");
+		File configFile = new File(plugin.getDataFolder(), "config.yml"); //$NON-NLS-1$
 
 		if (!configFile.exists()) {
 			try {
-				Tasks.copy(plugin.getResource("config.yml"), configFile);
+				Tasks.copy(plugin.getResource("config.yml"), configFile); //$NON-NLS-1$
 			} catch (IOException ex) {
-				GroupManager.logger.log(Level.SEVERE, "Error creating a new config.yml", ex);
+				GroupManager.logger.log(Level.SEVERE, Messages.getString("GMConfiguration.ERROR_CREATING_CONFIG"), ex); //$NON-NLS-1$
 			}
 		}
 
@@ -89,65 +92,75 @@ public class GMConfiguration {
 			configInputStream.close();
 
 		} catch (Exception ex) {
-			throw new IllegalArgumentException(String.format("The following file is corrupt: %s", configFile.getPath()), ex);
+			throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), configFile.getPath()), ex); //$NON-NLS-1$
 		}
 
 		/*
 		 * Read our config settings and store them for reading later.
 		 */
 		try {
-			Map<String, Object> config = getElement("config", getElement("settings", GMconfig));
+			Map<String, Object> config = getElement("config", getElement("settings", GMconfig)); //$NON-NLS-1$ //$NON-NLS-2$
 
 			try {
-				allowCommandBlocks = (Boolean) config.get("allow_commandblocks");
+				language = (String) config.get("language"); //$NON-NLS-1$
+
+				if (language != null)
+					Messages.setLanguage();
+				
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("language"), ex); //$NON-NLS-1$
 			}
 			
 			try {
-				opOverride = (Boolean) config.get("opOverrides");
+				allowCommandBlocks = (Boolean) config.get("allow_commandblocks"); //$NON-NLS-1$
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex); //$NON-NLS-1$
 			}
 			
 			try {
-				toggleValidate = (Boolean) config.get("validate_toggle");
+				opOverride = (Boolean) config.get("opOverrides"); //$NON-NLS-1$
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex); //$NON-NLS-1$
+			}
+			
+			try {
+				toggleValidate = (Boolean) config.get("validate_toggle"); //$NON-NLS-1$
+			} catch (Exception ex) {
+				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex); //$NON-NLS-1$
 			}
 
 			/*
 			 * data node for save/backup timers.
 			 */
 			try {
-				Map<String, Object> save = getElement("save", getElement("data", getElement("settings", GMconfig)));
+				Map<String, Object> save = getElement("save", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				
 				try {
-					saveInterval = (Integer) save.get("minutes");
+					saveInterval = (Integer) save.get("minutes"); //$NON-NLS-1$
 				} catch (Exception ex) {
-					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex);
+					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex); //$NON-NLS-1$
 				}
 				
 				try {
-					backupDuration = (Integer) save.get("hours");
+					backupDuration = (Integer) save.get("hours"); //$NON-NLS-1$
 				} catch (Exception ex) {
-					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex);
+					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex); //$NON-NLS-1$
 				}
 				
 			} catch (Exception ex) {
-				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex);
+				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex); //$NON-NLS-1$
 			}
 
 			
 
-			Object level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level");
+			Object level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if (level instanceof String)
 				loggerLevel = (String) level;
 
 			/*
 			 * Store our mirrors map for parsing later.
 			 */
-			mirrorsMap = (Map<String, Object>) ((Map<String, Object>) GMconfig.get("settings")).get("mirrors");
+			mirrorsMap = (Map<String, Object>) ((Map<String, Object>) GMconfig.get("settings")).get("mirrors"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			if (mirrorsMap == null)
 				throw new Exception();
@@ -156,7 +169,7 @@ public class GMConfiguration {
 			/*
 			 * Flag the error and use defaults
 			 */
-			GroupManager.logger.log(Level.SEVERE, "There are errors in your config.yml. Using default settings", ex);
+			GroupManager.logger.log(Level.SEVERE, Messages.getString("GMConfiguration.ERRORS_IN_CONFIG"), ex); //$NON-NLS-1$
 			
 			mirrorsMap = new HashMap<String, Object>();
 		}
@@ -167,19 +180,25 @@ public class GMConfiguration {
 	
 	private String nodeError(String node) {
 		
-		return String.format("Missing or corrupt '%s' node. Using default settings", node);
+		return String.format(Messages.getString("GMConfiguration.CORRUPT_NODE"), node); //$NON-NLS-1$
 	}
 	
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> getElement(String element, Map<String, Object> map) {
 		
 		if (!map.containsKey(element)) {
-			throw new IllegalArgumentException(String.format("The config.yml has no '%s'.", element));
+			throw new IllegalArgumentException(String.format(Messages.getString("GMConfiguration.MISSING_NODE"), element)); //$NON-NLS-1$
 		}
 		
 		return (Map<String, Object>) map.get(element);
 		
 	}
+	
+	public String getLanguage() {
+
+		return (language == null)? "english" : language;
+	}
+	
 	public boolean isAllowCommandBlocks() {
 
 		return allowCommandBlocks;

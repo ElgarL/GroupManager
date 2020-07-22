@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
@@ -54,7 +55,7 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 		}
 		// Validating arguments
 		if (args.length < 2) {
-			sender.sendMessage(ChatColor.RED + "Review your arguments count!" + " (/manuaddp <player> <permission> [permission2] [permission3]...)");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
 		
@@ -70,40 +71,40 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 		
 		// Validating your permissions
 		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + "Can't modify player with same group than you, or higher.");
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		
 		for (int i = 1; i < args.length; i++)
 		{
-			auxString = args[i].replace("'", "");
+			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 			String[] split = null;
 			Instant timed = null;
 			Long period = null;
 			/*
 			 * check for a timed permission
 			 */
-			if (auxString.contains("|")) {
-				split = auxString.split("\\|");
+			if (auxString.contains("|")) { //$NON-NLS-1$
+				split = auxString.split("\\|"); //$NON-NLS-1$
 
 				period = Tasks.parsePeriod(split[1]);
 				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
 				auxString = split[0];
 				
 				if (period == 0) {
-					sender.sendMessage(ChatColor.RED + "Invalid duration entered with '" + auxString + "' eg. <permission>|1d1h1m");
+					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_INVALID_DURATION"), auxString) + Messages.getString("MANUADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 					continue;
 				}
 			}
 		
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
-				sender.sendMessage(ChatColor.RED + "You can't add a permission you don't have: '" + auxString + "'");
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_ADD_PERMISSION"), auxString)); //$NON-NLS-1$
 				continue;
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkUserOnlyPermission(auxUser, auxString);
-			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "user")) 
+			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "user")) //$NON-NLS-1$
 			{
 				continue;
 			}
@@ -111,11 +112,11 @@ public class ManUAddP extends BaseCommand implements TabCompleter {
 			
 			if (period != null) {
 				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to player '" + auxUser.getLastName() + "' permissions with a duration of " + period + " minutes.");
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period)); //$NON-NLS-1$
 				
 			} else {
 				auxUser.addPermission(auxString);
-				sender.sendMessage(ChatColor.YELLOW + "You added '" + auxString + "' to player '" + auxUser.getLastName() + "' permissions.");
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 			}
 		}
 

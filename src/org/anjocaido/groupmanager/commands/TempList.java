@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,7 @@ public class TempList extends BaseCommand {
 				return true;
 		}
 		// WORKING
-		auxString = "";
+		auxString = ""; //$NON-NLS-1$
 		ArrayList<User> removeList = new ArrayList<User>();
 		int count = 0;
 		
@@ -54,21 +55,21 @@ public class TempList extends BaseCommand {
 				if (!dataHolder.isOverloaded(u.getUUID())) {
 					removeList.add(u);
 				} else {
-					auxString += u.getLastName() + ", ";
+					auxString += u.getLastName() + ", "; //$NON-NLS-1$
 					count++;
 				}
 			}
 
 		if (count == 0) {
-			sender.sendMessage(ChatColor.YELLOW + "There are no users in overload mode.");
+			sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_OVERLOAD")); //$NON-NLS-1$
 			return true;
 		}
-		auxString = auxString.substring(0, auxString.lastIndexOf(","));
+		auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
 		if (GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()) == null) {
 			GroupManager.getOverloadedUsers().put(dataHolder.getName().toLowerCase(), new ArrayList<User>());
 		}
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).removeAll(removeList);
-		sender.sendMessage(ChatColor.YELLOW + " " + count + " Users in overload mode: " + ChatColor.WHITE + auxString);
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("OVERLOADED_USERS"), count, ChatColor.WHITE + auxString)); //$NON-NLS-1$
 
 		return true;
 	}
