@@ -45,10 +45,10 @@ settings:
           all_unnamed_worlds:
           - users
           - groups
-    #  world2:      (World2 would have it's own set of user and groups files)
-    #    world3:
-    #    - users    (World3 would use the users.yml from world2, but it's own groups.yml)
-    #    world4:
-    #    - groups   (World4 would use the groups.yml from world2, but it's own users.yml)
-    #  world5:
-    #    - world6   (this would cause world6 to mirror both files from world5)
+    #   world2:      (World2 would have it's own set of user and groups files)
+    #     world3:
+    #     - users    (World3 would use the users.yml from world2, but it's own groups.yml)
+    #     world4:
+    #     - groups   (World4 would use the groups.yml from world2, but it's own users.yml)
+    #   world5:
+    #     - world6   (this would cause world6 to mirror both files from world5)
