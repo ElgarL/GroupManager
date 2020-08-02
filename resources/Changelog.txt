@@ -253,3 +253,4 @@ v2.5:
     - Make the saving of data Threadsafe.
     - Add version checking for updates at startup.
     - Externalise all text to allow for localisation.
+    - Fully register all our own permissions with superperms so commands are properly restricted.
