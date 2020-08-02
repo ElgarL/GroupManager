@@ -254,3 +254,4 @@ v2.5:
     - Add version checking for updates at startup.
     - Externalise all text to allow for localisation.
     - Fully register all our own permissions with superperms so commands are properly restricted.
+    - update permissions earlier in the log-in process so command visibility and tab complete are updated on the client.

@@ -11,6 +11,59 @@ authors:
 website: https://github.com/ElgarL/GroupManager
 description: Provides on-the-fly system for permissions system created by Nijikokun. But all in memory, and with flat-file saving schedule.
 
+permissions:
+    groupmanager.*:
+        description: Wildcard permission to grant all permissions.
+        default: op
+        children:
+            groupmanager.op: true
+    groupmanager.op:
+        description: User is treated as an op when using the GroupManager commands.
+        default: op
+        children:
+            groupmanager.manuadd: true
+            groupmanager.manudel: true
+            groupmanager.manuaddsub: true
+            groupmanager.manudelsub: true
+            groupmanager.mangadd: true
+            groupmanager.mangdel: true
+            groupmanager.manuaddp: true
+            groupmanager.manudelp: true
+            groupmanager.manuclearp: true
+            groupmanager.manulistp: true
+            groupmanager.manucheckp: true
+            groupmanager.mangaddp: true
+            groupmanager.mangdelp: true
+            groupmanager.mangclearp: true
+            groupmanager.manglistp: true
+            groupmanager.mangcheckp: true
+            groupmanager.mangaddi: true
+            groupmanager.mangdeli: true
+            groupmanager.manuaddv: true
+            groupmanager.manudelv: true
+            groupmanager.manulistv: true
+            groupmanager.manucheckv: true
+            groupmanager.mangaddv: true
+            groupmanager.mangdelv: true
+            groupmanager.manglistv: true
+            groupmanager.mangckeckv: true
+            groupmanager.manwhois: true
+            groupmanager.tempadd: true
+            groupmanager.tempdel: true
+            groupmanager.templist: true
+            groupmanager.tempdelall: true
+            groupmanager.mansave: true
+            groupmanager.manload: true
+            groupmanager.listgroups: true
+            groupmanager.manpromote: true
+            groupmanager.mandemote: true
+            groupmanager.mantogglevalidate: true
+            groupmanager.mantogglesave: true
+            groupmanager.manworld: true
+            groupmanager.manselect: true
+            groupmanager.manclear: true
+            groupmanager.mancheckw: true
+
 commands:
   manuadd:
     description: Moves a player to desired group (Adds to the file if does not exist).
@@ -181,57 +234,3 @@ commands:
     description: Obtains the path to each file a world is storing its data in (users/groups).
     usage: /<command> <world>
     permission: groupmanager.mancheckw
-    
-Permissions:
-    groupmanager.*:
-        description: Wildcard permission to grant all permissions.
-        default: op
-        children:
-            groupmanager.op: true
-    groupmanager.op:
-        description: User is treated as an op when using the GroupManager commands.
-        default: false
-        children:
-            groupmanager.manuadd: true
-            groupmanager.manudel: true
-            groupmanager.manuaddsub: true
-            groupmanager.manudelsub: true
-            groupmanager.mangadd: true
-            groupmanager.mangdel: true
-            groupmanager.manuaddp: true
-            groupmanager.manudelp: true
-            groupmanager.manuclearp: true
-            groupmanager.manulistp: true
-            groupmanager.manucheckp: true
-            groupmanager.mangaddp: true
-            groupmanager.mangdelp: true
-            groupmanager.mangclearp: true
-            groupmanager.manglistp: true
-            groupmanager.mangcheckp: true
-            groupmanager.mangaddi: true
-            groupmanager.mangdeli: true
-            groupmanager.manuaddv: true
-            groupmanager.manudelv: true
-            groupmanager.manulistv: true
-            groupmanager.manucheckv: true
-            groupmanager.mangaddv: true
-            groupmanager.mangdelv: true
-            groupmanager.manglistv: true
-            groupmanager.mangckeckv: true
-            groupmanager.manwhois: true
-            groupmanager.tempadd: true
-            groupmanager.tempdel: true
-            groupmanager.templist: true
-            groupmanager.tempdelall: true
-            groupmanager.mansave: true
-            groupmanager.manload: true
-            groupmanager.listgroups: true
-            groupmanager.manpromote: true
-            groupmanager.mandemote: true
-            groupmanager.mantogglevalidate: true
-            groupmanager.mantogglesave: true
-            groupmanager.manworld: true
-            groupmanager.manselect: true
-            groupmanager.manclear: true
-            groupmanager.mancheckw: true
-            

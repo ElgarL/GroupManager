@@ -36,7 +36,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -430,14 +430,14 @@ public class BukkitPermissions {
 	protected class PlayerEvents implements Listener {
 
 		@EventHandler(priority = EventPriority.LOWEST)
-		public void onPlayerJoin(PlayerJoinEvent event) {
+		public void onPlayerLogin(PlayerLoginEvent event) {
 
 			
 			
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 			
-			GroupManager.logger.finest("Player Join event: " + player.getName());
+			GroupManager.logger.finest("Player Login event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends
