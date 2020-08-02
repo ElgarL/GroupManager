@@ -1,5 +1,5 @@
 # GroupManager
-The original permission plug-in for [Bukkit/Spigot](https://www.spigotmc.org/resources/groupmanager.80743/).
+The original permission plug-in for [Bukkit/Spigot](https://www.spigotmc.org/resources/groupmanager.38875/).
 
 **Wiki**  
 [https://elgarl.github.io/GroupManager/](https://elgarl.github.io/GroupManager/)
