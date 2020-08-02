@@ -255,3 +255,4 @@ v2.5:
     - Externalise all text to allow for localisation.
     - Fully register all our own permissions with superperms so commands are properly restricted.
     - update permissions earlier in the log-in process so command visibility and tab complete are updated on the client.
+    - GM will now restrict access to ALL plug-in commands (tab-complete) for ALL plug-ins that correctly register their command permissions.
