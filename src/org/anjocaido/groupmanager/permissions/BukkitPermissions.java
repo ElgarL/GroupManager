@@ -212,6 +212,8 @@ public class BukkitPermissions {
 				// That's all folks!
 				attachment.getPermissible().recalculatePermissions();
 
+				// Tab complete and command visibility
+				player.updateCommands();
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -449,7 +451,7 @@ public class BukkitPermissions {
 			
 			setPlayer_join(false);
 			updatePermissions(event.getPlayer());
-				
+			
 			setPlayer_join(false);
 		}
 
