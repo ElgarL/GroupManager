@@ -1,7 +1,7 @@
 name: GroupManager
 main: org.anjocaido.groupmanager.GroupManager
 version: {BUILD_VER} (Phoenix)
-api-version: 1.15
+api-version: 1.13
 
 authors:
   - AnjoCaido
