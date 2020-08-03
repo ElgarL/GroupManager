@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" output="target/classes" path="src">
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
@@ -9,16 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="../libs/spigot-api-SNAPSHOT-shaded.jar" sourcepath="P:/Spigot/Spigot/Spigot-API">
-		<attributes>
-			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="../libs/annotations-19.0.0.jar" sourcepath="/libs/annotations-19.0.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/P:/eclipse2020-workspace/libs/annotations-19.0.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="resources">

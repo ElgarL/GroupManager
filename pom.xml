@@ -12,8 +12,21 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.bukkitAPIVersion>1.13</project.bukkitAPIVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jar.finalName>${project.name}</jar.finalName>
     </properties>
+    
+    <!-- For use with GitHub Package Registry -->
+    <!-- Requires repo write access, and proper local maven configuration -->
+    <!-- https://help.github.com/en/articles/about-github-package-registry -->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub GroupManager Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/ElgarL/GroupManager</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>
@@ -29,9 +42,9 @@
     <dependencies>
         <!--Bukkit API -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.15.1-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!--bStats -->
@@ -62,7 +75,7 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
-        <defaultGoal>clean package install</defaultGoal>
+        <defaultGoal>clean package</defaultGoal>
         <resources>
             <resource>
                 <directory>resources</directory>
