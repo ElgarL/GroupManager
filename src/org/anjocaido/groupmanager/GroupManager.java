@@ -121,7 +121,7 @@ public class GroupManager extends JavaPlugin {
 	private GMLoggerHandler ch;
 	
 	private static GroupManagerEventHandler GMEventHandler;
-	private static BukkitPermissions BukkitPermissions;
+	public static BukkitPermissions BukkitPermissions;
 	private GMWorldListener WorldEvents;
 	public static final Logger logger = Logger.getLogger(GroupManager.class.getName());
 
