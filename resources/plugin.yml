@@ -35,6 +35,7 @@ permissions:
             groupmanager.mangaddp: true
             groupmanager.mangdelp: true
             groupmanager.mangclearp: true
+            groupmanager.manglist: true
             groupmanager.manglistp: true
             groupmanager.mangcheckp: true
             groupmanager.mangaddi: true
@@ -54,7 +55,6 @@ permissions:
             groupmanager.tempdelall: true
             groupmanager.mansave: true
             groupmanager.manload: true
-            groupmanager.listgroups: true
             groupmanager.manpromote: true
             groupmanager.mandemote: true
             groupmanager.mantogglevalidate: true
@@ -121,6 +121,11 @@ commands:
     description: Removes all permissions from a group.
     usage: /<command> <group> <permissions>
     permission: groupmanager.mangclearp
+  manglist:
+    aliases: [listgroups]
+    description: Lists the groups available.
+    usage: /<command>
+    permission: groupmanager.manglist
   manglistp:
     description: Lists all permissions of a group.
     usage: /<command> <group>
@@ -197,11 +202,6 @@ commands:
     description: Reloads current world and config.yml, or loads given world from file to server.
     usage: /<command> [world]
     permission: groupmanager.manload
-  listgroups:
-    aliases: [manglist]
-    description: Lists the groups available.
-    usage: /<command>
-    permission: groupmanager.listgroups
   manpromote:
     description: Promotes a user in the same heritage line to a higher rank.
     usage: /<command> <player> <group>

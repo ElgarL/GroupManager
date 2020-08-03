@@ -28,12 +28,12 @@ import org.jetbrains.annotations.NotNull;
  * @author ElgarL
  *
  */
-public class ListGroups extends BaseCommand {
+public class ManGList extends BaseCommand {
 
 	/**
 	 * 
 	 */
-	public ListGroups() {}
+	public ManGList() {}
 
 	@Override
 	protected boolean parseCommand(@NotNull String[] args) {

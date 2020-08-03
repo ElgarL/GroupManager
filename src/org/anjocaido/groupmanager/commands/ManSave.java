@@ -24,7 +24,6 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  * @author ElgarL
  *
  */
-public class ManSave extends BaseCommand implements TabCompleter {
+public class ManSave extends BaseCommand {
 
 	/**
 	 * 
@@ -69,7 +68,7 @@ public class ManSave extends BaseCommand implements TabCompleter {
 	}
 
 	@Override
-	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 
 		if (args.length == 1) {
 			

@@ -17,22 +17,15 @@
  */
 package org.anjocaido.groupmanager.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author ElgarL
  *
  */
-public class ManGAdd extends BaseCommand implements TabCompleter {
+public class ManGAdd extends BaseCommand {
 
 	/**
 	 * 
@@ -62,16 +55,6 @@ public class ManGAdd extends BaseCommand implements TabCompleter {
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("CREATED_GROUP"), auxGroup.getName())); //$NON-NLS-1$
 
 		return true;
-	}
-
-	@Override
-	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-
-		parseSender(sender, alias);
-		/*
-		 * Return an empty list so there is no TabComplete on this. It should be a new group name.
-		 */
-		return new ArrayList<String>();
 	}
 
 }

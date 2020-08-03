@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
 import org.anjocaido.groupmanager.Tasks.UpdateTask;
-import org.anjocaido.groupmanager.commands.ListGroups;
+import org.anjocaido.groupmanager.commands.ManGList;
 import org.anjocaido.groupmanager.commands.ManCheckW;
 import org.anjocaido.groupmanager.commands.ManClear;
 import org.anjocaido.groupmanager.commands.ManDemote;
@@ -313,7 +313,6 @@ public class GroupManager extends JavaPlugin {
 	
 	private void initCommands() {
 		
-		getCommand("listgroups").setExecutor(new ListGroups()); //$NON-NLS-1$
 		getCommand("mancheckw").setExecutor(new ManCheckW()); //$NON-NLS-1$
 		getCommand("manclear").setExecutor(new ManClear()); //$NON-NLS-1$
 		getCommand("mandemote").setExecutor(new ManDemote()); //$NON-NLS-1$
@@ -328,6 +327,7 @@ public class GroupManager extends JavaPlugin {
 		getCommand("mangdeli").setExecutor(new ManGDelI()); //$NON-NLS-1$
 		getCommand("mangdelp").setExecutor(new ManGDelP()); //$NON-NLS-1$
 		getCommand("mangdelv").setExecutor(new ManGDelV()); //$NON-NLS-1$
+		getCommand("manglist").setExecutor(new ManGList()); //$NON-NLS-1$
 		getCommand("manglistp").setExecutor(new ManGListP()); //$NON-NLS-1$
 		getCommand("manglistv").setExecutor(new ManGListV()); //$NON-NLS-1$
 		getCommand("manload").setExecutor(new ManLoad()); //$NON-NLS-1$

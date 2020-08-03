@@ -35,14 +35,16 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author ElgarL
  *
  */
-public abstract class BaseCommand implements CommandExecutor {
+public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 	protected GroupManager plugin;
 	
@@ -89,6 +91,15 @@ public abstract class BaseCommand implements CommandExecutor {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+		
+		// If parsSender return empty.
+		if (!parseSender(sender, alias)) return new ArrayList<String>();
+		
+		return tabComplete(sender, command, alias, args);
 	}
 	
 	/**
@@ -233,7 +244,7 @@ public abstract class BaseCommand implements CommandExecutor {
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
-			if(user.getLastName().toLowerCase().contains(arg))
+			if((user.getLastName().toLowerCase().contains(arg)) && (!user.getLastName().equals(null)))
 				result.add(user.getLastName());
 		}
 		return result;
@@ -274,4 +285,11 @@ public abstract class BaseCommand implements CommandExecutor {
 
 	protected abstract boolean parseCommand(@NotNull String[] args);
 	
+	protected @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+		
+		/*
+		 * Return an empty list so there is no TabComplete on this.
+		 */
+		return new ArrayList<String>();
+	}
 }
