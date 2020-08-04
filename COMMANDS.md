@@ -156,11 +156,11 @@ Remove a group from another groups inheritance list.
 syntax: <command> <group1> <group2>
 permission: groupmanager.mangdeli
 ```
-- /listgroups  
+- /manglist  
 List the groups available.
 ```
 syntax: <command>
-permission: groupmanager.listgroups
+permission: groupmanager.manglist
 ```
 ## Group Permissions
 
