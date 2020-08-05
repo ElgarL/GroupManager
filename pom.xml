@@ -7,7 +7,7 @@
     <groupId>org.anjocaido.groupmanager</groupId>
     <artifactId>GroupManager</artifactId>
     <url>https://elgarl.github.io/GroupManager/</url>
-    <version>2.5-SNAPSHOT</version>
+    <version>2.5</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
