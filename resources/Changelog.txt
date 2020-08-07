@@ -261,5 +261,5 @@ v2.5:
 v2.6:
     - Trap all null errors in tab-complete from malformed data.
     - Added Russian translation courtesy of l1ttleO.
-    - Add compatibility back to 1.8.8 (not tested any further back).
+    - Add compatibility back for pre 1.14 (not tested any further back than 1.8).
     
