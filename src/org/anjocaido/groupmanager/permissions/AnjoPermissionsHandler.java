@@ -345,12 +345,24 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	@Override
 	public String getUserPrefix(String user) {
 
+		// Check for a direct prefix
 		String prefix = ph.getUser(user).getVariables().getVarString("prefix");
-		if (prefix.length() != 0) {
+		if (!prefix.isEmpty())
 			return prefix;
+		
+		// Check for a main group prefix
+		prefix = getGroupPrefix(getGroup(user));
+		if (!prefix.isEmpty())
+			return prefix;
+		
+		// Check for a subgroup prefix
+		for (String group : ph.getUser(user).subGroupListStringCopy()) {
+			prefix = getGroupPrefix(group);
+			if (!prefix.isEmpty())
+				break;
 		}
 
-		return getGroupPrefix(getGroup(user));
+		return prefix;
 	}
 
 	/**
@@ -366,13 +378,24 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	@Override
 	public String getUserSuffix(String user) {
 
+		// Check for a direct suffix
 		String suffix = ph.getUser(user).getVariables().getVarString("suffix");
-		if (suffix.length() != 0) {
+		if (!suffix.isEmpty())
 			return suffix;
+		
+		// Check for a main group suffix
+		suffix = getGroupSuffix(getGroup(user));
+		if (!suffix.isEmpty())
+			return suffix;
+		
+		// Check for a subgroup suffix
+		for (String group : ph.getUser(user).subGroupListStringCopy()) {
+			suffix = getGroupSuffix(group);
+			if (!suffix.isEmpty())
+				break;
 		}
 
-		return getGroupSuffix(getGroup(user));
-
+		return suffix;
 	}
 
 	/**
