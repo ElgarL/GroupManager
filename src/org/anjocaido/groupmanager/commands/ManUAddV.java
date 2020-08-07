@@ -72,7 +72,7 @@ public class ManUAddV extends BaseCommand {
 		}
 		auxString = auxString.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		auxUser.getVariables().addVar(args[1], Variables.parseVariableValue(auxString));
-		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxGroup.getName())); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxUser.getLastName())); //$NON-NLS-1$
 
 		return true;
 	}
