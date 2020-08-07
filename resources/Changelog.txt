@@ -258,3 +258,7 @@ v2.5:
     - GM will now restrict access to ALL plug-in commands (tab-complete) for ALL plug-ins that correctly register their command permissions.
     - Change ListGroups command to ManGList, in-line with the other command syntax. GM will still accept the old command.
     - Fix tab-complete to not throw errors if GroupManager is in an error state.
+v2.6:
+    - Trap all null errors in tab-complete from malformed data.
+    - Added Russian translation courtesy of l1ttleO.
+    

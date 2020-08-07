@@ -244,7 +244,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
-			if((user.getLastName().toLowerCase().contains(arg)) && (!user.getLastName().equals(null)))
+			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg)))
 				result.add(user.getLastName());
 		}
 		return result;
@@ -262,7 +262,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		arg = arg.toLowerCase();
 		
 		for (Group g : dataHolder.getGroupList()) {
-			if (g.getName().toLowerCase().contains(arg.toLowerCase()))
+			if ((g != null) && (g.getName() != null) && (g.getName().toLowerCase().contains(arg.toLowerCase())))
 				result.add(g.getName());
 		}
 		return result;
@@ -278,7 +278,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		List<String> worlds = new ArrayList<String>();
 		
 		for (OverloadedWorldHolder world : plugin.getWorldsHolder().allWorldsDataList())
-			worlds.add(world.getName());
+			if ((world != null) && (world.getName() != null))
+				worlds.add(world.getName());
 
 		return worlds;
 	}

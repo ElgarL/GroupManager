@@ -39,7 +39,7 @@ public abstract class DataUnit {
 
 	private WorldDataHolder dataSource;
 	private String uUID;
-	private String lastName;
+	private String lastName = "";
 	private boolean changed, sorted = false;
 	private List<String> permissions = Collections.unmodifiableList(Collections.<String>emptyList());
 	
