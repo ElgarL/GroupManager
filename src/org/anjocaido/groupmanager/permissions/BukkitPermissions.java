@@ -214,7 +214,7 @@ public class BukkitPermissions {
 
 				// Tab complete and command visibility
 				try {
-					// Pre 1.14.4 support
+					// Method only available post 1.14
 					if (player.getClass().getMethod("updateCommands") != null) {
 						player.updateCommands();
 					}
