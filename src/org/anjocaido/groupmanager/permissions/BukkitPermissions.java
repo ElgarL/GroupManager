@@ -213,7 +213,14 @@ public class BukkitPermissions {
 				attachment.getPermissible().recalculatePermissions();
 
 				// Tab complete and command visibility
-				player.updateCommands();
+				try {
+					// Pre 1.14.4 support
+					if (player.getClass().getMethod("updateCommands") != null) {
+						player.updateCommands();
+					}
+				} catch (Exception ex) {
+					// Server too old to support this command.
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
