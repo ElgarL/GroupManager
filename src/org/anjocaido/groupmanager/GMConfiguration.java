@@ -40,7 +40,7 @@ public class GMConfiguration {
 	private boolean allowCommandBlocks = false;
 	private boolean opOverride = true;
 	private boolean toggleValidate = true;
-	private boolean tabValidate = false;
+	private boolean tabValidate = true;
 	private Integer saveInterval = 10;
 	private Integer backupDuration = 24;
 	private String loggerLevel = "OFF"; //$NON-NLS-1$
@@ -61,6 +61,7 @@ public class GMConfiguration {
 		allowCommandBlocks = false;
 		opOverride = true;
 		toggleValidate = true;
+		tabValidate = true;
 		saveInterval = 10;
 		backupDuration = 24;
 		loggerLevel = "OFF"; //$NON-NLS-1$
