@@ -19,9 +19,8 @@ Add a repository in your pom.xml
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
-        </repository>```
-        
-The add as a dependency in your pom.xml
+        </repository>```  
+Then add as a dependency in your pom.xml
 ```
         <dependency>
             <groupId>com.github.ElgarL</groupId>
