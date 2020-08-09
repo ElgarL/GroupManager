@@ -26,6 +26,11 @@
             <name>GitHub GroupManager Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/ElgarL/GroupManager</url>
         </repository>
+        <!-- CodeMC -->
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
     </distributionManagement>
 
     <repositories>
@@ -34,7 +39,7 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
-            <id>CodeMC</id>
+            <id>codemc-repo</id>
             <url>https://repo.codemc.org/repository/maven-public</url>
         </repository>
     </repositories>
