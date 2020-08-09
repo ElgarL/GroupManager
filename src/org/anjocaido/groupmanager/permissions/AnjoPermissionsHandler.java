@@ -80,7 +80,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	@Override
 	public boolean permission(Player player, String permission) {
 
-		return checkUserPermission(ph.getUser(player.getUniqueId().toString()).updatePlayer(player), permission);
+		return checkUserPermission(ph.getUser(player.getUniqueId().toString()), permission);
 	}
 
 	/**

@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -149,10 +148,8 @@ public class BukkitPermissions {
 		String uuid = player.getUniqueId().toString();
 
 		// Reset the User objects player reference.
-		User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
+		plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 		
-		if (user != null)
-			user.updatePlayer(player);
 
 		PermissionAttachment attachment;
 
@@ -454,11 +451,10 @@ public class BukkitPermissions {
 			removeAttachment(player.getUniqueId().toString());
 
 			// force GM to create the player if they are not already listed.
-			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
 			setPlayer_join(false);
 			updatePermissions(player);
-			user.updatePlayer(player);
 			
 			setPlayer_join(false);
 		}
@@ -466,7 +462,13 @@ public class BukkitPermissions {
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerChangeWorld(PlayerChangedWorldEvent event) { // has changed worlds
 
-			updatePermissions(event.getPlayer(), event.getPlayer().getWorld().getName());
+			Player player = event.getPlayer();
+			
+			updatePermissions(player, player.getWorld().getName());
+			
+			// force GM to create the player if they are not already listed.
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			
 		}
 
 		/*
@@ -481,10 +483,8 @@ public class BukkitPermissions {
 			Player player = event.getPlayer();
 			String uuid = player.getUniqueId().toString();
 			
-			// Reset the User objects player reference.
-			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
-			
-			user.updatePlayer(null);
+			// Reset the User object.
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 
 			/*
 			 * force remove any attachments as bukkit may not

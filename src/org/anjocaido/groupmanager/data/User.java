@@ -28,6 +28,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.anjocaido.groupmanager.localization.Messages;
+import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
 
 /**
@@ -46,7 +47,6 @@ public class User extends DataUnit implements Cloneable {
 	 * false
 	 */
 	private UserVariables variables = new UserVariables(this);
-	private transient Player bukkitPlayer = null;
 
 	/**
 	 * 
@@ -335,16 +335,15 @@ public class User extends DataUnit implements Cloneable {
 		}
 	}
 
-	
+	@Deprecated
 	public User updatePlayer(Player player) {
 
-		bukkitPlayer = player;
 		return this;
 	}
 
 	public Player getBukkitPlayer() {
 		
-		return bukkitPlayer;
+		return BukkitWrapper.getInstance().getPlayer(getLastName());
 	}
 	
 	/**
@@ -353,6 +352,6 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public boolean isOnline() {
 		
-		return bukkitPlayer != null;
+		return getBukkitPlayer() != null;
 	}
 }
