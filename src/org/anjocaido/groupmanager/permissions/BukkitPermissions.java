@@ -454,10 +454,11 @@ public class BukkitPermissions {
 			removeAttachment(player.getUniqueId().toString());
 
 			// force GM to create the player if they are not already listed.
-			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
 			setPlayer_join(false);
-			updatePermissions(event.getPlayer());
+			updatePermissions(player);
+			user.updatePlayer(player);
 			
 			setPlayer_join(false);
 		}

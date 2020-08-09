@@ -21,16 +21,13 @@ package org.anjocaido.groupmanager.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.anjocaido.groupmanager.localization.Messages;
-
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -346,10 +343,16 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	public Player getBukkitPlayer() {
-
-		if (bukkitPlayer == null) {
-			bukkitPlayer = Bukkit.getPlayer(this.getLastName());
-		}
+		
 		return bukkitPlayer;
+	}
+	
+	/**
+	 * Is this player currently Online.
+	 * @return
+	 */
+	public boolean isOnline() {
+		
+		return bukkitPlayer != null;
 	}
 }

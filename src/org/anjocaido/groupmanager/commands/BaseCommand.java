@@ -249,7 +249,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 				
 				// If validating check for online state.
 				if (GroupManager.getGMConfig().isTabValidate() && GroupManager.getGMConfig().isToggleValidate()) {
-					if (BukkitWrapper.getInstance().getPlayer(user.getLastName()) != null)
+					if (user.isOnline())
 						result.add(user.getLastName());
 				} else {
 					// Not validating so add as a possible match
