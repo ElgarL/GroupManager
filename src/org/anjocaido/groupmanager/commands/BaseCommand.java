@@ -252,7 +252,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 					if (user.isOnline())
 						result.add(user.getLastName());
 				} else {
-					// Not validating so add as a possible match
+					// Not validating online state so add as a possible match
 					result.add(user.getLastName());
 				}
 			}

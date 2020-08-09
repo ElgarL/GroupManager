@@ -150,6 +150,11 @@ public class User extends DataUnit implements Cloneable {
 		return clone;
 	}
 
+	/**
+	 * Gets the main group this user is a member of.
+	 * 
+	 * @return the group.
+	 */
 	public Group getGroup() {
 
 		Group result = getDataSource().getGroup(group);
@@ -161,7 +166,9 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * @return the group
+	 * Gets the main group name this user is a member of.
+	 * 
+	 * @return the group name.
 	 */
 	public String getGroupName() {
 
@@ -286,22 +293,32 @@ public class User extends DataUnit implements Cloneable {
 		return false;
 	}
 
+	/**
+	 * Returns a new array of the Sub-Groups attached to this user.
+	 * 
+	 * @return List of sub-groups.
+	 */
 	public ArrayList<Group> subGroupListCopy() {
 
 		ArrayList<Group> val = new ArrayList<Group>();
 		synchronized(subGroups) {
-		for (String gstr : subGroups) {
-			Group g = getDataSource().getGroup(gstr);
-			if (g == null) {
-				removeSubGroup(g);
-				continue;
+			for (String gstr : subGroups) {
+				Group g = getDataSource().getGroup(gstr);
+				if (g == null) {
+					removeSubGroup(g);
+					continue;
+				}
+				val.add(g);
 			}
-			val.add(g);
-		}
 		}
 		return val;
 	}
 
+	/**
+	 * Compiles a list of Sub-Group Names attached to this user.
+	 * 
+	 * @return	List of sub-group names.
+	 */
 	public ArrayList<String> subGroupListStringCopy() {
 		synchronized(subGroups) {
 			return new ArrayList<String>(subGroups);
@@ -341,6 +358,11 @@ public class User extends DataUnit implements Cloneable {
 		return this;
 	}
 
+	/**
+	 * Returns a Player object (if online), or null.
+	 * 
+	 * @return Player object or null.
+	 */
 	public Player getBukkitPlayer() {
 		
 		return BukkitWrapper.getInstance().getPlayer(getLastName());
@@ -348,6 +370,7 @@ public class User extends DataUnit implements Cloneable {
 	
 	/**
 	 * Is this player currently Online.
+	 * 
 	 * @return
 	 */
 	public boolean isOnline() {

@@ -124,8 +124,8 @@ public class BukkitWrapper {
 	 * @param name	a sting of this players name (case insensitive)
 	 * @return	{@OfflinePlayer} object for this name.
 	 */
-	@SuppressWarnings("deprecation")
-	public OfflinePlayer bukkitGetOfflinePlayer(String name) {
+	@Deprecated
+	public OfflinePlayer getOfflinePlayer(String name) {
 		
 		return plugin.getServer().getOfflinePlayer(name);
 	}
@@ -138,11 +138,18 @@ public class BukkitWrapper {
 	 * @param uid a {@UUID} for this player.
 	 * @return	{@OfflinePlayer} object for this {@UUID}.
 	 */
-	public OfflinePlayer bukkitGetOfflinePlayer(UUID uid) {
+	public OfflinePlayer getOfflinePlayer(UUID uid) {
 		
 		return plugin.getServer().getOfflinePlayer(uid);
 	}
 	
+	/**
+	 * Attempts to match any players with the given name, and returns a list of all possible matches.
+	 * This list is not sorted in any particular order. If an exact match is found, the returned list will only contain a single result.
+	 * 
+	 * @param the (partial) name to match
+	 * @return
+	 */
 	public List<Player> matchPlayer(String name) {
 		
 		return plugin.getServer().matchPlayer(name);
