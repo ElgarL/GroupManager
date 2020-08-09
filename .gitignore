@@ -1,4 +1,4 @@
 /target/
 .settings
 .github
-/deploy/
+deploy.cmd
