@@ -244,8 +244,18 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
-			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg)))
-				result.add(user.getLastName());
+			// Possible matching player
+			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg))) {
+				
+				// If validating check for online state.
+				if (GroupManager.getGMConfig().isTabValidate() && GroupManager.getGMConfig().isToggleValidate()) {
+					if (BukkitWrapper.getInstance().getPlayer(user.getLastName()) != null)
+						result.add(user.getLastName());
+				} else {
+					// Not validating so add as a possible match
+					result.add(user.getLastName());
+				}
+			}
 		}
 		return result;
 	}

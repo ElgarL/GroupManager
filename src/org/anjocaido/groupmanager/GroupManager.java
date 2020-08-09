@@ -108,8 +108,6 @@ public class GroupManager extends JavaPlugin {
 	
 	private static WorldsHolder worldsHolder;
 	
-	private boolean validateOnlinePlayer = true;
-	
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
 	private ReentrantLock saveLock = new ReentrantLock();
@@ -402,17 +400,19 @@ public class GroupManager extends JavaPlugin {
 	/**
 	 * @return the validateOnlinePlayer
 	 */
+	@Deprecated // Use getGMConfig().isToggleValidate()
 	public boolean isValidateOnlinePlayer() {
 
-		return validateOnlinePlayer;
+		return getGMConfig().isToggleValidate();
 	}
 
 	/**
 	 * @param validateOnlinePlayer the validateOnlinePlayer to set
 	 */
+	@Deprecated // Use getGMConfig().setToggleValidate(value)
 	public void setValidateOnlinePlayer(boolean validateOnlinePlayer) {
 
-		this.validateOnlinePlayer = validateOnlinePlayer;
+		getGMConfig().setToggleValidate(validateOnlinePlayer);
 	}
 
 	private void prepareBackupFolder() {

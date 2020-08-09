@@ -40,6 +40,7 @@ public class GMConfiguration {
 	private boolean allowCommandBlocks = false;
 	private boolean opOverride = true;
 	private boolean toggleValidate = true;
+	private boolean tabValidate = false;
 	private Integer saveInterval = 10;
 	private Integer backupDuration = 24;
 	private String loggerLevel = "OFF"; //$NON-NLS-1$
@@ -128,6 +129,12 @@ public class GMConfiguration {
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex); //$NON-NLS-1$
 			}
+			
+			try {
+				tabValidate = (Boolean) config.get("tab_validate"); //$NON-NLS-1$
+			} catch (Exception ex) {
+				GroupManager.logger.log(Level.SEVERE, nodeError("tab_validate"), ex); //$NON-NLS-1$
+			}
 
 			/*
 			 * data node for save/backup timers.
@@ -175,7 +182,6 @@ public class GMConfiguration {
 		}
 		// Setup defaults
 		adjustLoggerLevel();
-		plugin.setValidateOnlinePlayer(isToggleValidate());
 	}
 	
 	private String nodeError(String node) {
@@ -212,6 +218,16 @@ public class GMConfiguration {
 	public boolean isToggleValidate() {
 		
 		return toggleValidate;
+	}
+	
+	public void setToggleValidate(Boolean value) {
+		
+		this.toggleValidate = value;
+	}
+	
+	public boolean isTabValidate() {
+		
+		return tabValidate;
 	}
 
 	public Integer getSaveInterval() {

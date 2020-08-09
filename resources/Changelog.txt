@@ -264,4 +264,4 @@ v2.6:
     - Add compatibility back for pre 1.14 (not tested any further back than 1.8).
     - Fix a bug in manuaddv throwing an error.
     - Prefix/suffix will now be fetched from subgroups if there is no value on the player or the main group.
-    
+    - Added a new config entry for tab_validate. If true GM will offer tab-complete names obeying the validate_toggle setting.

@@ -53,7 +53,7 @@ public class ManUDelSub extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
 
@@ -101,7 +101,7 @@ public class ManUDelSub extends BaseCommand {
 		}
 		
 		if (args.length == 2) {
-			if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
 			}
 

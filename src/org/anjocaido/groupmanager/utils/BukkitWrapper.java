@@ -148,6 +148,13 @@ public class BukkitWrapper {
 		return plugin.getServer().matchPlayer(name);
 	}
 	
+	/**
+	 * Gets a Player object if the player is Online.
+	 * returns null if offline.
+	 * 
+	 * @param name
+	 * @return {@Player} object for this name.
+	 */
 	public Player getPlayer(String name) {
 		
 		return plugin.getServer().getPlayer(name);
