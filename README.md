@@ -12,7 +12,8 @@ Support my Dev work via PayPal - [Donate](https://www.paypal.com/cgi-bin/webscr?
 I hang out on the Towny Discord if anyone needs help
 [https://discord.gg/gnpVs5m](https://discord.gg/gnpVs5m)
 
-To include Groupmanager as a dependency in your own plugins.
+---
+**To include Groupmanager as a dependency in your own plugins.**
 
 Add a repository in your pom.xml
 >        <repository>
