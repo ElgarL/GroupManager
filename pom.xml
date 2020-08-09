@@ -21,15 +21,10 @@
     <!-- Requires repo write access, and proper local maven configuration -->
     <!-- https://help.github.com/en/articles/about-github-package-registry -->
     <distributionManagement>
-        <!-- <repository>
+        <repository>
             <id>github</id>
             <name>GitHub GroupManager Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/ElgarL/GroupManager</url>
-        </repository>-->
-        <!-- CodeMC -->
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
     </distributionManagement>
 
