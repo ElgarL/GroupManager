@@ -265,3 +265,5 @@ v2.6:
     - Fix a bug in manuaddv throwing an error.
     - Prefix/suffix will now be fetched from subgroups if there is no value on the player or the main group.
     - Added a new config entry for tab_validate. If true GM will offer tab-complete names obeying the validate_toggle setting.
+    - Implement the unused GMUserEvent - USER_PERMISSIONS_CHANGED. This will trigger whenever an Online player has their permissions updated.
+    

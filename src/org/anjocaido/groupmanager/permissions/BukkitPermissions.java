@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.events.GMUserEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -148,8 +150,7 @@ public class BukkitPermissions {
 		String uuid = player.getUniqueId().toString();
 
 		// Reset the User objects player reference.
-		plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
-		
+		User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 
 		PermissionAttachment attachment;
 
@@ -226,6 +227,10 @@ public class BukkitPermissions {
 		}
 
 		GroupManager.logger.finest("Attachment updated for: " + player.getName());
+		
+		// Trigger a GMUserEvent for this update.
+		if (GroupManager.isLoaded())
+			GroupManager.getGMEventHandler().callEvent(user, GMUserEvent.Action.USER_PERMISSIONS_CHANGED);
 	}
 
 	/**
