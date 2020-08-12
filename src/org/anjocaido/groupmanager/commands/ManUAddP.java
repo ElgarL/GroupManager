@@ -120,11 +120,9 @@ public class ManUAddP extends BaseCommand {
 		}
 
 		// If the player is online, this will create new data for the user.
-		if (auxUser.getUUID() != null) {
-			targetPlayer = plugin.getServer().getPlayer(UUID.fromString(auxUser.getUUID()));
-			if (targetPlayer != null)
-				GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-		}
+		targetPlayer = plugin.getServer().getPlayer(auxUser.getLastName());
+		if (targetPlayer != null)
+			GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
 
 		return true;
 	}
