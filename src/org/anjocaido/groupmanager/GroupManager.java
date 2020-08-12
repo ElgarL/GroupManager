@@ -485,7 +485,7 @@ public class GroupManager extends JavaPlugin {
 										GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 								
 							}
-						} catch (IllegalStateException ex) {
+						} catch (Exception ex) {
 							GroupManager.logger.warning(ex.getMessage());
 						} finally {
 							/*
