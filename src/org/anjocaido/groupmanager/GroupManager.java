@@ -147,7 +147,7 @@ public class GroupManager extends JavaPlugin {
 
 		if (!restarting) {
 			// Unregister this service if we are shutting down.
-			this.getServer().getServicesManager().unregister(getWorldsHolder());
+			this.getServer().getServicesManager().unregister(this);
 		}
 
 		disableScheduler(); // Shutdown before we save, so it doesn't interfere.
@@ -274,7 +274,7 @@ public class GroupManager extends JavaPlugin {
 
 			// Register as a service
 			if (!restarting)
-				this.getServer().getServicesManager().register(WorldsHolder.class, getWorldsHolder(), this, ServicePriority.Lowest);
+				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
 			
 			/*
 			 * Version check.
