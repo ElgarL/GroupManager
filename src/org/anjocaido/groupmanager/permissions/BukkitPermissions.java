@@ -62,6 +62,8 @@ public class BukkitPermissions {
 	protected boolean dumpAllPermissions = true;
 	protected boolean dumpMatchedPermissions = true;
 	private boolean player_join = false;
+	
+	private boolean hasUpdateCommand = false;
 
 	/**
 	 * @return the player_join
@@ -77,6 +79,16 @@ public class BukkitPermissions {
 	public void setPlayer_join(boolean player_join) {
 
 		this.player_join = player_join;
+	}
+	
+	/**
+	 * Does the server support Player.updateCommand().
+	 * 
+	 * @return	true/false
+	 */
+	public boolean hasUpdateCommand() {
+
+		return hasUpdateCommand;
 	}
 
 	private static Field permissions;
@@ -98,6 +110,15 @@ public class BukkitPermissions {
 		this.plugin = plugin;
 		this.reset();
 		this.registerEvents();
+		
+		try {
+			// Method only available post 1.14
+			Player.class.getMethod("updateCommands");
+			hasUpdateCommand = true;
+		} catch (Exception ex) {
+			// Server too old to support updateCommands.
+			hasUpdateCommand = false;
+		}
 		
 
 		GroupManager.logger.info("Superperms support enabled.");
@@ -213,14 +234,10 @@ public class BukkitPermissions {
 				attachment.getPermissible().recalculatePermissions();
 
 				// Tab complete and command visibility
-				try {
-					// Method only available post 1.14
-					if (player.getClass().getMethod("updateCommands") != null) {
-						player.updateCommands();
-					}
-				} catch (Exception ex) {
-					// Server too old to support this command.
-				}
+				// Method only available post 1.14
+				if (hasUpdateCommand())
+					player.updateCommands();
+
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -455,14 +472,9 @@ public class BukkitPermissions {
 			 */
 			
 			// Tab complete command visibility
-			try {
-				// Method only available post 1.14
-				event.getPlayer().getClass().getMethod("updateCommands");
-			} catch (Exception ex) {
-				// Server too old to support updateCommands.
+			// Server too old to support updateCommands.
+			if (!hasUpdateCommand())
 				playerJoin(event);
-			}
-			
 		}
 		
 		@EventHandler(priority = EventPriority.LOWEST)
