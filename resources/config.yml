@@ -1,7 +1,7 @@
 settings:
   config:
     # Supported languages must have a coresponding properties file.
-    # (engligh, russian).
+    # (english, russian, french).
     language: english
     
     # With this enabled anyone set as op has full permissions when managing GroupManager
