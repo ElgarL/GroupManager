@@ -37,6 +37,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -442,13 +444,39 @@ public class BukkitPermissions {
 
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
-
 			
+			/* this is a pre Join event (always default world).
+			 * We are triggering an update on this as
+			 * there is no API call in pre-1.14 to
+			 * update a clients command tab-complete.
+			 * 
+			 * World specific permissions will be updated
+			 * later in the PlayerJoinEvent.
+			 */
+			playerJoin(event);
+		}
+		
+		@EventHandler(priority = EventPriority.LOWEST)
+		public void onPlayerJoin(PlayerJoinEvent event) {
+
+			/**
+			 * The player actually joined the server.
+			 * So we can set permissions relative to their world.
+			 */
+			playerJoin(event);
+		}
+		
+		/**
+		 * Process the login/join events.
+		 * 
+		 * @param event
+		 */
+		private void playerJoin(PlayerEvent event) {
 			
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 			
-			GroupManager.logger.finest("Player Login event: " + player.getName());
+			GroupManager.logger.finest("Player Join event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends
@@ -458,7 +486,6 @@ public class BukkitPermissions {
 			// force GM to create the player if they are not already listed.
 			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
-			setPlayer_join(false);
 			updatePermissions(player);
 			
 			setPlayer_join(false);
