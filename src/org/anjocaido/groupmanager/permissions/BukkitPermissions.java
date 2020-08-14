@@ -453,7 +453,16 @@ public class BukkitPermissions {
 			 * World specific permissions will be updated
 			 * later in the PlayerJoinEvent.
 			 */
-			playerJoin(event);
+			
+			// Tab complete command visibility
+			try {
+				// Method only available post 1.14
+				event.getPlayer().getClass().getMethod("updateCommands");
+			} catch (Exception ex) {
+				// Server too old to support updateCommands.
+				playerJoin(event);
+			}
+			
 		}
 		
 		@EventHandler(priority = EventPriority.LOWEST)
