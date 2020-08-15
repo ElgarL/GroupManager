@@ -1,4 +1,4 @@
-Changelog
+﻿Changelog
 
 v 1.1:
 	- Fixed users being able to use 'manuadd' to add users to higher groups than their own.
@@ -271,4 +271,5 @@ v2.6:
 v2.7:
     - Added French translation courtesy of Gayytis.
     - Add chinese-simplified translation courtesy of Greensky, TROU.
+    - force UTF-8 encoding when reading language files (your server/client must support the language you are setting).
     
