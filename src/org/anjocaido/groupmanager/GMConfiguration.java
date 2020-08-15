@@ -207,7 +207,7 @@ public class GMConfiguration {
 	
 	public String getLanguage() {
 
-		return (language == null)? "english" : language;
+		return language;
 	}
 	
 	public boolean isAllowCommandBlocks() {
