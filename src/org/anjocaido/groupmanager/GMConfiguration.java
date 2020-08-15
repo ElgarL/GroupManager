@@ -105,13 +105,11 @@ public class GMConfiguration {
 
 			try {
 				language = (String) config.get("language"); //$NON-NLS-1$
-
-				if (language != null)
-					Messages.setLanguage();
-				
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("language"), ex); //$NON-NLS-1$
+				language = "english";
 			}
+			Messages.setLanguage();
 			
 			try {
 				allowCommandBlocks = (Boolean) config.get("allow_commandblocks"); //$NON-NLS-1$
