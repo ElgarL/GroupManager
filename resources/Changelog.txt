@@ -272,4 +272,5 @@ v2.7:
     - Added French translation courtesy of Gayytis.
     - Add chinese-simplified translation courtesy of Greensky, TROU.
     - force UTF-8 encoding when reading language files (your server/client must support the language you are setting).
+    - Set defaults for missing Config.yml entries.
     
