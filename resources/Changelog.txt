@@ -270,4 +270,5 @@ v2.6:
     - Stop non UUID users in the users.yml from preventing superperm updates.
 v2.7:
     - Added French translation courtesy of Gayytis.
+    - Add chinese-simplified translation courtesy of Greensky, TROU.
     
