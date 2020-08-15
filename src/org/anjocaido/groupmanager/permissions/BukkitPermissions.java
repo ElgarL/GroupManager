@@ -37,6 +37,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -60,6 +62,8 @@ public class BukkitPermissions {
 	protected boolean dumpAllPermissions = true;
 	protected boolean dumpMatchedPermissions = true;
 	private boolean player_join = false;
+	
+	private boolean hasUpdateCommand = false;
 
 	/**
 	 * @return the player_join
@@ -75,6 +79,16 @@ public class BukkitPermissions {
 	public void setPlayer_join(boolean player_join) {
 
 		this.player_join = player_join;
+	}
+	
+	/**
+	 * Does the server support Player.updateCommand().
+	 * 
+	 * @return	true/false
+	 */
+	public boolean hasUpdateCommand() {
+
+		return hasUpdateCommand;
 	}
 
 	private static Field permissions;
@@ -96,6 +110,15 @@ public class BukkitPermissions {
 		this.plugin = plugin;
 		this.reset();
 		this.registerEvents();
+		
+		try {
+			// Method only available post 1.14
+			Player.class.getMethod("updateCommands");
+			hasUpdateCommand = true;
+		} catch (Exception ex) {
+			// Server too old to support updateCommands.
+			hasUpdateCommand = false;
+		}
 		
 
 		GroupManager.logger.info("Superperms support enabled.");
@@ -211,14 +234,10 @@ public class BukkitPermissions {
 				attachment.getPermissible().recalculatePermissions();
 
 				// Tab complete and command visibility
-				try {
-					// Method only available post 1.14
-					if (player.getClass().getMethod("updateCommands") != null) {
-						player.updateCommands();
-					}
-				} catch (Exception ex) {
-					// Server too old to support this command.
-				}
+				// Method only available post 1.14
+				if (hasUpdateCommand())
+					player.updateCommands();
+
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -442,13 +461,43 @@ public class BukkitPermissions {
 
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
-
 			
+			/* this is a pre Join event (always default world).
+			 * We are triggering an update on this as
+			 * there is no API call in pre-1.14 to
+			 * update a clients command tab-complete.
+			 * 
+			 * World specific permissions will be updated
+			 * later in the PlayerJoinEvent.
+			 */
+			
+			// Tab complete command visibility
+			// Server too old to support updateCommands.
+			if (!hasUpdateCommand())
+				playerJoin(event);
+		}
+		
+		@EventHandler(priority = EventPriority.LOWEST)
+		public void onPlayerJoin(PlayerJoinEvent event) {
+
+			/**
+			 * The player actually joined the server.
+			 * So we can set permissions relative to their world.
+			 */
+			playerJoin(event);
+		}
+		
+		/**
+		 * Process the login/join events.
+		 * 
+		 * @param event
+		 */
+		private void playerJoin(PlayerEvent event) {
 			
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 			
-			GroupManager.logger.finest("Player Login event: " + player.getName());
+			GroupManager.logger.finest("Player Join event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends
@@ -458,7 +507,6 @@ public class BukkitPermissions {
 			// force GM to create the player if they are not already listed.
 			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
-			setPlayer_join(false);
 			updatePermissions(player);
 			
 			setPlayer_join(false);

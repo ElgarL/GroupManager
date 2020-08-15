@@ -268,3 +268,6 @@ v2.6:
     - Implement the unused GMUserEvent - USER_PERMISSIONS_CHANGED. This will trigger whenever an Online player has their permissions updated.
     - Register the main GroupManager class with Bukkits ServiceManager instead of the WorldsHolder.
     - Stop non UUID users in the users.yml from preventing superperm updates.
+v2.7:
+    - Added French translation courtesy of Gayytis.
+    
