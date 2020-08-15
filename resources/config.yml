@@ -1,4 +1,4 @@
-settings:
+﻿settings:
   config:
     # Supported languages must have a coresponding properties file.
     # (english, russian, french, chinese-simplified).

@@ -1,4 +1,4 @@
-# Group inheritance
+﻿# Group inheritance
 #
 # Any inherited groups prefixed with a g: are global groups
 # and are inherited from the GlobalGroups.yml.
