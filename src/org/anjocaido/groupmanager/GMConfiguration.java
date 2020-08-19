@@ -105,36 +105,38 @@ public class GMConfiguration {
 
 			try {
 				language = (String) config.get("language"); //$NON-NLS-1$
-
-				if (language != null)
-					Messages.setLanguage();
-				
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("language"), ex); //$NON-NLS-1$
+				language = "english";
 			}
+			Messages.setLanguage();
 			
 			try {
 				allowCommandBlocks = (Boolean) config.get("allow_commandblocks"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex); //$NON-NLS-1$
+				allowCommandBlocks = false;
 			}
 			
 			try {
 				opOverride = (Boolean) config.get("opOverrides"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex); //$NON-NLS-1$
+				opOverride = true;
 			}
 			
 			try {
 				toggleValidate = (Boolean) config.get("validate_toggle"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex); //$NON-NLS-1$
+				toggleValidate = true;
 			}
 			
 			try {
 				tabValidate = (Boolean) config.get("tab_validate"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("tab_validate"), ex); //$NON-NLS-1$
+				tabValidate = true;
 			}
 
 			/*
@@ -147,12 +149,14 @@ public class GMConfiguration {
 					saveInterval = (Integer) save.get("minutes"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex); //$NON-NLS-1$
+					saveInterval = 10;
 				}
 				
 				try {
 					backupDuration = (Integer) save.get("hours"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex); //$NON-NLS-1$
+					backupDuration = 24;
 				}
 				
 			} catch (Exception ex) {
@@ -203,7 +207,7 @@ public class GMConfiguration {
 	
 	public String getLanguage() {
 
-		return (language == null)? "english" : language;
+		return language;
 	}
 	
 	public boolean isAllowCommandBlocks() {
