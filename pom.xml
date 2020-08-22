@@ -65,11 +65,13 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.21</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
         	<groupId>com.intellij</groupId>
         	<artifactId>annotations</artifactId>
         	<version>9.0.4</version>
+        	<scope>compile</scope>
         </dependency>
     </dependencies>
 
