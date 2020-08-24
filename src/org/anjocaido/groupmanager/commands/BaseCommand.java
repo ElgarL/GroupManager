@@ -97,7 +97,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
 		// If parsSender fails return empty.
-		if (!parseSender(sender, alias)) return new ArrayList<String>();
+		if (!parseSender(sender, alias) || isConsole) return new ArrayList<String>();
 		
 		return tabComplete(sender, command, alias, args);
 	}

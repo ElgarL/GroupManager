@@ -273,4 +273,5 @@ v2.7:
     - Add chinese-simplified and chinese-traditional translations courtesy of Greensky, TROU.
     - force UTF-8 encoding when reading language files (your server/client must support the language you are selecting).
     - Set defaults for missing Config.yml entries.
-    
+    - Block tab-complete use in console (no more errors).
+    - Fix mancheckw using the wrong language string (no more error).
