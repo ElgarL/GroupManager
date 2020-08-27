@@ -107,8 +107,8 @@ public class GMConfiguration {
 				language = (String) config.get("language"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("language"), ex); //$NON-NLS-1$
-				language = "english";
 			}
+			if (language == null || language.isEmpty()) language = "english";
 			Messages.setLanguage();
 			
 			try {

@@ -275,3 +275,8 @@ v2.7:
     - Set defaults for missing Config.yml entries.
     - Block tab-complete use in console (no more errors).
     - Fix mancheckw using the wrong language string (no more error).
+v2.8:
+    - Prevent a missing language entry in the config from preventing the config being loaded.
+    - Prevent GM events from throwing errors in the rare instance they are triggered during shutdown.
+    
+    
