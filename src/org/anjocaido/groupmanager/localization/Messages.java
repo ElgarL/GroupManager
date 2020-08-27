@@ -52,8 +52,14 @@ public class Messages {
 	
 	public static void setLanguage() {
 		
-		BUNDLE_NAME = "languages." + GroupManager.getGMConfig().getLanguage();
-		RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
+		try {
+			BUNDLE_NAME = "languages." + GroupManager.getGMConfig().getLanguage();
+			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
+		} catch (Exception ex) {
+			// Invalid name, use default.
+			BUNDLE_NAME = "languages.english";
+			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
+		}
 	}
 	
 	static class UTF8Control extends Control {
