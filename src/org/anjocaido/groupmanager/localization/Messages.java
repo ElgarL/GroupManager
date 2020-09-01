@@ -38,7 +38,7 @@ public class Messages {
 	private static ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 
 	private Messages() {
-		
+
 	}
 
 	public static String getString(String key) {
@@ -57,7 +57,7 @@ public class Messages {
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		} catch (Exception ex) {
 			// Invalid name, use default.
-			getLogger().log(Level.WARN, "Language name invalid, using default (English)");
+			GroupManager.logger.warning("Invalid language defined in config, using default (English)");
 			BUNDLE_NAME = "languages.english";
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		}
