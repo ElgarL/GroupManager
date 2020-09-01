@@ -108,8 +108,6 @@ public class GroupManager extends JavaPlugin {
 	
 	private static WorldsHolder worldsHolder;
 	
-	private boolean validateOnlinePlayer = true;
-	
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
 	private ReentrantLock saveLock = new ReentrantLock();
@@ -149,7 +147,7 @@ public class GroupManager extends JavaPlugin {
 
 		if (!restarting) {
 			// Unregister this service if we are shutting down.
-			this.getServer().getServicesManager().unregister(getWorldsHolder());
+			this.getServer().getServicesManager().unregister(this);
 		}
 
 		disableScheduler(); // Shutdown before we save, so it doesn't interfere.
@@ -276,7 +274,7 @@ public class GroupManager extends JavaPlugin {
 
 			// Register as a service
 			if (!restarting)
-				this.getServer().getServicesManager().register(WorldsHolder.class, getWorldsHolder(), this, ServicePriority.Lowest);
+				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
 			
 			/*
 			 * Version check.
@@ -402,17 +400,19 @@ public class GroupManager extends JavaPlugin {
 	/**
 	 * @return the validateOnlinePlayer
 	 */
+	@Deprecated // Use getGMConfig().isToggleValidate()
 	public boolean isValidateOnlinePlayer() {
 
-		return validateOnlinePlayer;
+		return getGMConfig().isToggleValidate();
 	}
 
 	/**
 	 * @param validateOnlinePlayer the validateOnlinePlayer to set
 	 */
+	@Deprecated // Use getGMConfig().setToggleValidate(value)
 	public void setValidateOnlinePlayer(boolean validateOnlinePlayer) {
 
-		this.validateOnlinePlayer = validateOnlinePlayer;
+		getGMConfig().setToggleValidate(validateOnlinePlayer);
 	}
 
 	private void prepareBackupFolder() {
@@ -485,7 +485,7 @@ public class GroupManager extends JavaPlugin {
 										GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 								
 							}
-						} catch (IllegalStateException ex) {
+						} catch (Exception ex) {
 							GroupManager.logger.warning(ex.getMessage());
 						} finally {
 							/*

@@ -30,12 +30,15 @@ import java.util.Set;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.events.GMUserEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -59,6 +62,8 @@ public class BukkitPermissions {
 	protected boolean dumpAllPermissions = true;
 	protected boolean dumpMatchedPermissions = true;
 	private boolean player_join = false;
+	
+	private boolean hasUpdateCommand = false;
 
 	/**
 	 * @return the player_join
@@ -74,6 +79,16 @@ public class BukkitPermissions {
 	public void setPlayer_join(boolean player_join) {
 
 		this.player_join = player_join;
+	}
+	
+	/**
+	 * Does the server support Player.updateCommand().
+	 * 
+	 * @return	true/false
+	 */
+	public boolean hasUpdateCommand() {
+
+		return hasUpdateCommand;
 	}
 
 	private static Field permissions;
@@ -95,6 +110,15 @@ public class BukkitPermissions {
 		this.plugin = plugin;
 		this.reset();
 		this.registerEvents();
+		
+		try {
+			// Method only available post 1.14
+			Player.class.getMethod("updateCommands");
+			hasUpdateCommand = true;
+		} catch (Exception ex) {
+			// Server too old to support updateCommands.
+			hasUpdateCommand = false;
+		}
 		
 
 		GroupManager.logger.info("Superperms support enabled.");
@@ -150,9 +174,6 @@ public class BukkitPermissions {
 
 		// Reset the User objects player reference.
 		User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
-		
-		if (user != null)
-			user.updatePlayer(player);
 
 		PermissionAttachment attachment;
 
@@ -213,7 +234,10 @@ public class BukkitPermissions {
 				attachment.getPermissible().recalculatePermissions();
 
 				// Tab complete and command visibility
-				player.updateCommands();
+				// Method only available post 1.14
+				if (hasUpdateCommand())
+					player.updateCommands();
+
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -222,6 +246,10 @@ public class BukkitPermissions {
 		}
 
 		GroupManager.logger.finest("Attachment updated for: " + player.getName());
+		
+		// Trigger a GMUserEvent for this update.
+		if (GroupManager.isLoaded())
+			GroupManager.getGMEventHandler().callEvent(user, GMUserEvent.Action.USER_PERMISSIONS_CHANGED);
 	}
 
 	/**
@@ -433,13 +461,43 @@ public class BukkitPermissions {
 
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
-
 			
+			/* this is a pre Join event (always default world).
+			 * We are triggering an update on this as
+			 * there is no API call in pre-1.14 to
+			 * update a clients command tab-complete.
+			 * 
+			 * World specific permissions will be updated
+			 * later in the PlayerJoinEvent.
+			 */
+			
+			// Tab complete command visibility
+			// Server too old to support updateCommands.
+			if (!hasUpdateCommand())
+				playerJoin(event);
+		}
+		
+		@EventHandler(priority = EventPriority.LOWEST)
+		public void onPlayerJoin(PlayerJoinEvent event) {
+
+			/**
+			 * The player actually joined the server.
+			 * So we can set permissions relative to their world.
+			 */
+			playerJoin(event);
+		}
+		
+		/**
+		 * Process the login/join events.
+		 * 
+		 * @param event
+		 */
+		private void playerJoin(PlayerEvent event) {
 			
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 			
-			GroupManager.logger.finest("Player Login event: " + player.getName());
+			GroupManager.logger.finest("Player Join event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends
@@ -449,8 +507,7 @@ public class BukkitPermissions {
 			// force GM to create the player if they are not already listed.
 			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 			
-			setPlayer_join(false);
-			updatePermissions(event.getPlayer());
+			updatePermissions(player);
 			
 			setPlayer_join(false);
 		}
@@ -458,7 +515,13 @@ public class BukkitPermissions {
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerChangeWorld(PlayerChangedWorldEvent event) { // has changed worlds
 
-			updatePermissions(event.getPlayer(), event.getPlayer().getWorld().getName());
+			Player player = event.getPlayer();
+			
+			updatePermissions(player, player.getWorld().getName());
+			
+			// force GM to create the player if they are not already listed.
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			
 		}
 
 		/*
@@ -473,10 +536,8 @@ public class BukkitPermissions {
 			Player player = event.getPlayer();
 			String uuid = player.getUniqueId().toString();
 			
-			// Reset the User objects player reference.
-			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
-			
-			user.updatePlayer(null);
+			// Reset the User object.
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 
 			/*
 			 * force remove any attachments as bukkit may not

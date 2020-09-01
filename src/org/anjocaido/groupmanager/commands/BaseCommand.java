@@ -97,7 +97,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
 		// If parsSender fails return empty.
-		if (!parseSender(sender, alias)) return new ArrayList<String>();
+		if (!parseSender(sender, alias) || isConsole) return new ArrayList<String>();
 		
 		return tabComplete(sender, command, alias, args);
 	}
@@ -244,8 +244,18 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
-			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg)))
-				result.add(user.getLastName());
+			// Possible matching player
+			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg))) {
+				
+				// If validating check for online state.
+				if (GroupManager.getGMConfig().isTabValidate() && GroupManager.getGMConfig().isToggleValidate()) {
+					if (user.isOnline())
+						result.add(user.getLastName());
+				} else {
+					// Not validating online state so add as a possible match
+					result.add(user.getLastName());
+				}
+			}
 		}
 		return result;
 	}

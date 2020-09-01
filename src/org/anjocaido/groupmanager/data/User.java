@@ -21,16 +21,14 @@ package org.anjocaido.groupmanager.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.anjocaido.groupmanager.localization.Messages;
-
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
+import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
 
 /**
@@ -49,7 +47,6 @@ public class User extends DataUnit implements Cloneable {
 	 * false
 	 */
 	private UserVariables variables = new UserVariables(this);
-	private transient Player bukkitPlayer = null;
 
 	/**
 	 * 
@@ -153,6 +150,11 @@ public class User extends DataUnit implements Cloneable {
 		return clone;
 	}
 
+	/**
+	 * Gets the main group this user is a member of.
+	 * 
+	 * @return the group.
+	 */
 	public Group getGroup() {
 
 		Group result = getDataSource().getGroup(group);
@@ -164,7 +166,9 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * @return the group
+	 * Gets the main group name this user is a member of.
+	 * 
+	 * @return the group name.
 	 */
 	public String getGroupName() {
 
@@ -289,22 +293,32 @@ public class User extends DataUnit implements Cloneable {
 		return false;
 	}
 
+	/**
+	 * Returns a new array of the Sub-Groups attached to this user.
+	 * 
+	 * @return List of sub-groups.
+	 */
 	public ArrayList<Group> subGroupListCopy() {
 
 		ArrayList<Group> val = new ArrayList<Group>();
 		synchronized(subGroups) {
-		for (String gstr : subGroups) {
-			Group g = getDataSource().getGroup(gstr);
-			if (g == null) {
-				removeSubGroup(g);
-				continue;
+			for (String gstr : subGroups) {
+				Group g = getDataSource().getGroup(gstr);
+				if (g == null) {
+					removeSubGroup(g);
+					continue;
+				}
+				val.add(g);
 			}
-			val.add(g);
-		}
 		}
 		return val;
 	}
 
+	/**
+	 * Compiles a list of Sub-Group Names attached to this user.
+	 * 
+	 * @return	List of sub-group names.
+	 */
 	public ArrayList<String> subGroupListStringCopy() {
 		synchronized(subGroups) {
 			return new ArrayList<String>(subGroups);
@@ -338,18 +352,29 @@ public class User extends DataUnit implements Cloneable {
 		}
 	}
 
-	
+	@Deprecated
 	public User updatePlayer(Player player) {
 
-		bukkitPlayer = player;
 		return this;
 	}
 
+	/**
+	 * Returns a Player object (if online), or null.
+	 * 
+	 * @return Player object or null.
+	 */
 	public Player getBukkitPlayer() {
-
-		if (bukkitPlayer == null) {
-			bukkitPlayer = Bukkit.getPlayer(this.getLastName());
-		}
-		return bukkitPlayer;
+		
+		return BukkitWrapper.getInstance().getPlayer(getLastName());
+	}
+	
+	/**
+	 * Is this player currently Online.
+	 * 
+	 * @return
+	 */
+	public boolean isOnline() {
+		
+		return getBukkitPlayer() != null;
 	}
 }

@@ -1,7 +1,7 @@
-settings:
+﻿settings:
   config:
     # Supported languages must have a coresponding properties file.
-    # (engligh, russian).
+    # (english, russian, french, chinese-simplified, chinese-traditional).
     language: english
     
     # With this enabled anyone set as op has full permissions when managing GroupManager
@@ -11,6 +11,11 @@ settings:
     # Default setting for 'mantogglevalidate'
     # true will cause GroupManager to attempt name matching by default.
     validate_toggle: true
+    
+    # If Enabled tab-complete will follow the mantoggle validate setting when
+    # offering player names. Disabled will offer all known players.
+    tab_validate: true
+    
     # ***************************************************************************************
     # *** NOTE: Having this feature enabled can allow improper use of Command Blocks      ***
     # ***       which may lead to undesireable permission changes. You have been warned!  ***

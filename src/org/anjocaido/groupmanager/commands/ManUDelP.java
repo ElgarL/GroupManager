@@ -55,7 +55,7 @@ public class ManUDelP extends BaseCommand {
 			return true;
 		}
 		
-		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
 
@@ -119,7 +119,7 @@ public class ManUDelP extends BaseCommand {
 		}
 		
 		if (args.length >= 2) {
-			if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
 			}
 

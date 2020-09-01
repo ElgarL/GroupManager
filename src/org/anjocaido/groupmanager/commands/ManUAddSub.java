@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,7 +52,7 @@ public class ManUAddSub extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
 

@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -343,11 +342,9 @@ public class WorldsHolder {
 				
 				for (User user: world.getUserList()) {
 					// If the player is online, this will create new data for the user.
-					if (user.getUUID() != null) {
-						Player targetPlayer = plugin.getServer().getPlayer(UUID.fromString(user.getUUID()));
-						if (targetPlayer != null)
-							GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-					}
+					Player targetPlayer = plugin.getServer().getPlayer(user.getLastName());
+					if (targetPlayer != null)
+						GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
 				}
 			}
 			

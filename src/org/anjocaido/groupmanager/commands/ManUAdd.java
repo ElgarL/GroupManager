@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -59,7 +60,7 @@ public class ManUAdd extends BaseCommand {
 		}
 		
 		// If validating players and no player was found by that name.
-		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
 		

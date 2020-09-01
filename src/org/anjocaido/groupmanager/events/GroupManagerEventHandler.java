@@ -42,18 +42,18 @@ public class GroupManagerEventHandler {
 	}
 
 	protected void callEvent(GMGroupEvent event) {
-
-		event.schedule(event);
+		
+		try { event.schedule(event); } catch (Exception ex) {}
 	}
 
 	protected void callEvent(GMUserEvent event) {
 
-		event.schedule(event);
+		try { event.schedule(event); } catch (Exception ex) {}
 	}
 
 	protected void callEvent(GMSystemEvent event) {
 
-		event.schedule(event);
+		try { event.schedule(event); } catch (Exception ex) {}
 	}
 
 	public void callEvent(Group group, GMGroupEvent.Action action) {

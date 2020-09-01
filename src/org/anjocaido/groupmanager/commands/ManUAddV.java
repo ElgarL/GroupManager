@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Variables;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
@@ -52,7 +53,7 @@ public class ManUAddV extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDV_SYNTAX"));
 			return true;
 		}
-		if ((plugin.isValidateOnlinePlayer()) && ((match = validatePlayer(args[0], sender)) == null)) {
+		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
 
@@ -72,7 +73,7 @@ public class ManUAddV extends BaseCommand {
 		}
 		auxString = auxString.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		auxUser.getVariables().addVar(args[1], Variables.parseVariableValue(auxString));
-		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxGroup.getName())); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxUser.getLastName())); //$NON-NLS-1$
 
 		return true;
 	}

@@ -73,7 +73,7 @@ public class ManCheckW extends BaseCommand {
 		}
 		dataHolder = plugin.getWorldsHolder().getWorldData(auxString);
 		
-		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_BUKKIT_INVALID_ARGUMENTS"), dataHolder.getName())); //$NON-NLS-1$
+		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("YOU_HAVE_SELECTED_WORLD"), ChatColor.GREEN + dataHolder.getName())); //$NON-NLS-1$
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("WORLD_USING_DATA_FILES")); //$NON-NLS-1$
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUPS") + ChatColor.GREEN + dataHolder.getGroupsFile().getAbsolutePath()); //$NON-NLS-1$
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("USERS") + ChatColor.GREEN + dataHolder.getUsersFile().getAbsolutePath()); //$NON-NLS-1$
