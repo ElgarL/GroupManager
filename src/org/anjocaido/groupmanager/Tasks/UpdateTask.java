@@ -60,7 +60,7 @@ public class UpdateTask implements Runnable {
 			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) { //$NON-NLS-1$
 				
 				GroupManager.logger.warning(String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle)); //$NON-NLS-1$
-				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.80743/"); //$NON-NLS-1$
+				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.38875/"); //$NON-NLS-1$
 
 			} else {
 				
