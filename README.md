@@ -12,9 +12,9 @@ GroupManager is a plug-in for Sigot/Bukkit based Minecraft servers. It allows yo
 
 The most traditional system (shown below) uses group inheritance, starting with new players at the top, and owners on the bottom. On smaller servers you might end up merging the moderator and admin rolls, but most people will have different opinions when it comes to which powers the admin should have access to, and which powers moderators should receive as well.
 ___
-- **Newbie**  
+- **Default**  
 The newbie group contains the very basic permission nodes, and should be safe to give all newly joined players upon login.
-- **Player**  
+- **Builder**  
 The player group covers all the commands that established players can use. This usually includes	commands which involve the economy, basic teleportation, and other basic commands.
 - **Moderator**  
 The Moderator and Admin groups can be merged or split even further based on your preference. Typically the lowest moderator rank would have access to kick and jail a user, while higher ranks could have access to IP ban players, turn invisible, and spawn creative mode items.
