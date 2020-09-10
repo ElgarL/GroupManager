@@ -279,4 +279,5 @@ v2.8:
     - Prevent a missing language entry in the config from preventing the config being loaded.
     - Prevent GM events from throwing errors in the rare instance they are triggered during shutdown.
     - Correct update link when outdated.
+    - Catch a VERY rare occurence of Bukkit returning an OfflinePlayer with no name.
     

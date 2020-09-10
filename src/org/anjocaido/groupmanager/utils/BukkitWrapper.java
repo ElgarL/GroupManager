@@ -71,7 +71,7 @@ public class BukkitWrapper {
 		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
 		
 		for (OfflinePlayer player : offlinePlayer)
-			if (player.getName().equalsIgnoreCase(name)) {
+			if (player.getName() != null && player.getName().equalsIgnoreCase(name)) {
 				cache = player;
 				return player.getUniqueId();
 			}
@@ -100,7 +100,7 @@ public class BukkitWrapper {
 		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
 				
 		for (OfflinePlayer player : offlinePlayer)
-			if (player.getUniqueId().compareTo(uid) == 0) {
+			if (player.getName() != null && player.getUniqueId().compareTo(uid) == 0) {
 				cache = player;
 				return player.getName();
 			}
