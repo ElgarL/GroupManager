@@ -1,4 +1,4 @@
-<a href="https://elgarl.github.io/GroupManager/">GroupManager Website</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/COMMANDS.md">GroupManager Commands</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/CONFIG.md">GroupManager Config</a>
+<a href="https://elgarl.github.io/GroupManager/">GroupManager Website</a> || <a href="https://elgarl.github.io/GroupManager/COMMANDS">GroupManager Commands</a> || <a href="https://elgarl.github.io/GroupManager/CONFIG">GroupManager Config</a>
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_s-xclick" />
 <input type="hidden" name="hosted_button_id" value="95VVUXYDUCDH8" />
@@ -8,7 +8,7 @@
 
 # GroupManager
 
-GroupManager is a plug-in for Sigot/Bukkit based Minecraft servers. It allows you to group permissions together and add players to each group. Each group can have a full inheritance tree of other sub-groups, enabling players to have differing levels of authority and control with a promotion and demotion hierachy.
+GroupManager is a plug-in for Spigot/Bukkit based Minecraft servers. It allows you to group permissions together and add players to each group. Each group can have a full inheritance tree of other sub-groups, enabling players to have differing levels of authority and control with a promotion and demotion hierarchy.
 
 The most traditional system (shown below) uses group inheritance, starting with new players at the top, and owners on the bottom. On smaller servers you might end up merging the moderator and admin rolls, but most people will have different opinions when it comes to which powers the admin should have access to, and which powers moderators should receive as well.
 ___
@@ -28,10 +28,10 @@ ___
 The install process for Group Manager is rather simple:
 
     Safely stop the server.
-    Place the GroupManager plug-in into your plugins folder. (GroupManager.jar)
+    Place the GroupManager plugin into your plugins folder. (GroupManager.jar)
     Start and stop the server.
     Set up/modify the initial config.yml file.
-    Restart the server
+    Start the server
 
 ## Permissions
 
@@ -93,5 +93,5 @@ Some examples:
 Some plugins support group based 'antigrief' protection. Like with the chat colours, GroupManager doesn't provide this functionality.
 Typically the build status is given as:
 
-    build: false disables building/destroying of blocks.
-    build: true enables building/destroying of blocks.
+    build: false : Disables building/destroying of blocks.
+    build: true : Enables building/destroying of blocks.
