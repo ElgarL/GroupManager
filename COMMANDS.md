@@ -1,7 +1,7 @@
-<a href="https://elgarl.github.io/GroupManager/">GroupManager Website</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/COMMANDS.md">GroupManager Commands</a> || <a href="https://github.com/ElgarL/GroupManager/blob/gh-pages/CONFIG.md">GroupManager Config</a>
+<a href="https://elgarl.github.io/GroupManager/">GroupManager Website</a> || <a href="https://elgarl.github.io/GroupManager/COMMANDS">GroupManager Commands</a> || <a href="https://elgarl.github.io/GroupManager/CONFIG">GroupManager Config</a>
 # Commands
 
-GroupManager provides two ways to perform user and group management. Either define the groups and users using the config files or modify the users and groups using console commands. All these commands can be used in the server console or in-game by someone with op, or the relevant permissions for each command. It is recommended to define the groups at least initially using the config files and perform user management with the commands. To give all permissions you can use the wildcard permission groupmanager.*.
+GroupManager provides two ways to perform user and group management. Either define the groups and users using the config files or modify the users and groups using console commands. All these commands can be used in the server console or in-game by someone with OP, or the relevant permissions for each command. It is recommended to define the groups at least initially using the config files and perform user management with the commands. To give all permissions you can use the wildcard permission groupmanager.*.
 
 Contents
 ----|
@@ -228,7 +228,7 @@ permission: groupmanager.mangckeckv
 ## Utility Commands
 
 - /mansave  
-Save all permissions on file.
+Save all permissions in a file.
 ```
 syntax: <command>
 permission: groupmanager.mansave
