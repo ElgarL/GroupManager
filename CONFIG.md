@@ -3,7 +3,7 @@
 
 This page details the configuration of the GroupManager config files.
 
-**Warning: Group manager overwrites its config files on reload, if you make manual changes be sure to /manload them.**
+**Warning: GroupManager overwrites its config files on reload, if you make manual changes be sure to /manload them.**
 
 Contents
 ---|
@@ -32,7 +32,7 @@ The directory structure when you first generate the config files will look somet
                     groups.yml
                     users.yml
 
-## config
+## Config
 Located at: plugins/GroupManager/config.yml
 
 This config file contains some basic settings and is used when you have multiple worlds. It is used to mirror the permissions from a single world across to others.
@@ -49,7 +49,7 @@ settings:
     # true will cause GroupManager to attempt name matching by default.
     validate_toggle: true
     # ************************************************************************************************************************************************************
-    # *** NOTE: Having this feature enabled can allow improper use of Command Blocks which may lead to undesireable permission changes. You have been warned! ***
+    # *** NOTE: Having this feature enabled can allow improper use of command blocks which may lead to undesireable permission changes. You have been warned! ***
     # ************************************************************************************************************************************************************
     allow_commandblocks: false
     
@@ -118,12 +118,12 @@ Here is an example of how to use mirroring in GM
 ```
 In this example you would be expected to maintain several sets of config files. Skylands and Skylands2 will share the Skylands folder. Mainworld, and the MainWorld_nether will share a folder. Hardcore will use the groups files from MainWorld but will have its own user file, and all other worlds will use the Hardcore user file and Mainworld groups file.
 
-## group
+## Group
 Located at: plugins/GroupManager/worlds/<worldname>/group.yml
 
 This is the main and most important config file. This is where you declare the groups for which you are going to be using. The example config file is a little too big to post here, but it will be automatically generated the first time you start GM.
 
-The basics of group manager can be summed up by the example shown here:
+The basics of GroupManager can be summed up by the example shown here:
 ```
 groups:
   Default:
@@ -172,11 +172,11 @@ The "default" group, has an example of negative permissions, to specifically rev
 
 The default configuration has many more such groups with an array of permissions, and uses something called global groups. This is used to make multiple world configs simpler, more details below.
 
-## user
+## User
 
 Located at: plugins/GroupManager/worlds/<worldname>/user.yml
 
-This is where you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the ingame commands (asnd safer).
+This is where you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the in-game commands (and safer).
 
 The config file will look something like this:
 ```
@@ -203,7 +203,7 @@ The 2nd line gives the user name or the players UUID. If the player has never lo
 The permissions section lists any permissions directly assigned to this player. In this example 'ElgarL' gets a the extra permission to be able to /heal.
 The group line of each user stipulates which group the user belongs too.
 
-## globalgroups
+## GlobalGroups
 
 Located at: plugins/GroupManager/globalgroups.yml
 
