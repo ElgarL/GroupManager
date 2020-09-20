@@ -9,7 +9,7 @@ The original permission plug-in for [Bukkit/Spigot](https://www.spigotmc.org/res
 
 **Support**  
 Support my Dev work via PayPal - [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=95VVUXYDUCDH8&source=url).  
-Ask for assistance in teh GroupManager Discord.
+Ask for assistance in the GroupManager Discord.
 [https://discord.gg/BdGxVmu](https://discord.gg/BdGxVmu)
 
 ---
