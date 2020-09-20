@@ -65,7 +65,6 @@ public class GMHook
 			}
 		}
 		return false;
-		
 	}
 
 	public String getGroup(final Player player)
