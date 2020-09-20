@@ -67,8 +67,7 @@ public class GMHook
 		return false;
 	}
 
-	public String getGroup(final Player player)
-	{
+	public String getGroup(final Player player) {
 		if (!hasGroupManager()) return null;
 		
 		final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -77,8 +76,7 @@ public class GMHook
 		return handler.getGroup(player.getName());
 	}
 
-	public boolean setGroup(final Player player, final String group)
-	{
+	public boolean setGroup(final Player player, final String group) {
 		if (!hasGroupManager()) return false;
 		
 		final OverloadedWorldHolder handler = groupManager.getWorldsHolder().getWorldData(player);
@@ -88,8 +86,7 @@ public class GMHook
 		return true;
 	}
 
-	public List<String> getGroups(final Player player)
-	{
+	public List<String> getGroups(final Player player) {
 		if (!hasGroupManager()) return null;
 		
 		final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -98,8 +95,7 @@ public class GMHook
 		return Arrays.asList(handler.getGroups(player.getName()));
 	}
 
-	public String getPrefix(final Player player)
-	{
+	public String getPrefix(final Player player) {
 		if (!hasGroupManager()) return null;
 		
 		final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -108,8 +104,7 @@ public class GMHook
 		return handler.getUserPrefix(player.getName());
 	}
 
-	public String getSuffix(final Player player)
-	{
+	public String getSuffix(final Player player) {
 		if (!hasGroupManager()) return null;
 		
 		final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -126,8 +121,7 @@ public class GMHook
 	 * @return
 	 */
 	@Deprecated
-	public boolean hasPermission(final Player player, final String node)
-	{
+	public boolean hasPermission(final Player player, final String node) {
 		if (!hasGroupManager()) return false;
 		
 		final AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissions(player);
