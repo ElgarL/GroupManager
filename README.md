@@ -63,7 +63,7 @@ public class GMHook
 				groupManager = (GroupManager)GMplugin;
 				return true;
 			}
-			return false
+			return false;
 		}
 		return true;
 	}
