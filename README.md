@@ -46,26 +46,22 @@ public class GMHook
 	private GroupManager groupManager;
 	private Plugin plugin;
 
-	public GMHook(final Plugin plugin)
-	{
+	public GMHook(final Plugin plugin) {
 		this.plugin = plugin;
 	}
 
 	public boolean hasGroupManager() {
 		
-		if (groupManager == null) {
+		if (groupManager != null) return true;
 			
-			final PluginManager pluginManager = plugin.getServer().getPluginManager();
-			final Plugin GMplugin = pluginManager.getPlugin("GroupManager");
+		final PluginManager pluginManager = plugin.getServer().getPluginManager();
+		final Plugin GMplugin = pluginManager.getPlugin("GroupManager");
 
-			if (GMplugin != null && GMplugin.isEnabled())
-			{
-				groupManager = (GroupManager)GMplugin;
-				return true;
-			}
-			return false;
+		if (GMplugin != null && GMplugin.isEnabled()) {
+			groupManager = (GroupManager)GMplugin;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public String getGroup(final Player player) {
@@ -117,7 +113,7 @@ public class GMHook
 	/**
 	 * Use Player.hasPermission
 	 * 
-	 * @param base
+	 * @param player
 	 * @param node
 	 * @return
 	 */
