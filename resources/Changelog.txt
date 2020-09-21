@@ -280,4 +280,5 @@ v2.8:
     - Prevent GM events from throwing errors in the rare instance they are triggered during shutdown.
     - Correct update link when outdated.
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
-    
+v2.9:
+    - Add Czech translation courtesy of Jetel.
