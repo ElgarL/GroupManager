@@ -260,7 +260,7 @@ v2.5:
     - Fix tab-complete to not throw errors if GroupManager is in an error state.
 v2.6:
     - Trap all null errors in tab-complete from malformed data.
-    - Added Russian translation (Courtesy of [l1ttleO](https://github.com/l1ttleO)).
+    - Added Russian translation (Courtesy of @l1ttleO).
     - Add compatibility back for pre-1.14 (not tested any further back than 1.8).
     - Fix a bug in manuaddv throwing an error.
     - Prefix/suffix will now be fetched from subgroups if there is no value on the player or the main group.
@@ -269,8 +269,8 @@ v2.6:
     - Register the main GroupManager class with Bukkit's ServiceManager instead of the WorldsHolder.
     - Stop non UUID users in the users.yml from preventing superperm updates.
 v2.7:
-    - Added French translation (Courtesy of [Gayytis](https://github.com/Gayytis)).
-    - Add chinese-simplified and chinese-traditional translations (Courtesy of [Greensky, TROU](https://github.com/HenryHu2000)).
+    - Added French translation (Courtesy of @Gayytis).
+    - Add chinese-simplified and chinese-traditional translations (Courtesy of Greensky, TROU (@HenryHu2000)).
     - Force UTF-8 encoding when reading language files (your server/client must support the language you are selecting).
     - Set defaults for missing `config.yml` entries.
     - Block tab-complete use in console (no more errors).
@@ -281,4 +281,4 @@ v2.8:
     - Correct update link when outdated.
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
 v2.9:
-    - Add Czech translation (Courtesy of [Jetel](https://github.com/JetelHudzum)).
+    - Add Czech translation (Courtesy of @JetelHudzum).
