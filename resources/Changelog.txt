@@ -1,4 +1,4 @@
-﻿Changelog
+?Changelog
 
 v 1.1:
 	- Fixed users being able to use 'manuadd' to add users to higher groups than their own.
@@ -123,7 +123,7 @@ v 1.9:
 	- Check for a null player object in the PlayerTeleportEvent.
 	- Trap errors in fetching the mirrors map.
 	- Fixed an infinite loop error when using '/manudel' on a logged in player. It caused setDefaultGroup to trigger a bukkit update when no GM User existed yet.
-	- do not allow inherited permissions to negate higher perms.
+	- Do not allow inherited permissions to negate higher perms.
 	- Fixed a bug when pushing superperms in the wrong order.
 	- Fix players retaining permissions when demoted.
 	- Auto sort permissions on load to speed up population of superperms.
@@ -180,7 +180,7 @@ v 2.0:
 	- Update all code formatting to use tabs for indentation.
 	- Stop using our own deprecated methods as we tell others to do.
 	- Finally remove all deprecated methods.
-	- Re-initialize the WorldsHolder on a reload, as un-registering and re-registering a new holder means all plugins have to check for the new service on every quiery.
+	- Re-initialize the WorldsHolder on a reload, as un-registering and re-registering a new holder means all plugins have to check for the new service on every query.
 	- Prevent null perms getting past the GlobalGroups loader.
 	- Fix forgetting sub groups on a manload.
 	- Allow 'manucheckp' to notify when superperms reports false but it is really negated.
@@ -202,7 +202,7 @@ v 2.0:
 	- Change order of data in Users.yml to [name, Group, SubGroup, Permissions, Info nodes].
 	- Add alphabetically sorted user lists.
 	- allWorldsDataList now returns fully mirrored worlds which are not identical mirrors (fixes the /manselect list).
-	- Add support for Rcon.
+	- Add support for RCON.
 	- Prevent GM commands from being used on CommandBlocks.
 	- Clear our attachment map upon a manload so we correctly reconfigure a players new permissions.
 	- Synchronize the raising of GroupManager events to Bukkit.getServer() (should prevent deadlocks).
@@ -213,15 +213,15 @@ v 2.0:
 	- Prevent '*' permissions granting the 'groupmanager.noofflineperms' permission.
 	- Added '/mancheckw <world>' to inspect which permission files a world is referencing.
 	- Add config potion to set if GM commands should be allowed on CommnandBlocks.
-	- Catch the error when using an out of date config for 'allow_commandblocks' So it doesn't kill the whole config.
+	- Catch the error when using an out of date config for 'allow_commandblocks' so it doesn't kill the whole config.
 	- '/manselect' will no longer list duplicate worlds.
 	- Added a new mirroring option in the config of 'all_unnamed_worlds'. This will cause all new or unnamed worlds to use this mirroring.
 	- Don't allow adding a node with '/manuaddp' and '/mangaddp' which is already negated.
-	- Warn when adding a node where an exception already exist.
+	- Warn when adding a node where an exception already exists.
 	- Only prevent adding nodes with '/manuaddp' and '/mangaddp' if they are exact matches (not wildcards).
 	- Store worldSelection indexed on the senders name rather than the object (fixes commandblocks using manselect).
 	- Check subgroup permissions with an equal priority so no one subgroup is higher ranked than another.
-	- add recursive permission adding/deleting
+	- Add recursive permission adding/deleting
 	- Prevent adding sub groups for ranks the granting player doesn't have access to.
 	- Allow Exceptions in any inherited group to override negation of permissions.
 v2.1:
@@ -254,31 +254,31 @@ v2.5:
     - Add version checking for updates at startup.
     - Externalise all text to allow for localisation.
     - Fully register all our own permissions with superperms so commands are properly restricted.
-    - update permissions earlier in the log-in process so command visibility and tab complete are updated on the client.
+    - Update permissions earlier in the log-in process so command visibility and tab complete are updated on the client.
     - GM will now restrict access to ALL plug-in commands (tab-complete) for ALL plug-ins that correctly register their command permissions.
     - Change ListGroups command to ManGList, in-line with the other command syntax. GM will still accept the old command.
     - Fix tab-complete to not throw errors if GroupManager is in an error state.
 v2.6:
     - Trap all null errors in tab-complete from malformed data.
-    - Added Russian translation courtesy of l1ttleO.
-    - Add compatibility back for pre 1.14 (not tested any further back than 1.8).
+    - Added Russian translation (Courtesy of [l1ttleO](https://github.com/l1ttleO)).
+    - Add compatibility back for pre-1.14 (not tested any further back than 1.8).
     - Fix a bug in manuaddv throwing an error.
     - Prefix/suffix will now be fetched from subgroups if there is no value on the player or the main group.
-    - Added a new config entry for tab_validate. If true GM will offer tab-complete names obeying the validate_toggle setting.
-    - Implement the unused GMUserEvent - USER_PERMISSIONS_CHANGED. This will trigger whenever an Online player has their permissions updated.
-    - Register the main GroupManager class with Bukkits ServiceManager instead of the WorldsHolder.
+    - Added a new config entry for tab_validate. If true, GM will offer tab-complete names obeying the validate_toggle setting.
+    - Implement the unused GMUserEvent - USER_PERMISSIONS_CHANGED. This will trigger whenever an online player has their permissions updated.
+    - Register the main GroupManager class with Bukkit's ServiceManager instead of the WorldsHolder.
     - Stop non UUID users in the users.yml from preventing superperm updates.
 v2.7:
-    - Added French translation courtesy of Gayytis.
-    - Add chinese-simplified and chinese-traditional translations courtesy of Greensky, TROU.
-    - force UTF-8 encoding when reading language files (your server/client must support the language you are selecting).
-    - Set defaults for missing Config.yml entries.
+    - Added French translation (Courtesy of [Gayytis](https://github.com/Gayytis)).
+    - Add chinese-simplified and chinese-traditional translations (Courtesy of [Greensky, TROU](https://github.com/HenryHu2000)).
+    - Force UTF-8 encoding when reading language files (your server/client must support the language you are selecting).
+    - Set defaults for missing `config.yml` entries.
     - Block tab-complete use in console (no more errors).
     - Fix mancheckw using the wrong language string (no more error).
 v2.8:
-    - Prevent a missing language entry in the config from preventing the config being loaded.
-    - Prevent GM events from throwing errors in the rare instance they are triggered during shutdown.
+    - Use English as the default language if no valid language is defined in the config.
+    - Prevent GM events from throwing errors if they are triggered during shutdown.
     - Correct update link when outdated.
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
 v2.9:
-    - Add Czech translation courtesy of Jetel.
+    - Add Czech translation (Courtesy of [Jetel](https://github.com/JetelHudzum)).
