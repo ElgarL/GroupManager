@@ -54,8 +54,8 @@ groups:
     - bukkit.command.ban
     - bukkit.command.ban.ip
     - bukkit.command.ban.player
-    - bukkit.command.gamemode
-    - bukkit.command.kick
+    - minecraft.command.gamemode
+    - minecraft.command.kick
     - bukkit.command.unban
     - bukkit.command.unban.ip
     - bukkit.command.unban.player
@@ -64,23 +64,23 @@ groups:
     permissions:
     - bukkit.broadcast
     - bukkit.broadcast.admin
-    - bukkit.command.give
+    - minecraft.command.give
     - bukkit.command.help
-    - bukkit.command.kill
-    - bukkit.command.list
-    - bukkit.command.me
-    - -bukkit.command.op
-    - -bukkit.command.op.give
-    - -bukkit.command.op.take
+    - minecraft.command.kill
+    - minecraft.command.list
+    - minecraft.command.me
+    - -minecraft.command.op
+    - -minecraft.command.op.give
+    - -minecraft.command.op.take
     - bukkit.command.plugins
     - bukkit.command.reload
     - bukkit.command.save
     - bukkit.command.save.disable
     - bukkit.command.save.enable
     - bukkit.command.save.perform
-    - bukkit.command.say
-    - bukkit.command.stop
-    - bukkit.command.teleport
+    - minecraft.command.say
+    - minecraft.command.stop
+    - minecraft.command.teleport
     - bukkit.command.tell
     - bukkit.command.time
     - bukkit.command.time.add
