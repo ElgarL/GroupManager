@@ -459,7 +459,7 @@ public class BukkitPermissions {
 	 */
 	protected class PlayerEvents implements Listener {
 
-		@EventHandler(priority = EventPriority.LOWEST)
+		@EventHandler(priority = EventPriority.LOW)
 		public void onPlayerLogin(PlayerLoginEvent event) {
 			
 			/* this is a pre Join event (always default world).
@@ -477,7 +477,7 @@ public class BukkitPermissions {
 				playerJoin(event);
 		}
 		
-		@EventHandler(priority = EventPriority.LOWEST)
+		@EventHandler(priority = EventPriority.LOW)
 		public void onPlayerJoin(PlayerJoinEvent event) {
 
 			/**
@@ -512,7 +512,7 @@ public class BukkitPermissions {
 			setPlayer_join(false);
 		}
 
-		@EventHandler(priority = EventPriority.LOWEST)
+		@EventHandler(priority = EventPriority.LOW)
 		public void onPlayerChangeWorld(PlayerChangedWorldEvent event) { // has changed worlds
 
 			Player player = event.getPlayer();

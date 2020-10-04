@@ -282,3 +282,4 @@ v2.8:
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
 v2.9:
     - Add Czech translation (Courtesy of @JetelHudzum).
+    - Fix a really rare error of no world detected when a player logged in due to event ordering.
