@@ -459,7 +459,7 @@ public class BukkitPermissions {
 	 */
 	protected class PlayerEvents implements Listener {
 
-		@EventHandler(priority = EventPriority.LOW)
+		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
 			
 			/* this is a pre Join event (always default world).
@@ -477,7 +477,7 @@ public class BukkitPermissions {
 				playerJoin(event);
 		}
 		
-		@EventHandler(priority = EventPriority.LOW)
+		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerJoin(PlayerJoinEvent event) {
 
 			/**
@@ -512,16 +512,15 @@ public class BukkitPermissions {
 			setPlayer_join(false);
 		}
 
-		@EventHandler(priority = EventPriority.LOW)
+		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerChangeWorld(PlayerChangedWorldEvent event) { // has changed worlds
 
 			Player player = event.getPlayer();
 			
-			updatePermissions(player, player.getWorld().getName());
-			
 			// force GM to create the player if they are not already listed.
 			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
-			
+						
+			updatePermissions(player, player.getWorld().getName());
 		}
 
 		/*
