@@ -178,6 +178,16 @@ public class WorldDataHolder {
 			
 			GroupManager.logger.fine("User record found for UUID: " + uUID + ":" + currentName);
 			user.setLastName(currentName);
+			/*
+			 * Check for a non UUID name match as
+			 * its possible some plugin (worldedit)
+			 * performed a command permission lookup
+			 * by name, before we got to see a login
+			 * event (to grab a UUID). This would
+			 * force create a user .
+			 */
+			if (getUsers().containsKey(currentName.toLowerCase())) getUsers().remove(currentName.toLowerCase());
+			
 			return user;
 			
 		}
