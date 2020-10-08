@@ -1,4 +1,4 @@
-﻿# These groups only contain permission nodes.
+# These groups only contain permission nodes.
 #
 # **** You can NOT add anything other than permission nodes ****
 # **** This is NOT where you set up the groups which you give to users! ****
@@ -51,48 +51,70 @@ groups:
 
   g:bukkit_moderator:
     permissions:
-    - bukkit.command.ban
-    - bukkit.command.ban.ip
-    - bukkit.command.ban.player
+    - minecraft.command.ban
+    - minecraft.command.ban.ip
+    - minecraft.command.ban.player
     - minecraft.command.gamemode
     - minecraft.command.kick
-    - bukkit.command.unban
-    - bukkit.command.unban.ip
-    - bukkit.command.unban.player
+    - minecraft.command.list
+    - minecraft.command.pardon
+    - minecraft.command.pardon-ip
+    - minecraft.command.say
 
   g:bukkit_admin:
     permissions:
-    - bukkit.broadcast
-    - bukkit.broadcast.admin
+    - minecraft.command.attribute
+    - minecraft.command.advancement
+    - minecraft.command.clear
+    - minecraft.command.clone
+    - minecraft.command.data
+    - minecraft.command.debug
+    - minecraft.command.difficulty
+    - minecraft.command.enchant
+    - minecraft.command.execute
+    - minecraft.command.fill
+    - minecraft.command.gamerule
     - minecraft.command.give
-    - bukkit.command.help
     - minecraft.command.kill
-    - minecraft.command.list
+    - minecraft.command.locate
     - minecraft.command.me
     - -minecraft.command.op
     - -minecraft.command.op.give
     - -minecraft.command.op.take
+    - minecraft.command.particle
+    - minecraft.command.playsound
+    - minecraft.command.recipe
+    - minecraft.command.setblock
+    - minecraft.command.setworldspawn
+    - minecraft.command.scoreboard
+    - minecraft.command.summon
+    - minecraft.command.spawnpoint
+    - minecraft.command.spreadplayers
+    - minecraft.command.stop
+    - minecraft.command.teleport
+    - minecraft.command.time
+    - minecraft.command.weather
+    - minecraft.command.whitelist
+    - minecraft.command.whitelist.add
+    - minecraft.command.whitelist.disable
+    - minecraft.command.whitelist.enable
+    - minecraft.command.whitelist.list
+    - minecraft.command.whitelist.reload
+    - minecraft.command.whitelist.remove
+    - minecraft.command.worldborder
+    #xp doesn't seem to work
+    - minecraft.command.xp
+    - bukkit.broadcast
+    - bukkit.broadcast.admin
+    - bukkit.command.help
     - bukkit.command.plugins
     - bukkit.command.reload
     - bukkit.command.save
     - bukkit.command.save.disable
     - bukkit.command.save.enable
     - bukkit.command.save.perform
-    - minecraft.command.say
-    - minecraft.command.stop
-    - minecraft.command.teleport
     - bukkit.command.tell
-    - bukkit.command.time
-    - bukkit.command.time.add
-    - bukkit.command.time.set
     - bukkit.command.version
-    - bukkit.command.whitelist
-    - bukkit.command.whitelist.add
-    - bukkit.command.whitelist.disable
-    - bukkit.command.whitelist.enable
-    - bukkit.command.whitelist.list
-    - bukkit.command.whitelist.reload
-    - bukkit.command.whitelist.remove
 
 # Permission nodes for EssentialsX
 # by md678685 
@@ -330,3 +352,4 @@ groups:
     - sv.use.2
     - sv.see.2
     - sv.notoggle
+
