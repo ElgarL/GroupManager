@@ -72,6 +72,7 @@ import org.anjocaido.groupmanager.commands.TempAdd;
 import org.anjocaido.groupmanager.commands.TempDel;
 import org.anjocaido.groupmanager.commands.TempDelAll;
 import org.anjocaido.groupmanager.commands.TempList;
+import org.anjocaido.groupmanager.commands.ManVer;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
@@ -354,6 +355,7 @@ public class GroupManager extends JavaPlugin {
 		getCommand("tempdel").setExecutor(new TempDel()); //$NON-NLS-1$
 		getCommand("tempdelall").setExecutor(new TempDelAll()); //$NON-NLS-1$
 		getCommand("templist").setExecutor(new TempList()); //$NON-NLS-1$
+		getCommand("manver").setExecutor(new ManVer()); //$NON-NLS-1$
 
 	}
 

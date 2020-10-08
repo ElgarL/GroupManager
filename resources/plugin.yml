@@ -63,6 +63,7 @@ permissions:
             groupmanager.manselect: true
             groupmanager.manclear: true
             groupmanager.mancheckw: true
+            groupmanager.manver: true
 
 commands:
   manuadd:
@@ -234,3 +235,7 @@ commands:
     description: Obtains the path to each file a world is storing its data in (users/groups).
     usage: /<command> <world>
     permission: groupmanager.mancheckw
+  manver:
+    description: Displays the version
+    usage: /<command>
+    permission: groupmanager.manver
