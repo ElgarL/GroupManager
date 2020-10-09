@@ -52,8 +52,7 @@ groups:
   g:bukkit_moderator:
     permissions:
     - minecraft.command.ban
-    - minecraft.command.ban.ip
-    - minecraft.command.ban.player
+    - minecraft.command.ban-ip
     - minecraft.command.gamemode
     - minecraft.command.kick
     - minecraft.command.list
@@ -79,8 +78,6 @@ groups:
     - minecraft.command.locate
     - minecraft.command.me
     - -minecraft.command.op
-    - -minecraft.command.op.give
-    - -minecraft.command.op.take
     - minecraft.command.particle
     - minecraft.command.playsound
     - minecraft.command.recipe
@@ -95,25 +92,17 @@ groups:
     - minecraft.command.time
     - minecraft.command.weather
     - minecraft.command.whitelist
-    - minecraft.command.whitelist.add
-    - minecraft.command.whitelist.disable
-    - minecraft.command.whitelist.enable
-    - minecraft.command.whitelist.list
-    - minecraft.command.whitelist.reload
-    - minecraft.command.whitelist.remove
     - minecraft.command.worldborder
-    #xp doesn't seem to work
     - minecraft.command.xp
     - bukkit.broadcast
     - bukkit.broadcast.admin
     - bukkit.command.help
     - bukkit.command.plugins
     - bukkit.command.reload
-    - bukkit.command.save
-    - bukkit.command.save.disable
-    - bukkit.command.save.enable
-    - bukkit.command.save.perform
-    - bukkit.command.tell
+    - minecraft.command.save-all
+    - minecraft.command.save-on
+    - minecraft.command.save-off
+    - minecraft.command.tell
     - bukkit.command.version
 
 # Permission nodes for EssentialsX
