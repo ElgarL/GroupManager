@@ -281,5 +281,9 @@ v2.8:
     - Correct update link when outdated.
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
 v2.9:
-    - Add Czech translation (Courtesy of @JetelHudzum).
-    - Fix a really rare error of no world detected when a player logged in due to event ordering.
+    - Bump Spigot-API from 1.16.2 to 1.16.3. (@l1ttleO). 
+    - Fix default GlobalGroups.yml. (@ElgarL, @super-cokil, @l1ttleO) 
+    - Add Czech translation. (@JetelHudzum)
+    - Fix a really rare error of no world detected when a player logged in due to event ordering. (@ElgarL)
+    - Fix GM creating duplicate user entries due to plugins requesting lookups before GM can process PlayerLoginEvent. (@ElgarL)
+    - Bump junit from 4.11 to 4.13.1 (@dependabot)
