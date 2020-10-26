@@ -49,10 +49,10 @@ permissions:
             groupmanager.manglistv: true
             groupmanager.mangckeckv: true
             groupmanager.manwhois: true
-            groupmanager.tempadd: true
-            groupmanager.tempdel: true
-            groupmanager.templist: true
-            groupmanager.tempdelall: true
+            groupmanager.manuaddtemp: true
+            groupmanager.manudeltemp: true
+            groupmanager.manulisttemp: true
+            groupmanager.manudelalltemp: true
             groupmanager.mansave: true
             groupmanager.manload: true
             groupmanager.manpromote: true
@@ -178,22 +178,26 @@ commands:
     description: Lists groups and other data of a user.
     usage: /<command> <player>
     permission: groupmanager.manwhois
-  tempadd:
+  manuaddtemp:
     description: Creates a temporary permissions copy for a user.
     usage: /<command> <player>
     permission: groupmanager.tempadd
-  tempdel:
+    aliases: tempadd
+  manudeltemp:
     description: Removes the temporary permissions copy for a user.
     usage: /<command> <player>
     permission: groupmanager.tempdel
-  templist:
+    aliases: tempdel
+  manulisttemp:
     description: Lists users in overload-permissions mode made by command /tempadd.
     usage: /<command>
     permission: groupmanager.templist
-  tempdelall:
+    aliases: templist
+  manudelalltemp:
     description: Removes all overrides made by command /tempadd.
     usage: /<command>
     permission: groupmanager.tempdelall
+    aliases: tempdelall
   mansave:
     description: Saves all permissions from server to file.
     usage: /<command> [force]

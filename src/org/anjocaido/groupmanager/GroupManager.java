@@ -68,10 +68,10 @@ import org.anjocaido.groupmanager.commands.ManUListP;
 import org.anjocaido.groupmanager.commands.ManUListV;
 import org.anjocaido.groupmanager.commands.ManWhois;
 import org.anjocaido.groupmanager.commands.ManWorld;
-import org.anjocaido.groupmanager.commands.TempAdd;
-import org.anjocaido.groupmanager.commands.TempDel;
-import org.anjocaido.groupmanager.commands.TempDelAll;
-import org.anjocaido.groupmanager.commands.TempList;
+import org.anjocaido.groupmanager.commands.ManUAddTemp;
+import org.anjocaido.groupmanager.commands.ManUDelTemp;
+import org.anjocaido.groupmanager.commands.ManUDelAllTemp;
+import org.anjocaido.groupmanager.commands.ManUListTemp;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
@@ -343,17 +343,17 @@ public class GroupManager extends JavaPlugin {
 		getCommand("manucheckv").setExecutor(new ManUCheckV()); //$NON-NLS-1$
 		getCommand("manuclearp").setExecutor(new ManUClearP()); //$NON-NLS-1$
 		getCommand("manudel").setExecutor(new ManUDel()); //$NON-NLS-1$
-		getCommand("manudelsub").setExecutor(new ManUDelSub()); //$NON-NLS-1$
+		getCommand("manutempadddelsub").setExecutor(new ManUDelSub()); //$NON-NLS-1$
 		getCommand("manudelp").setExecutor(new ManUDelP()); //$NON-NLS-1$
 		getCommand("manudelv").setExecutor(new ManUDelV()); //$NON-NLS-1$
 		getCommand("manulistp").setExecutor(new ManUListP()); //$NON-NLS-1$
 		getCommand("manulistv").setExecutor(new ManUListV()); //$NON-NLS-1$
 		getCommand("manwhois").setExecutor(new ManWhois()); //$NON-NLS-1$
 		getCommand("manworld").setExecutor(new ManWorld()); //$NON-NLS-1$
-		getCommand("tempadd").setExecutor(new TempAdd()); //$NON-NLS-1$
-		getCommand("tempdel").setExecutor(new TempDel()); //$NON-NLS-1$
-		getCommand("tempdelall").setExecutor(new TempDelAll()); //$NON-NLS-1$
-		getCommand("templist").setExecutor(new TempList()); //$NON-NLS-1$
+		getCommand("manuaddtemp").setExecutor(new ManUAddTemp()); //$NON-NLS-1$
+		getCommand("manudeltemp").setExecutor(new ManUDelTemp()); //$NON-NLS-1$
+		getCommand("manudelalltemp").setExecutor(new ManUDelAllTemp()); //$NON-NLS-1$
+		getCommand("manulisttemp").setExecutor(new ManUListTemp()); //$NON-NLS-1$
 
 	}
 
