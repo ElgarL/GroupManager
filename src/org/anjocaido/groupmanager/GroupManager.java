@@ -17,61 +17,9 @@
  */
 package org.anjocaido.groupmanager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
 import org.anjocaido.groupmanager.Tasks.UpdateTask;
-import org.anjocaido.groupmanager.commands.ManGList;
-import org.anjocaido.groupmanager.commands.ManCheckW;
-import org.anjocaido.groupmanager.commands.ManClear;
-import org.anjocaido.groupmanager.commands.ManDemote;
-import org.anjocaido.groupmanager.commands.ManGAdd;
-import org.anjocaido.groupmanager.commands.ManGAddI;
-import org.anjocaido.groupmanager.commands.ManGAddP;
-import org.anjocaido.groupmanager.commands.ManGAddV;
-import org.anjocaido.groupmanager.commands.ManGCheckP;
-import org.anjocaido.groupmanager.commands.ManGCheckV;
-import org.anjocaido.groupmanager.commands.ManGClearP;
-import org.anjocaido.groupmanager.commands.ManGDel;
-import org.anjocaido.groupmanager.commands.ManGDelI;
-import org.anjocaido.groupmanager.commands.ManGDelP;
-import org.anjocaido.groupmanager.commands.ManGDelV;
-import org.anjocaido.groupmanager.commands.ManGListP;
-import org.anjocaido.groupmanager.commands.ManGListV;
-import org.anjocaido.groupmanager.commands.ManLoad;
-import org.anjocaido.groupmanager.commands.ManPromote;
-import org.anjocaido.groupmanager.commands.ManSave;
-import org.anjocaido.groupmanager.commands.ManSelect;
-import org.anjocaido.groupmanager.commands.ManToggleSave;
-import org.anjocaido.groupmanager.commands.ManToggleValidate;
-import org.anjocaido.groupmanager.commands.ManUAdd;
-import org.anjocaido.groupmanager.commands.ManUAddP;
-import org.anjocaido.groupmanager.commands.ManUAddSub;
-import org.anjocaido.groupmanager.commands.ManUAddV;
-import org.anjocaido.groupmanager.commands.ManUCheckP;
-import org.anjocaido.groupmanager.commands.ManUCheckV;
-import org.anjocaido.groupmanager.commands.ManUClearP;
-import org.anjocaido.groupmanager.commands.ManUDel;
-import org.anjocaido.groupmanager.commands.ManUDelP;
-import org.anjocaido.groupmanager.commands.ManUDelSub;
-import org.anjocaido.groupmanager.commands.ManUDelV;
-import org.anjocaido.groupmanager.commands.ManUListP;
-import org.anjocaido.groupmanager.commands.ManUListV;
-import org.anjocaido.groupmanager.commands.ManWhois;
-import org.anjocaido.groupmanager.commands.ManWorld;
-import org.anjocaido.groupmanager.commands.TempAdd;
-import org.anjocaido.groupmanager.commands.TempDel;
-import org.anjocaido.groupmanager.commands.TempDelAll;
-import org.anjocaido.groupmanager.commands.TempList;
+import org.anjocaido.groupmanager.commands.*;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
@@ -89,6 +37,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -350,10 +309,10 @@ public class GroupManager extends JavaPlugin {
 		getCommand("manulistv").setExecutor(new ManUListV()); //$NON-NLS-1$
 		getCommand("manwhois").setExecutor(new ManWhois()); //$NON-NLS-1$
 		getCommand("manworld").setExecutor(new ManWorld()); //$NON-NLS-1$
-		getCommand("tempadd").setExecutor(new TempAdd()); //$NON-NLS-1$
-		getCommand("tempdel").setExecutor(new TempDel()); //$NON-NLS-1$
-		getCommand("tempdelall").setExecutor(new TempDelAll()); //$NON-NLS-1$
-		getCommand("templist").setExecutor(new TempList()); //$NON-NLS-1$
+		getCommand("manuaddtemp").setExecutor(new ManUAddTemp()); //$NON-NLS-1$
+		getCommand("manudeltemp").setExecutor(new ManUDelTemp()); //$NON-NLS-1$
+		getCommand("manudelalltemp").setExecutor(new ManUDelAllTemp()); //$NON-NLS-1$
+		getCommand("manulisttemp").setExecutor(new ManUListTemp()); //$NON-NLS-1$
 
 	}
 
