@@ -275,25 +275,25 @@ Obtain the paths to each file a world is storing it's data in (users/groups).
 syntax: <command> <world>
 permission: groupmanager.mancheckw
 ```
-- /manuaddtemp
+- /manuaddtemp  
 Add a user in the overloaded users list (changes made to them will not be saved).
 ```
 syntax: <command> <user>
 permission: groupmanager.tempadd
 ```
-- /manudeltemp
+- /manudeltemp  
 Remove a user from the overloaded users list.
 ```
 syntax: <command> <user>
 permission: groupmanager.tempdel
 ```
-- /manulisttemp
+- /manulisttemp  
 List overloaded users.
 ```
 syntax: <command>
 permission: groupmanager.templist
 ```
-- /manudelalltemp
+- /manudelalltemp  
 Remove all users from the overloaded users list.
 ```
 syntax: <command>
