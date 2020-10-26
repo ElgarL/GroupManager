@@ -17,16 +17,19 @@
  */
 package org.anjocaido.groupmanager.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
+import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author ElgarL
@@ -56,7 +59,29 @@ public class ManUAddSub extends BaseCommand {
 			return false;
 		}
 
-		if (match != null) {
+		for (int i = 1; i < args.length; i++)
+		{
+			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			String[] split = null;
+			Instant timed = null;
+			Long period = null;
+			/*
+			 * check for a timed subgroup
+			 */
+			if (auxString.contains("|")) { //$NON-NLS-1$
+				split = auxString.split("\\|"); //$NON-NLS-1$
+
+				period = Tasks.parsePeriod(split[1]);
+				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				auxString = split[0];
+
+				if (period == 0) {
+					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_INVALID_DURATION"), auxString) + Messages.getString("MANUADDSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
+					continue;
+				}
+			}
+
+			if (match != null) {
 			auxUser = dataHolder.getUser(match.toString());
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
@@ -84,7 +109,17 @@ public class ManUAddSub extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 		else
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
-		
+
+			if (period != null) {
+				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxString, auxGroup.getName(), period)); //$NON-NLS-1$
+
+			} else {
+				auxGroup.addPermission(auxString);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxString, auxGroup.getName())); //$NON-NLS-1$
+			}
+		}
+
 		return true;
 	}
 	
