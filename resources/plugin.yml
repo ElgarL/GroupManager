@@ -49,10 +49,10 @@ permissions:
             groupmanager.manglistv: true
             groupmanager.mangckeckv: true
             groupmanager.manwhois: true
-            groupmanager.manuaddtemp: true
-            groupmanager.manudeltemp: true
-            groupmanager.manulisttemp: true
-            groupmanager.manudelalltemp: true
+            groupmanager.tempadd: true
+            groupmanager.tempdel: true
+            groupmanager.templist: true
+            groupmanager.tempdelall: true
             groupmanager.mansave: true
             groupmanager.manload: true
             groupmanager.manpromote: true
