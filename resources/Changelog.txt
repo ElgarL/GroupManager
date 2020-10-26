@@ -287,3 +287,4 @@ v2.9:
     - Fix a really rare error of no world detected when a player logged in due to event ordering. (@ElgarL)
     - Fix GM creating duplicate user entries due to plugins requesting lookups before GM can process PlayerLoginEvent. (@ElgarL)
     - Bump junit from 4.11 to 4.13.1 (@dependabot)
+    - Fix syntax for "/temp..." commands (@l1ttleO)
