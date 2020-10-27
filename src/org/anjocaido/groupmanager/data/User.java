@@ -76,7 +76,7 @@ public class User extends DataUnit implements Cloneable {
 		}
 		// Clone timed subgroups.
 		clone.timedSubGroups.putAll(getTimedSubGroups());
-		
+
 		// clone.variables = this.variables.clone();
 		// clone.flagAsChanged();
 		return clone;
@@ -117,7 +117,7 @@ public class User extends DataUnit implements Cloneable {
 
 		// Clone timed subgroups.
 		clone.timedSubGroups.putAll(getTimedSubGroups());
-		
+
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
 		return clone;
@@ -366,7 +366,7 @@ public class User extends DataUnit implements Cloneable {
 		} catch (Exception e) {}
 		return false;
 	}
-	
+
 	/**
 	 * Remove a timed sub-group.
 	 * 
@@ -390,7 +390,7 @@ public class User extends DataUnit implements Cloneable {
 	public ArrayList<Group> subGroupListCopy() {
 
 		ArrayList<Group> groupList = new ArrayList<Group>();
-		
+
 		synchronized(subGroups) {
 
 			subGroups.forEach(name -> {
@@ -402,7 +402,7 @@ public class User extends DataUnit implements Cloneable {
 					groupList.add(g);
 				}
 			});
-			
+
 			timedSubGroups.keySet().forEach(name -> {
 				Group g = getDataSource().getGroup(name);
 
@@ -441,7 +441,7 @@ public class User extends DataUnit implements Cloneable {
 			return val;
 		}
 	}
-	
+
 	/**
 	 * Compiles a list of Sub-Group Names attached to this user.
 	 * Excludes timed Groups.
@@ -456,7 +456,7 @@ public class User extends DataUnit implements Cloneable {
 			return val;
 		}
 	}
-	
+
 	/**
 	 * Compiles a list of Sub-Group Names attached to this user.
 	 * Includes timed Groups.
