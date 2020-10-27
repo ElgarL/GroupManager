@@ -43,8 +43,8 @@ public class User extends DataUnit implements Cloneable {
 	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<String>());
 	private Map<String, Long> timedSubGroups = Collections.synchronizedSortedMap(Collections.<String, Long>emptySortedMap());
 	/**
-	 * This one holds the fields in INFO node. like prefix = 'c' or build =
-	 * false
+	 * This one holds the fields in INFO node,
+	 * like prefix = 'c' or build = false.
 	 */
 	private UserVariables variables = new UserVariables(this);
 
@@ -197,6 +197,8 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
+	 * Silently set teh Users Group.
+	 * 
 	 * @param group the group to set
 	 */
 	public void setGroup(Group group) {
@@ -205,6 +207,8 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
+	 * Sets the Group this User belongs to.
+	 * 
 	 * @param group       the group to set
 	 * @param updatePerms if we are to trigger a superperms update.
 	 */
@@ -236,6 +240,12 @@ public class User extends DataUnit implements Cloneable {
 		}
 	}
 
+	/**
+	 * Adds a static sub-group.
+	 * 
+	 * @param subGroup	the group to add.
+	 * @return			true if the group was added.
+	 */
 	public boolean addSubGroup(Group subGroup) {
 
 		// Don't allow adding a subgroup if it's already set as the primary.
@@ -265,6 +275,12 @@ public class User extends DataUnit implements Cloneable {
 		//subGroups.add(subGroup.getName());
 	}
 
+	/**
+	 * Adds a timed sub-group.
+	 * 
+	 * @param subGroup	the group to add.
+	 * @return			true if the group was added.
+	 */
 	public boolean addTimedSubGroup(Group subGroup, long expires) {
 
 		// Don't allow adding a subgroup if it's already set as the primary.
@@ -295,11 +311,22 @@ public class User extends DataUnit implements Cloneable {
 		return true;
 	}
 
+	/**
+	 * Total sub-groups, times and static.
+	 * 
+	 * @return	amount of sub-groups on this user.
+	 */
 	public int subGroupsSize () {
 
 		return subGroups.size() + timedSubGroups.size();
 	}
 
+	/**
+	 * Does this User have ANY sub-groups
+	 * static or timed.
+	 * 
+	 * @return	true if any sub-groups are present.
+	 */
 	public boolean isSubGroupsEmpty () {
 
 		return subGroups.isEmpty() && timedSubGroups.isEmpty();
@@ -316,6 +343,12 @@ public class User extends DataUnit implements Cloneable {
 		return subGroups.contains(subGroup.getName());
 	}
 
+	/**
+	 * Remove a static sub-group.
+	 * 
+	 * @param subGroup	the Group to remove.
+	 * @return			true if a group was removed.
+	 */
 	public boolean removeSubGroup (Group subGroup){
 		synchronized(timedSubGroups) {
 			if (timedSubGroups.containsKey(subGroup.getName()))
@@ -334,6 +367,12 @@ public class User extends DataUnit implements Cloneable {
 		return false;
 	}
 	
+	/**
+	 * Remove a timed sub-group.
+	 * 
+	 * @param subGroup	the Group to remove.
+	 * @return			true if a group was removed.
+	 */
 	private boolean removeTimedSubGroup(Group subGroup) {
 
 		synchronized(timedSubGroups) {
@@ -377,11 +416,21 @@ public class User extends DataUnit implements Cloneable {
 		return groupList;
 	}
 
+	/**
+	 * Returns a map (copy) of any timed subGroups.
+	 * 
+	 * @return	Map of times sub-groups.
+	 */
 	public Map<String, Long> getTimedSubGroups() {
 
 		return new TreeMap<String, Long>(timedSubGroups);
 	}
 
+	/**
+	 * Fetch a SubGroup list formatted for saving.
+	 * 
+	 * @return	List of sub-group names.
+	 */
 	public List<String> getSaveSubGroupsList() {
 
 		synchronized(subGroups) {
