@@ -51,7 +51,7 @@ public class ManUAddSub extends BaseCommand {
 				return true;
 		}
 		// Validating arguments
-		if (args.length >= 2) {
+		if (args.length < 2) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
