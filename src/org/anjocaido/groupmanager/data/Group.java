@@ -17,26 +17,21 @@
  */
 package org.anjocaido.groupmanager.data;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
-import org.anjocaido.groupmanager.events.GMGroupEvent.Action;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
+import org.anjocaido.groupmanager.events.GMGroupEvent.Action;
+
 /**
  * 
  * @author gabrielcouto/ElgarL
  */
-public class Group extends DataUnit implements Cloneable, Comparable<Group> {
-
-	@Override
-	public int compareTo(Group o) {
-
-		return this.getName().compareTo( o.getName() );
-	}
+public class Group extends DataUnit implements Cloneable {
 
 	/**
 	 * The group it inherits DIRECTLY!
@@ -68,7 +63,7 @@ public class Group extends DataUnit implements Cloneable, Comparable<Group> {
 
 		super(name);
 	}
-	
+
 	/**
 	 * @return the name
 	 */
