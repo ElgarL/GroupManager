@@ -17,7 +17,15 @@
  */
 package org.anjocaido.groupmanager.data;
 
-//import com.sun.org.apache.bcel.internal.generic.AALOAD;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
@@ -25,9 +33,6 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.entity.Player;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * 
@@ -52,10 +57,7 @@ public class User extends DataUnit implements Cloneable {
 		super(source, name);
 		this.group = source.getDefaultGroup().getName();
 	}
-	public Map<Group, Long> getTimedSubGroups() {
 
-		return new TreeMap<>((Comparator<? super Group>) timedSubGroups);
-	}
 	/**
 	 * @return User clone
 	 */
@@ -119,9 +121,9 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		// Clone timed subgroups.
-        for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
-            clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
-        }
+		for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
+		}
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
 		return clone;
@@ -150,9 +152,9 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		// Clone timed subgroups.
-        for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
-            clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
-        }
+		for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
+		}
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
@@ -302,70 +304,82 @@ public class User extends DataUnit implements Cloneable {
 		return true;
 	}
 
-		public int subGroupsSize () {
+	public int subGroupsSize () {
 
-			return subGroups.size();
+		return subGroups.size() + timedSubGroups.size();
+	}
+
+	public boolean isSubGroupsEmpty () {
+
+		return subGroups.isEmpty() && timedSubGroups.isEmpty();
+	}
+
+	/**
+	 * Does the user have this as a SubGroup (not timed).
+	 * 
+	 * @param subGroup	the Group to test.
+	 * @return			true if group is present.
+	 */
+	public boolean containsSubGroup (Group subGroup){
+
+		return subGroups.contains(subGroup.getName());
+	}
+
+	public boolean removeSubGroup (Group subGroup){
+		synchronized(timedSubGroups) {
+			if (timedSubGroups.containsKey(subGroup))
+				return removeTimedSubGroup(subGroup);
 		}
+		try {
+			if (subGroups.remove(subGroup.getName())) {
+				flagAsChanged();
+				if (GroupManager.isLoaded())
+					if (!GroupManager.getBukkitPermissions().isPlayer_join())
+						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+				return true;
+			}
+		} catch (Exception e) {}
+		return false;
+	}
+	
+	private boolean removeTimedSubGroup(Group subGroup) {
 
-		public boolean isSubGroupsEmpty () {
-
-			return subGroups.isEmpty();
+		synchronized(timedSubGroups) {
+			flagAsChanged();
+			Map<Group, Long> clone = new HashMap<>(timedSubGroups);
+			boolean ret = clone.remove(subGroup) != null;
+			timedSubGroups = Collections.unmodifiableMap(clone);
+			return ret;
 		}
+	}
 
-		public boolean containsSubGroup (Group subGroup){
+	/**
+	 * Returns a new array of the Sub-Groups attached to this user.
+	 *
+	 * @return List of sub-groups.
+	 */
+	public ArrayList<Group> subGroupListCopy() {
 
-			return subGroups.contains(subGroup.getName());
-		}
-
-		public boolean removeSubGroup (Group subGroup){
-            synchronized(timedSubGroups) {
-                if (timedSubGroups.containsKey(subGroup))
-                    return removeTimedSubGroup(subGroup);
-            }
-			try {
-				if (subGroups.remove(subGroup.getName())) {
-					flagAsChanged();
-					if (GroupManager.isLoaded())
-						if (!GroupManager.getBukkitPermissions().isPlayer_join())
-							GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-					GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-					return true;
+		ArrayList<Group> val = new ArrayList<Group>();
+		synchronized(subGroups) {
+			for (String gstr : subGroups) {
+				Group g = getDataSource().getGroup(gstr);
+				if (g == null) {
+					removeSubGroup(g);
+					continue;
 				}
-			} catch (Exception e) {}
-			return false;
+				val.add(g);
+			}
+			val.addAll(timedSubGroups.keySet());
 		}
-    private boolean removeTimedSubGroup(Group subGroup) {
+		return val;
+	}
 
-        synchronized(timedSubGroups) {
-            flagAsChanged();
-            Map<Group, Long> clone = new HashMap<>(timedSubGroups);
-            boolean ret = clone.remove(subGroup) != null;
-            timedSubGroups = Collections.unmodifiableMap(clone);
-            return ret;
-        }
-    }
+	public Map<Group, Long> getTimedSubGroups() {
 
-		/**
-		 * Returns a new array of the Sub-Groups attached to this user.
-		 *
-		 * @return List of sub-groups.
-		 */
-        public ArrayList<Group> subGroupListCopy() {
-
-            ArrayList<Group> val = new ArrayList<Group>();
-            synchronized(subGroups) {
-                for (String gstr : subGroups) {
-                    Group g = getDataSource().getGroup(gstr);
-                    if (g == null) {
-                        removeSubGroup(g);
-                        continue;
-                    }
-                    val.add(g);
-                }
-                val.addAll(timedSubGroups.keySet());
-            }
-            return val;
-        }
+		return new TreeMap<Group, Long>(timedSubGroups);
+	}
 
 	public List<String> getSaveSubGroupsList() {
 
@@ -377,74 +391,74 @@ public class User extends DataUnit implements Cloneable {
 			return val;
 		}
 	}
-		/**
-		 * Compiles a list of Sub-Group Names attached to this user.
-		 *
-		 * @return List of sub-group names.
-		 */
-        public ArrayList<String> subGroupListStringCopy() {
+	/**
+	 * Compiles a list of Sub-Group Names attached to this user.
+	 *
+	 * @return List of sub-group names.
+	 */
+	public ArrayList<String> subGroupListStringCopy() {
 
-            synchronized(subGroups) {
-                ArrayList<String> val = new ArrayList<>(subGroups);
+		synchronized(subGroups) {
+			ArrayList<String> val = new ArrayList<>(subGroups);
 
-                timedSubGroups.forEach((group, timer) -> val.add(group.getName()));
+			timedSubGroups.forEach((group, timer) -> val.add(group.getName()));
 
-                return val;
-            }
-        }
-
-		/**
-		 * @return the variables
-		 */
-		public UserVariables getVariables () {
-
-			return variables;
+			return val;
 		}
+	}
 
-		/**
-		 *
-		 * @param varList
-		 */
-		public void setVariables (Map < String, Object > varList){
+	/**
+	 * @return the variables
+	 */
+	public UserVariables getVariables () {
 
-			//UserVariables temp = new UserVariables(this, varList);
-			variables.clearVars();
-			for (String key : varList.keySet()) {
-				variables.addVar(key, varList.get(key));
-			}
-			flagAsChanged();
-			if (GroupManager.isLoaded()) {
-				//if (!GroupManager.BukkitPermissions.isPlayer_join())
-				//	GroupManager.BukkitPermissions.updatePlayer(this.getName());
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_INFO_CHANGED);
-			}
+		return variables;
+	}
+
+	/**
+	 *
+	 * @param varList
+	 */
+	public void setVariables (Map < String, Object > varList){
+
+		//UserVariables temp = new UserVariables(this, varList);
+		variables.clearVars();
+		for (String key : varList.keySet()) {
+			variables.addVar(key, varList.get(key));
 		}
-
-		@Deprecated
-		public User updatePlayer (Player player){
-
-			return this;
+		flagAsChanged();
+		if (GroupManager.isLoaded()) {
+			//if (!GroupManager.BukkitPermissions.isPlayer_join())
+			//	GroupManager.BukkitPermissions.updatePlayer(this.getName());
+			GroupManager.getGMEventHandler().callEvent(this, Action.USER_INFO_CHANGED);
 		}
+	}
 
-		/**
-		 * Returns a Player object (if online), or null.
-		 *
-		 * @return Player object or null.
-		 */
-		public Player getBukkitPlayer () {
+	@Deprecated
+	public User updatePlayer (Player player){
 
-			return BukkitWrapper.getInstance().getPlayer(getLastName());
-		}
+		return this;
+	}
 
-		/**
-		 * Is this player currently Online.
-		 *
-		 * @return
-		 */
-		public boolean isOnline () {
+	/**
+	 * Returns a Player object (if online), or null.
+	 *
+	 * @return Player object or null.
+	 */
+	public Player getBukkitPlayer () {
 
-			return getBukkitPlayer() != null;
-		}
+		return BukkitWrapper.getInstance().getPlayer(getLastName());
+	}
+
+	/**
+	 * Is this player currently Online.
+	 *
+	 * @return
+	 */
+	public boolean isOnline () {
+
+		return getBukkitPlayer() != null;
+	}
 	/**
 	 * Remove any expired subGroups.
 	 *
