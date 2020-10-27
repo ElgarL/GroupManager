@@ -291,7 +291,7 @@ public class User extends DataUnit implements Cloneable {
 			Map<Group, Long> clone = new HashMap<Group, Long>(timedSubGroups);
 			clone.put(subGroup, expires);
 			timedSubGroups = Collections.unmodifiableMap(clone);
-			GroupManager.logger.info(String.format("Timed: %s - expires: %o", subGroup, expires));
+			GroupManager.logger.info(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
 		}
 		flagAsChanged();
 		if (GroupManager.isLoaded()) {
@@ -367,6 +367,16 @@ public class User extends DataUnit implements Cloneable {
             return val;
         }
 
+	public List<String> getSaveSubGroupsList() {
+
+		synchronized(subGroups) {
+			ArrayList<String> val = new ArrayList<>(subGroups);
+
+			timedSubGroups.forEach((group, timer) -> val.add(group.getName() + "|" + timer));
+
+			return val;
+		}
+	}
 		/**
 		 * Compiles a list of Sub-Group Names attached to this user.
 		 *
@@ -452,7 +462,7 @@ public class User extends DataUnit implements Cloneable {
 					if (clone.remove(group.getKey()) != null) {
 						//changed = true;
 						expired = true;
-						GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), group.getKey()));
+						GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), group.getKey().getName()));
 					}
 				}
 			}
