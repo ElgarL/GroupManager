@@ -51,7 +51,7 @@ public class ManUAddSub extends BaseCommand {
 				return true;
 		}
 		// Validating arguments
-		if (args.length != 2) {
+		if (args.length >= 2) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
@@ -167,7 +167,7 @@ public class ManUAddSub extends BaseCommand {
 		/*
 		 * Populate the second argument of TabComplete with a list of group names.
 		 */
-		if (args.length == 2) {
+		if (args.length >= 2) {
 
 			result = tabCompleteGroups(args[1]);
 		}
