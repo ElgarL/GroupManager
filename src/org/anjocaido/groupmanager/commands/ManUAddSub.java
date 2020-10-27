@@ -59,6 +59,18 @@ public class ManUAddSub extends BaseCommand {
 			return false;
 		}
 
+		if (match != null) {
+			auxUser = dataHolder.getUser(match.toString());
+		} else {
+			auxUser = dataHolder.getUser(args[0]);
+		}
+
+		// Validating permission
+		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
+			return true;
+		}
+
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -79,54 +91,66 @@ public class ManUAddSub extends BaseCommand {
 					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_INVALID_DURATION"), auxString) + Messages.getString("MANUADDSUB_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 					continue;
 				}
-			}
 
-			if (match != null) {
-			auxUser = dataHolder.getUser(match.toString());
-		} else {
-			auxUser = dataHolder.getUser(args[0]);
-		}
-		auxGroup = dataHolder.getGroup(args[1]);
-		if (auxGroup == null) {
-			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[1])); //$NON-NLS-1$
-			return true;
-		}
-		// Validating permission
-		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
-			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
-			return true;
-		}
-		if (!isConsole && !isOpOverride && (permissionHandler.hasGroupInInheritance(auxGroup, senderGroup.getName()))) {
-			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SUBGROUP_HIGHER_THAN_YOURS")); //$NON-NLS-1$
-			return true;
-		}
-		if (!isConsole && !isOpOverride && (!permissionHandler.inGroup(senderUser.getUUID(), auxUser.getGroupName()) || !permissionHandler.inGroup(senderUser.getUUID(), auxGroup.getName()))) {
-			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_YOU_DO_NOT_INHERIT")); //$NON-NLS-1$
-			return true;
-		}
-		// Seems OK
-		if (auxUser.addSubGroup(auxGroup))
-			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
-		else
-			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
+				auxGroup = dataHolder.getGroup(auxString);
+				if (auxGroup == null) {
+					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),auxString)); //$NON-NLS-1$
+					continue;
+				}
 
-			if (period != null) {
-				auxUser.addTimedSubGroup(auxGroup, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxUser, auxGroup.getName(), period)); //$NON-NLS-1$
+				if (!isConsole && !isOpOverride && (permissionHandler.hasGroupInInheritance(auxGroup, senderGroup.getName()))) {
+					sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SUBGROUP_HIGHER_THAN_YOURS")); //$NON-NLS-1$
+					continue;
+				}
 
+				if (!isConsole && !isOpOverride && (!permissionHandler.inGroup(senderUser.getUUID(), auxUser.getGroupName()) || !permissionHandler.inGroup(senderUser.getUUID(), auxGroup.getName()))) {
+					sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_YOU_DO_NOT_INHERIT")); //$NON-NLS-1$
+					continue;
+				}
+
+				// Seems OK
+				if (period != null) {
+					if (auxUser.addTimedSubGroup(auxGroup, timed.getEpochSecond())) {
+						sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxGroup.getName(), auxUser.getLastName(), period)); //$NON-NLS-1$
+					} else {
+						sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
+					}
+				}
 			} else {
-				auxUser.addSubGroup(auxGroup);
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxUser, auxGroup.getName())); //$NON-NLS-1$
+				/*
+				 * Normal subgroup
+				 */
+				auxGroup = dataHolder.getGroup(auxString);
+				if (auxGroup == null) {
+					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),auxString)); //$NON-NLS-1$
+					continue;
+				}
+
+				if (!isConsole && !isOpOverride && (permissionHandler.hasGroupInInheritance(auxGroup, senderGroup.getName()))) {
+					sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SUBGROUP_HIGHER_THAN_YOURS")); //$NON-NLS-1$
+					continue;
+				}
+
+				if (!isConsole && !isOpOverride && (!permissionHandler.inGroup(senderUser.getUUID(), auxUser.getGroupName()) || !permissionHandler.inGroup(senderUser.getUUID(), auxGroup.getName()))) {
+					sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_YOU_DO_NOT_INHERIT")); //$NON-NLS-1$
+					continue;
+				}
+
+				// Seems OK
+				if (auxUser.addSubGroup(auxGroup)) {
+					sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
+				} else {
+					sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
+				}
 			}
 		}
-
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
-		List<String> result = new ArrayList<String>();
+
+		List<String> result = new ArrayList<>();
 		
 		/*
 		 * Return a TabComplete for users.

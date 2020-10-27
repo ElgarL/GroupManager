@@ -30,7 +30,13 @@ import java.util.Map.Entry;
  * 
  * @author gabrielcouto/ElgarL
  */
-public class Group extends DataUnit implements Cloneable {
+public class Group extends DataUnit implements Cloneable, Comparable<Group> {
+
+	@Override
+	public int compareTo(Group o) {
+
+		return this.getName().compareTo( o.getName() );
+	}
 
 	/**
 	 * The group it inherits DIRECTLY!

@@ -23,6 +23,7 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.events.GMUserEvent.Action;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
+import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -54,9 +55,9 @@ public class User extends DataUnit implements Cloneable {
 		super(source, name);
 		this.group = source.getDefaultGroup().getName();
 	}
-	public Map<String, Long> getTimedSubGroups() {
+	public Map<Group, Long> getTimedSubGroups() {
 
-		return new TreeMap<String, Long>((Comparator<? super String>) timedSubGroups);
+		return new TreeMap<Group, Long>((Comparator<? super String>) timedSubGroups);
 	}
 	/**
 	 * @return User clone
@@ -77,6 +78,10 @@ public class User extends DataUnit implements Cloneable {
 		// Clone timed permissions.
 		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
+		}
+		// Clone timed subgroups.
+		for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
 		}
 		// clone.variables = this.variables.clone();
 		// clone.flagAsChanged();
@@ -406,5 +411,33 @@ public class User extends DataUnit implements Cloneable {
 
 			return getBukkitPlayer() != null;
 		}
+	/**
+	 * Remove any expired subGroups.
+	 *
+	 * @return true if any Groups were removed.
+	 */
+	public boolean removeExpired() {
+
+		boolean expired = false;
+
+		synchronized (timedSubGroups) {
+
+			SortedMap<Group, Long> clone = new TreeMap<Group, Long>(timedSubGroups);
+			for (Entry<Group, Long> group : timedSubGroups.entrySet()) {
+				if (Tasks.isExpired(group.getValue())) {
+					if (clone.remove(group.getKey()) != null) {
+						//changed = true;
+						expired = true;
+						GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), group.getKey()));
+					}
+				}
+			}
+
+			if (expired)
+				timedSubGroups = Collections.unmodifiableSortedMap(clone);
+		}
+
+		return expired || super.removeExpired();
 	}
+}
 
