@@ -83,7 +83,11 @@ public class ManUAddSub extends BaseCommand {
 			if (auxString.contains("|")) { //$NON-NLS-1$
 				split = auxString.split("\\|"); //$NON-NLS-1$
 
-				period = Tasks.parsePeriod(split[1]);
+				try {
+					period = Tasks.parsePeriod(split[1]);
+				} catch (Exception e) {
+					period = 0L;
+				}
 				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
 				auxString = split[0];
 
