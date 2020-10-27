@@ -35,9 +35,6 @@ import java.util.Map.Entry;
  */
 public class User extends DataUnit implements Cloneable {
 
-	/**
-	 *
-	 */
 	private String group = null;
 	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<String>());
 	private Map<Group, Long> timedSubGroups = Collections.unmodifiableSortedMap(Collections.synchronizedSortedMap(Collections.<Group, Long>emptySortedMap()));
@@ -57,7 +54,7 @@ public class User extends DataUnit implements Cloneable {
 	}
 	public Map<Group, Long> getTimedSubGroups() {
 
-		return new TreeMap<Group, Long>((Comparator<? super String>) timedSubGroups);
+		return new TreeMap<>((Comparator<? super Group>) timedSubGroups);
 	}
 	/**
 	 * @return User clone
@@ -121,6 +118,10 @@ public class User extends DataUnit implements Cloneable {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 
+		// Clone timed subgroups.
+        for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
+            clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
+        }
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
 		return clone;
@@ -147,6 +148,11 @@ public class User extends DataUnit implements Cloneable {
 		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
+
+		// Clone timed subgroups.
+        for (Entry<Group, Long> subgroup : this.getTimedSubGroups().entrySet()) {
+            clone.addTimedSubGroup(subgroup.getKey(), subgroup.getValue());
+        }
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
@@ -312,7 +318,10 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		public boolean removeSubGroup (Group subGroup){
-
+            synchronized(timedSubGroups) {
+                if (timedSubGroups.containsKey(subGroup))
+                    return removeTimedSubGroup(subGroup);
+            }
 			try {
 				if (subGroups.remove(subGroup.getName())) {
 					flagAsChanged();
@@ -322,42 +331,57 @@ public class User extends DataUnit implements Cloneable {
 					GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
 					return true;
 				}
-			} catch (Exception e) {
-			}
+			} catch (Exception e) {}
 			return false;
 		}
+    private boolean removeTimedSubGroup(Group subGroup) {
+
+        synchronized(timedSubGroups) {
+            flagAsChanged();
+            Map<Group, Long> clone = new HashMap<>(timedSubGroups);
+            boolean ret = clone.remove(subGroup) != null;
+            timedSubGroups = Collections.unmodifiableMap(clone);
+            return ret;
+        }
+    }
 
 		/**
 		 * Returns a new array of the Sub-Groups attached to this user.
 		 *
 		 * @return List of sub-groups.
 		 */
-		public ArrayList<Group> subGroupListCopy () {
+        public ArrayList<Group> subGroupListCopy() {
 
-			ArrayList<Group> val = new ArrayList<Group>();
-			synchronized (subGroups) {
-				for (String gstr : subGroups) {
-					Group g = getDataSource().getGroup(gstr);
-					if (g == null) {
-						removeSubGroup(g);
-						continue;
-					}
-					val.add(g);
-				}
-			}
-			return val;
-		}
+            ArrayList<Group> val = new ArrayList<Group>();
+            synchronized(subGroups) {
+                for (String gstr : subGroups) {
+                    Group g = getDataSource().getGroup(gstr);
+                    if (g == null) {
+                        removeSubGroup(g);
+                        continue;
+                    }
+                    val.add(g);
+                }
+                val.addAll(timedSubGroups.keySet());
+            }
+            return val;
+        }
 
 		/**
 		 * Compiles a list of Sub-Group Names attached to this user.
 		 *
 		 * @return List of sub-group names.
 		 */
-		public ArrayList<String> subGroupListStringCopy () {
-			synchronized (subGroups) {
-				return new ArrayList<String>(subGroups);
-			}
-		}
+        public ArrayList<String> subGroupListStringCopy() {
+
+            synchronized(subGroups) {
+                ArrayList<String> val = new ArrayList<>(subGroups);
+
+                timedSubGroups.forEach((group, timer) -> val.add(group.getName()));
+
+                return val;
+            }
+        }
 
 		/**
 		 * @return the variables
@@ -440,4 +464,3 @@ public class User extends DataUnit implements Cloneable {
 		return expired || super.removeExpired();
 	}
 }
-
