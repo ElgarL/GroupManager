@@ -111,12 +111,12 @@ public class ManUAddSub extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 
 			if (period != null) {
-				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxString, auxGroup.getName(), period)); //$NON-NLS-1$
+				auxUser.addTimedSubGroup(auxGroup, timed.getEpochSecond());
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxUser, auxGroup.getName(), period)); //$NON-NLS-1$
 
 			} else {
-				auxGroup.addPermission(auxString);
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxString, auxGroup.getName())); //$NON-NLS-1$
+				auxUser.addSubGroup(auxGroup);
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxUser, auxGroup.getName())); //$NON-NLS-1$
 			}
 		}
 

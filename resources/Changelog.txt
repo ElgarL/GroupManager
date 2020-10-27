@@ -288,3 +288,4 @@ v2.9:
     - Fix GM creating duplicate user entries due to plugins requesting lookups before GM can process PlayerLoginEvent. (@ElgarL)
     - Bump junit from 4.11 to 4.13.1 (@dependabot)
     - Fix syntax for "/temp..." commands (@l1ttleO)
+    - Add timed subgroups (@l1ttleO, @ElgarL)
