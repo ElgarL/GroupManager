@@ -13,12 +13,12 @@ description: Provides on-the-fly system for permissions system created by Nijiko
 
 permissions:
     groupmanager.*:
-        description: Wildcard permission to grant all permissions.
+        description: A wildcard to grant all permissions.
         default: op
         children:
             groupmanager.op: true
     groupmanager.op:
-        description: User is treated as an op when using the GroupManager commands.
+        description: Given if the user is a server operator
         default: op
         children:
             groupmanager.manuadd: true
@@ -66,11 +66,11 @@ permissions:
 
 commands:
   manuadd:
-    description: Moves a player to desired group (Adds to the file if does not exist).
+    description: Moves a player to the desired group (Adds to the file if does not exist).
     usage: /<command> <player> <group> | optional [world]
     permission: groupmanager.manuadd
   manudel:
-    description: Removes any user specific configuration and make them default group.
+    description: Removes any user-specific configuration and make them default group.
     usage: /<command> <player>
     permission: groupmanager.manudel
   manuaddsub:
@@ -86,7 +86,7 @@ commands:
     usage: /<command> <group>
     permission: groupmanager.mangadd
   mangdel:
-    description: Removes a group from the system (all its users become default).
+    description: Removes a group from the system (all it's users will become default).
     usage: /<command> <group>
     permission: groupmanager.mangdel
   manuaddp:
@@ -123,7 +123,7 @@ commands:
     permission: groupmanager.mangclearp
   manglist:
     aliases: [listgroups]
-    description: Lists the groups available.
+    description: Lists all groups available.
     usage: /<command>
     permission: groupmanager.manglist
   manglistp:
@@ -135,7 +135,7 @@ commands:
     usage: /<command> <group> <permissions>
     permission: groupmanager.mangcheckp
   mangaddi:
-    description: Adds a group to another group inheritance list.
+    description: Adds a group to another group's inheritance list.
     usage: /<command> <group1> <group2>
     permission: groupmanager.mangaddi
   mangdeli:
