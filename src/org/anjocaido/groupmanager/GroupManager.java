@@ -134,7 +134,7 @@ public class GroupManager extends JavaPlugin {
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
-		GroupManager.logger.warning(String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
+		GroupManager.logger.info(String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
 		
 		if (!restarting)
