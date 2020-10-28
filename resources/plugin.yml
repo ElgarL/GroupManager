@@ -18,7 +18,7 @@ permissions:
         children:
             groupmanager.op: true
     groupmanager.op:
-        description: Given if the user is a server operator
+        description: User is treated as a server operator when using the GroupManager commands.
         default: op
         children:
             groupmanager.manuadd: true
