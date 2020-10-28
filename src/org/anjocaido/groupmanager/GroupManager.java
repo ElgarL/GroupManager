@@ -619,7 +619,7 @@ public class GroupManager extends JavaPlugin {
 	/**
 	 * Is the plugin fully loaded?
 	 * 
-	 * @return true if we are loaded or false if reloading/loading.
+	 * @return	true if we are loaded or false if reloading/loading.
 	 */
 	public static boolean isLoaded() {
 
