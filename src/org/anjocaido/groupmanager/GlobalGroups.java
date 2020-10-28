@@ -394,7 +394,7 @@ public class GlobalGroups {
 	}
 
 	/**
-	 * Returns a List of all permission nodes for this group null if none
+	 * Returns a List of all permission nodes for this group, null if none
 	 * 
 	 * @param groupName
 	 * @return List of all group names
@@ -408,9 +408,8 @@ public class GlobalGroups {
 	}
 
 	/**
-	 * Returns a Set of all global group names.
 	 * 
-	 * @return Set containing all group names.
+	 * @return a set containing all group names.
 	 */
 	/*public Set<String> getGlobalGroups() {
 
