@@ -409,7 +409,7 @@ public class GlobalGroups {
 
 	/**
 	 * 
-	 * @return a set containing all group names.
+	 * @return a Set containing all group names.
 	 */
 	/*public Set<String> getGlobalGroups() {
 
