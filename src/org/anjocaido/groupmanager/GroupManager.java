@@ -218,7 +218,7 @@ public class GroupManager extends JavaPlugin {
 
 			/*
 			 * Schedule a Bukkit Permissions update for 1 tick later.
-			 * All plug-ins will be loaded by then
+			 * All plugins will be loaded by then
 			 */
 
 			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1) {
@@ -497,7 +497,7 @@ public class GroupManager extends JavaPlugin {
 	}
 	
 	/**
-	 * Checks if a permission exists and of a lower or same priority.
+	 * Checks if a permission exists and has lower/same priority
 	 */
 	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
 		
@@ -559,9 +559,9 @@ public class GroupManager extends JavaPlugin {
 	}
 
 	/**
-	 * Send confirmation of a group change. using permission nodes...
+	 * Send a notification that a user's groups have been changed using permission nodes:
 	 * 
-	 * groupmanager.notify.self groupmanager.notify.other
+	 * groupmanager.notify.self; groupmanager.notify.other
 	 * 
 	 * @param name
 	 * @param msg
@@ -617,9 +617,9 @@ public class GroupManager extends JavaPlugin {
 	}
 	
 	/**
-	 * Is the plug-in fully loaded?
+	 * Is the plugin fully loaded?
 	 * 
-	 * @return	true if we are loaded or false if reloading/loading.
+	 * @return true if we are loaded or false if reloading/loading.
 	 */
 	public static boolean isLoaded() {
 
