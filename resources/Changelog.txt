@@ -289,3 +289,8 @@ v2.9:
     - Bump junit from 4.11 to 4.13.1 (@dependabot)
     - Fix syntax for "/temp..." commands (@l1ttleO)
     - Add timed subgroups (@l1ttleO, @ElgarL)
+    - Add PAPI support...
+        %groupmanager_group%, %groupmanager_allgroups%, %groupmanager_subgroups%,
+        %groupmanager_user_prefix%, %groupmanager_user_suffix%,
+        %groupmanager_group_prefix%, %groupmanager_group_suffix%,
+        PAPI permission checks - %groupmanager_perm_permission.here%

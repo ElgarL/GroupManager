@@ -11,6 +11,8 @@ authors:
 website: https://github.com/ElgarL/GroupManager
 description: Provides on-the-fly system for permissions system created by Nijikokun. But all in memory, and with flat-file saving schedule.
 
+softdepend: [PlaceholderAPI]
+
 permissions:
     groupmanager.*:
         description: A wildcard to grant all permissions.
