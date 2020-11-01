@@ -1085,18 +1085,19 @@ public class WorldDataHolder {
                     throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "subgroups", usersKey, usersFile.getPath()));
                 }
 
-                if (nodeData == null) {
-                    /*
-                     * If no subgroups node is found, or it's empty do nothing.
-                     */
+                /*
+                 * If no subgroups node is found, or it's empty do nothing.
+                 */
+                if (nodeData != null) {
+                    
                     if (nodeData instanceof List) {
                         for (Object o : ((List) nodeData)) {
                             /*
-                             * Only add this permission if it's not empty
+                             * Only add this subgroup if it's not empty
                              */
                             if (!o.toString().isEmpty()) {
                                 /*
-                                 * check for a timed permission
+                                 * check for a timed subgroup
                                  */
                                 if (o.toString().contains("|")) {
                                     String[] split = o.toString().split("\\|");
@@ -1107,8 +1108,9 @@ public class WorldDataHolder {
                                         GroupManager.logger.warning("TimedSubGroup error: " + o.toString());
                                     }
                                 } else {
-                                    Group subGrp = ph.getGroup(nodeData.toString());
-                                    thisUser.addSubGroup(subGrp);
+                                    Group subGrp = ph.getGroup(o.toString());
+                                    if (subGrp != null)
+                                    	thisUser.addSubGroup(subGrp);
                                 }
                             }
                         }
@@ -1131,7 +1133,8 @@ public class WorldDataHolder {
                                     }
                                 } else {
                                     Group subGrp = ph.getGroup(nodeData.toString());
-                                    thisUser.addSubGroup(subGrp);
+                                    if (subGrp != null)
+                                    	thisUser.addSubGroup(subGrp);
                                 }
                             }
                         }
