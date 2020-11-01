@@ -18,6 +18,7 @@
 package org.anjocaido.groupmanager.permissions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -1241,6 +1242,23 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			allGroups.addAll(listAllGroupsInherited(subg));
 		}
 
+		String[] arr = new String[allGroups.size()];
+		return allGroups.toArray(arr);
+	}
+	
+	/**
+	 * Returns a list of all subgroups.
+	 * 
+	 * @param userName
+	 * @return String[] of all group names.
+	 */
+	public String[] getSubGroups(String userName) {
+		
+		Set<String> allGroups = new HashSet<String>();
+		for (Group subg : ph.getUser(userName).subGroupListCopy()) {
+			allGroups.addAll(listAllGroupsInherited(subg));
+		}
+		
 		String[] arr = new String[allGroups.size()];
 		return allGroups.toArray(arr);
 	}

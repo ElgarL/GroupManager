@@ -17,31 +17,11 @@
  */
 package org.anjocaido.groupmanager;
 
-import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
-import org.anjocaido.groupmanager.Tasks.UpdateTask;
-import org.anjocaido.groupmanager.commands.*;
-import org.anjocaido.groupmanager.data.User;
-import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
-import org.anjocaido.groupmanager.events.GMWorldListener;
-import org.anjocaido.groupmanager.events.GroupManagerEventHandler;
-import org.anjocaido.groupmanager.localization.Messages;
-import org.anjocaido.groupmanager.metrics.Metrics;
-import org.anjocaido.groupmanager.permissions.BukkitPermissions;
-import org.anjocaido.groupmanager.utils.GMLoggerHandler;
-import org.anjocaido.groupmanager.utils.PermissionCheckResult;
-import org.anjocaido.groupmanager.utils.Tasks;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -49,34 +29,98 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
+import org.anjocaido.groupmanager.Tasks.UpdateTask;
+import org.anjocaido.groupmanager.commands.ManCheckW;
+import org.anjocaido.groupmanager.commands.ManClear;
+import org.anjocaido.groupmanager.commands.ManDemote;
+import org.anjocaido.groupmanager.commands.ManGAdd;
+import org.anjocaido.groupmanager.commands.ManGAddI;
+import org.anjocaido.groupmanager.commands.ManGAddP;
+import org.anjocaido.groupmanager.commands.ManGAddV;
+import org.anjocaido.groupmanager.commands.ManGCheckP;
+import org.anjocaido.groupmanager.commands.ManGCheckV;
+import org.anjocaido.groupmanager.commands.ManGClearP;
+import org.anjocaido.groupmanager.commands.ManGDel;
+import org.anjocaido.groupmanager.commands.ManGDelI;
+import org.anjocaido.groupmanager.commands.ManGDelP;
+import org.anjocaido.groupmanager.commands.ManGDelV;
+import org.anjocaido.groupmanager.commands.ManGList;
+import org.anjocaido.groupmanager.commands.ManGListP;
+import org.anjocaido.groupmanager.commands.ManGListV;
+import org.anjocaido.groupmanager.commands.ManLoad;
+import org.anjocaido.groupmanager.commands.ManPromote;
+import org.anjocaido.groupmanager.commands.ManSave;
+import org.anjocaido.groupmanager.commands.ManSelect;
+import org.anjocaido.groupmanager.commands.ManToggleSave;
+import org.anjocaido.groupmanager.commands.ManToggleValidate;
+import org.anjocaido.groupmanager.commands.ManUAdd;
+import org.anjocaido.groupmanager.commands.ManUAddP;
+import org.anjocaido.groupmanager.commands.ManUAddSub;
+import org.anjocaido.groupmanager.commands.ManUAddTemp;
+import org.anjocaido.groupmanager.commands.ManUAddV;
+import org.anjocaido.groupmanager.commands.ManUCheckP;
+import org.anjocaido.groupmanager.commands.ManUCheckV;
+import org.anjocaido.groupmanager.commands.ManUClearP;
+import org.anjocaido.groupmanager.commands.ManUDel;
+import org.anjocaido.groupmanager.commands.ManUDelAllTemp;
+import org.anjocaido.groupmanager.commands.ManUDelP;
+import org.anjocaido.groupmanager.commands.ManUDelSub;
+import org.anjocaido.groupmanager.commands.ManUDelTemp;
+import org.anjocaido.groupmanager.commands.ManUDelV;
+import org.anjocaido.groupmanager.commands.ManUListP;
+import org.anjocaido.groupmanager.commands.ManUListTemp;
+import org.anjocaido.groupmanager.commands.ManUListV;
+import org.anjocaido.groupmanager.commands.ManWhois;
+import org.anjocaido.groupmanager.commands.ManWorld;
+import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
+import org.anjocaido.groupmanager.events.GMWorldListener;
+import org.anjocaido.groupmanager.events.GroupManagerEventHandler;
+import org.anjocaido.groupmanager.localization.Messages;
+import org.anjocaido.groupmanager.metrics.Metrics;
+import org.anjocaido.groupmanager.permissions.BukkitPermissions;
+import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
+import org.anjocaido.groupmanager.utils.GMLoggerHandler;
+import org.anjocaido.groupmanager.utils.PermissionCheckResult;
+import org.anjocaido.groupmanager.utils.Tasks;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.java.JavaPlugin;
+
 
 /**
  *
  * @author gabrielcouto, ElgarL
  */
 public class GroupManager extends JavaPlugin {
-	
+
 	public GroupManager() {}
-	
+
 	private File backupFolder;
 	private Runnable commiter;
 	private Runnable cleanup;
 	private ScheduledThreadPoolExecutor scheduler;
 	private static Map<String, ArrayList<User>> overloadedUsers = new HashMap<String, ArrayList<User>>();
 	private static Map<String, String> selectedWorlds = new HashMap<String, String>();
-	
+
 	private static WorldsHolder worldsHolder;
-	
+
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
 	private ReentrantLock saveLock = new ReentrantLock();
-	
+
 	private String lastError = ""; //$NON-NLS-1$
 
 	private static GlobalGroups globalGroups;
 
 	private GMLoggerHandler ch;
-	
+
 	private static GroupManagerEventHandler GMEventHandler;
 	@Deprecated // This field will be changing to private in the future. Please use the static getBukkitPermissions() method
 	public static BukkitPermissions BukkitPermissions;
@@ -86,20 +130,20 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		
+
 		onDisable(false);
 	}
-	
+
 	@Override
 	public void onEnable() {
-		
+
 		/*
 		 * Initialize the event handler
 		 */
 		setGMEventHandler(new GroupManagerEventHandler(this));
 		onEnable(false);
 	}
-	
+
 	public void onDisable(boolean restarting) {
 
 		setLoaded(false);
@@ -122,25 +166,25 @@ public class GroupManager extends JavaPlugin {
 		if (BukkitPermissions != null) {
 			BukkitPermissions.removeAllAttachments();
 		}
-		
+
 		if (!restarting) {
-			
+
 			if (WorldEvents != null)
 				WorldEvents = null;
 
 			BukkitPermissions = null;
-			
+
 		}
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
 		GroupManager.logger.info(String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
-		
+
 		if (!restarting)
 			GroupManager.logger.removeHandler(ch);
 	}
-	
+
 	public void onEnable(boolean restarting) {
 
 		try {
@@ -150,7 +194,7 @@ public class GroupManager extends JavaPlugin {
 			overloadedUsers = new HashMap<String, ArrayList<User>>();
 			selectedWorlds = new HashMap<String, String>();
 			lastError = ""; //$NON-NLS-1$
-			
+
 			/*
 			 * Setup our logger if we are not restarting.
 			 */
@@ -167,7 +211,7 @@ public class GroupManager extends JavaPlugin {
 			prepareConfig();
 			// Load the global groups
 			globalGroups = new GlobalGroups(this);
-			
+
 			/*
 			 * Configure the worlds holder.
 			 */
@@ -204,9 +248,10 @@ public class GroupManager extends JavaPlugin {
 			if (!restarting) {
 				WorldEvents = new GMWorldListener(this);
 				BukkitPermissions = new BukkitPermissions(this);
-				
+
+				checkPlugins();
 				initCommands();
-				
+
 			} else {
 				BukkitPermissions.reset();
 			}
@@ -234,12 +279,12 @@ public class GroupManager extends JavaPlugin {
 			// Register as a service
 			if (!restarting)
 				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
-			
+
 			/*
 			 * Version check.
 			 */
 			this.getServer().getScheduler().runTaskLaterAsynchronously(this, new UpdateTask(pdfFile.getVersion()), 1L);
-			
+
 		} catch (Exception ex) {
 
 			/*
@@ -253,24 +298,24 @@ public class GroupManager extends JavaPlugin {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 
 		}
-		
+
 		if (!restarting) {
-			
+
 			/*
 			 * Register Metrics
 			 */
 			try {
 				Metrics metrics = new Metrics(this, 7982);
-			    
-			    metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
+
+				metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
 			} catch (Exception e) {
 				System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
 			}
 		}
 	}
-	
+
 	private void initCommands() {
-		
+
 		getCommand("mancheckw").setExecutor(new ManCheckW()); //$NON-NLS-1$
 		getCommand("manclear").setExecutor(new ManClear()); //$NON-NLS-1$
 		getCommand("mandemote").setExecutor(new ManDemote()); //$NON-NLS-1$
@@ -316,6 +361,21 @@ public class GroupManager extends JavaPlugin {
 
 	}
 
+	private void checkPlugins() {
+
+		List<String> addons = new ArrayList<>();
+		Plugin test;
+
+		test = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		if (test != null) {
+			new GMPlaceholderExpansion(this).register();
+			addons.add(String.format("%s v%s", "PlaceholderAPI", test.getDescription().getVersion()));
+		}
+
+		if (!addons.isEmpty())
+			GroupManager.logger.info(String.format("Add-ons: " + String.join(", ", addons)));
+	}
+
 	/**
 	 * Write an error.log
 	 * 
@@ -344,7 +404,7 @@ public class GroupManager extends JavaPlugin {
 		try {
 			String error = "=============================== GM ERROR LOG ===============================\n"; //$NON-NLS-1$
 			error += String.format("= ERROR REPORT START - %s =\n\n", this.getDescription().getVersion()); //$NON-NLS-1$
-			
+
 			error += Tasks.getStackTraceAsString(ex);
 			error += "\n============================================================================\n"; //$NON-NLS-1$
 
@@ -355,7 +415,7 @@ public class GroupManager extends JavaPlugin {
 		}
 
 	}
-	
+
 	/**
 	 * @return the validateOnlinePlayer
 	 */
@@ -399,15 +459,15 @@ public class GroupManager extends JavaPlugin {
 
 				@Override
 				public void run() {
-					
+
 					if (isLoaded())
-						
+
 						try {
 							// obtain a lock so we are the only thread saving (blocking).
 							getSaveLock().lock();
-							
+
 							if (worldsHolder.saveChanges(false)) {
-								
+
 								GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 							}
 						} catch (IllegalStateException ex) {
@@ -427,22 +487,22 @@ public class GroupManager extends JavaPlugin {
 
 				@Override
 				public void run() {
-					
+
 					if (isLoaded())
 						try {
 							// obtain a lock so we are the only thread saving (blocking).
 							getSaveLock().lock();
-							
+
 							/*
 							 * If we removed any permissions and saving is not disabled
 							 * update our data files so we are not updating perms
 							 * every 60 seconds.
 							 */
 							if (worldsHolder.purgeExpiredPerms()) {
-								
+
 								if (worldsHolder.saveChanges(false))
-										GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-								
+									GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+
 							}
 						} catch (Exception ex) {
 							GroupManager.logger.warning(ex.getMessage());
@@ -454,17 +514,17 @@ public class GroupManager extends JavaPlugin {
 						}
 				}
 			};
-			
+
 			scheduler = new ScheduledThreadPoolExecutor(2);
 			long minutes = (long) getGMConfig().getSaveInterval();
-			
+
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
 				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
 				GroupManager.logger.info(String.format(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_SET"), minutes)); //$NON-NLS-1$
 			} else
 				GroupManager.logger.warning(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
-			
+
 			GroupManager.logger.info(String.format(Messages.getString("GroupManager.BACKUPS_RETAINED_MSG"), getGMConfig().getBackupDuration())); //$NON-NLS-1$
 		}
 	}
@@ -487,21 +547,21 @@ public class GroupManager extends JavaPlugin {
 
 		return worldsHolder;
 	}
-	
+
 	/**
 	 * @return the overloadedUsers
 	 */
 	public static Map<String, ArrayList<User>> getOverloadedUsers() {
-	
+
 		return overloadedUsers;
 	}
-	
+
 	/**
 	 * Checks if a permission exists and has lower/same priority
 	 */
 	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
-		
-		
+
+
 		if (newPerm.startsWith("+")) //$NON-NLS-1$
 		{
 			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
@@ -542,19 +602,19 @@ public class GroupManager extends JavaPlugin {
 			{
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS_ALREADY"), type)); //$NON-NLS-1$
 				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-				
+
 				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.
 				return (oldPerm.accessLevel.equalsIgnoreCase(newPerm));
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * @return the selectedWorlds
 	 */
 	public static Map<String, String> getSelectedWorlds() {
-	
+
 		return selectedWorlds;
 	}
 
@@ -615,7 +675,7 @@ public class GroupManager extends JavaPlugin {
 		return globalGroups;
 
 	}
-	
+
 	/**
 	 * Is the plugin fully loaded?
 	 * 
@@ -625,18 +685,18 @@ public class GroupManager extends JavaPlugin {
 
 		return isLoaded;
 	}
-	
+
 	public static void setLoaded(boolean isLoaded) {
 
 		GroupManager.isLoaded = isLoaded;
 	}
-	
-	
+
+
 	/**
 	 * @return the saveLock
 	 */
 	public ReentrantLock getSaveLock() {
-	
+
 		return saveLock;
 	}
 
@@ -644,7 +704,7 @@ public class GroupManager extends JavaPlugin {
 	 * @return true if the scheduler is running.
 	 */
 	public boolean isSchedulerRunning() {
-	
+
 		return scheduler != null;
 	}
 
@@ -652,23 +712,23 @@ public class GroupManager extends JavaPlugin {
 	 * @return the lastError
 	 */
 	public String getLastError() {
-	
+
 		return lastError;
 	}
-	
+
 	/**
 	 * @param lastError the lastError to set
 	 */
 	public void setLastError(String lastError) {
-	
+
 		this.lastError = lastError;
 	}
-	
+
 	/**
 	 * @return the bukkitPermissions
 	 */
 	public static BukkitPermissions getBukkitPermissions() {
-	
+
 		return BukkitPermissions;
 	}
 
