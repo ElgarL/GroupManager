@@ -156,7 +156,7 @@ public class UpdateTask implements Runnable {
 
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+            	throw new IllegalStateException(Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
             } finally {
                 reader.close();
             }
@@ -167,8 +167,11 @@ public class UpdateTask implements Runnable {
             return parseVersion(newVersionTitle);
             
         } catch (Exception e) {
+        	/*
+        	 * Fail quietly.
+        	 * No need to spam a stack trace.
+        	 */
         	GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
-        	e.printStackTrace();
         }
         /*
          * No version found so report our current version.
@@ -193,7 +196,6 @@ public class UpdateTask implements Runnable {
 			return Double.valueOf(version);
 		} catch (Exception e) {
 			GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
-        	e.printStackTrace();
 		}
 		
 		return 0.0;
