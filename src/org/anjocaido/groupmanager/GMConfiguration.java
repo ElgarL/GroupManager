@@ -36,6 +36,7 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  */
 public class GMConfiguration {
 	
+	private boolean checkForUpdates = true;
 	private String language = "english";
 	private boolean allowCommandBlocks = false;
 	private boolean opOverride = true;
@@ -57,6 +58,7 @@ public class GMConfiguration {
 		/*
 		 * Set defaults
 		 */
+		checkForUpdates = true;
 		language = "english"; //$NON-NLS-1$
 		allowCommandBlocks = false;
 		opOverride = true;
@@ -102,7 +104,14 @@ public class GMConfiguration {
 		 */
 		try {
 			Map<String, Object> config = getElement("config", getElement("settings", GMconfig)); //$NON-NLS-1$ //$NON-NLS-2$
-
+			
+			try {
+				checkForUpdates = (Boolean) config.get("check_for_updates"); //$NON-NLS-1$
+			} catch (Exception ex) {
+				GroupManager.logger.log(Level.SEVERE, nodeError("check_for_updates"), ex); //$NON-NLS-1$
+				checkForUpdates = true;
+			}			
+			
 			try {
 				language = (String) config.get("language"); //$NON-NLS-1$
 			} catch (Exception ex) {
