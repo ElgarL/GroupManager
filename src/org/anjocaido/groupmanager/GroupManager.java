@@ -283,7 +283,7 @@ public class GroupManager extends JavaPlugin {
 			/*
 			 * Version check.
 			 */
-			if (getGMConfig.isCheckForUpdates) {
+			if (getGMConfig().isCheckForUpdates()) {
 				this.getServer().getScheduler().runTaskLaterAsynchronously(this, new UpdateTask(pdfFile.getVersion()), 1L); }
 
 		} catch (Exception ex) {
