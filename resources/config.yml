@@ -1,5 +1,8 @@
 ﻿settings:
   config:
+    # Do we check for updates on enable?
+    check_for_updates: true
+    
     # Languages must have a corresponding properties file.
     # Acceptable entries are - chinese-simplified, chinese-traditional, czech, english, french, russian.
     language: english
