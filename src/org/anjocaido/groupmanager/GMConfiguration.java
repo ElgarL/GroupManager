@@ -214,6 +214,11 @@ public class GMConfiguration {
 		
 	}
 	
+	public boolean isCheckForUpdates() {
+
+		return checkForUpdates;
+	}
+
 	public String getLanguage() {
 
 		return language;
