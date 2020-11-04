@@ -48,21 +48,21 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.3-R0.1-SNAPSHOT</version>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--placeholder -->
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.4</version>
+			<version>2.10.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--bStats -->
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.4</version>
+			<version>1.7</version>
 			<scope>compile</scope>
 		</dependency>
 		<!--Non-Minecraft related dependencies -->
@@ -73,9 +73,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.intellij</groupId>
+			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
-			<version>9.0.4</version>
+			<version>20.1.0</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
