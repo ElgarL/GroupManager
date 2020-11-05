@@ -75,7 +75,9 @@ public class User extends DataUnit implements Cloneable {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(timedSubGroups);
+		for (Entry<String, Long> grp : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(getDataSource().getGroup(grp.getKey()), grp.getValue());
+		}
 
 		return clone;
 	}
@@ -114,7 +116,9 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(timedSubGroups);
+		for (Entry<String, Long> grp : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(getDataSource().getGroup(grp.getKey()), grp.getValue());
+		}
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
@@ -144,7 +148,9 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(timedSubGroups);
+		for (Entry<String, Long> grp : this.getTimedSubGroups().entrySet()) {
+			clone.addTimedSubGroup(getDataSource().getGroup(grp.getKey()), grp.getValue());
+		}
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
