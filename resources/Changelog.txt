@@ -281,17 +281,15 @@ v2.8:
     - Correct update link when outdated.
     - Catch a VERY rare occurrence of Bukkit returning an OfflinePlayer with no name.
 v2.9:
-    - Bump Spigot-API from 1.16.2 to 1.16.3.
     - Fix default GlobalGroups.yml. (@ElgarL, @super-cokil, @l1ttleO) 
     - Add Czech translation. (@JetelHudzum)
-    - Fix a really rare error of no world detected when a player logged in due to event ordering. (@ElgarL)
-    - Fix GM creating duplicate user entries due to plugins requesting lookups before GM can process PlayerLoginEvent. (@ElgarL)
-    - Bump junit from 4.11 to 4.13.1
-    - Fix syntax for "/temp..." commands
+    - Fix a really rare error of no world detected when a player logged in due to event ordering.
+    - Fix GM creating duplicate user entries due to plugins requesting lookups before GM can process PlayerLoginEvent.
+    - Fix syntax for "/temp..." commands (old commands will still work)
     - Add timed subgroups (@l1ttleO, @ElgarL)
-    - Add PAPI support. Available placeholders:
+    - Add PAPI support...
         %groupmanager_group%, %groupmanager_allgroups%, %groupmanager_subgroups%,
         %groupmanager_user_prefix%, %groupmanager_user_suffix%,
         %groupmanager_group_prefix%, %groupmanager_group_suffix%,
         PAPI permission checks - %groupmanager_perm_permission.here%
-    - Make update check configurable
+    - Update check is now configurable
