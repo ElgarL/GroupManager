@@ -39,9 +39,9 @@ import org.bukkit.entity.Player;
  */
 public class User extends DataUnit implements Cloneable {
 
-	private String group = null;
-	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<String>());
-	private Map<String, Long> timedSubGroups = Collections.synchronizedSortedMap(Collections.<String, Long>emptySortedMap());
+	private String group;
+	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<>());
+	private Map<String, Long> timedSubGroups = Collections.synchronizedSortedMap(Collections.emptySortedMap());
 	/**
 	 * This one holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
@@ -316,16 +316,6 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Total sub-groups, times and static.
-	 * 
-	 * @return	amount of sub-groups on this user.
-	 */
-	public int subGroupsSize () {
-
-		return subGroups.size() + timedSubGroups.size();
-	}
-
-	/**
 	 * Does this User have ANY sub-groups
 	 * static or timed.
 	 * 
@@ -367,7 +357,7 @@ public class User extends DataUnit implements Cloneable {
 				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
 				return true;
 			}
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 		return false;
 	}
 
@@ -393,7 +383,7 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public ArrayList<Group> subGroupListCopy() {
 
-		ArrayList<Group> groupList = new ArrayList<Group>();
+		ArrayList<Group> groupList = new ArrayList<>();
 
 		synchronized(subGroups) {
 
@@ -427,7 +417,7 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public Map<String, Long> getTimedSubGroups() {
 
-		return new TreeMap<String, Long>(timedSubGroups);
+		return new TreeMap<>(timedSubGroups);
 	}
 
 	/**
@@ -455,9 +445,8 @@ public class User extends DataUnit implements Cloneable {
 	public ArrayList<String> subGroupListCloneStringCopy() {
 
 		synchronized(subGroups) {
-			ArrayList<String> val = new ArrayList<>(subGroups);
 
-			return val;
+			return new ArrayList<>(subGroups);
 		}
 	}
 
@@ -503,7 +492,7 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	@Deprecated
-	public User updatePlayer (Player player){
+	public User updatePlayer(){
 
 		return this;
 	}
@@ -538,7 +527,7 @@ public class User extends DataUnit implements Cloneable {
 
 		synchronized (timedSubGroups) {
 
-			SortedMap<String, Long> clone = new TreeMap<String, Long>(timedSubGroups);
+			SortedMap<String, Long> clone = new TreeMap<>(timedSubGroups);
 			for (Entry<String, Long> entry : timedSubGroups.entrySet()) {
 				if (Tasks.isExpired(entry.getValue())) {
 					if (clone.remove(entry.getKey()) != null) {

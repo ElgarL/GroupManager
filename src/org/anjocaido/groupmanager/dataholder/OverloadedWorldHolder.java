@@ -33,7 +33,7 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	/**
      *
      */
-	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new HashMap<String, User>());
+	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * 
@@ -50,7 +50,6 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 
 	/**
 	 * 
-	 * @param userName
 	 * @return user object or a new user if none exists.
 	 */
 	@Override
@@ -161,15 +160,11 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	@Override
 	public Collection<User> getUserList() {
 
-		Collection<User> overloadedList = new ArrayList<User>();
+		Collection<User> overloadedList = new ArrayList<>();
 		synchronized(getUsers()) {
 		Collection<User> normalList = getUsers().values();
 		for (User u : normalList) {
-			if (overloadedUsers.containsKey(u.getUUID().toLowerCase())) {
-				overloadedList.add(overloadedUsers.get(u.getUUID().toLowerCase()));
-			} else {
-				overloadedList.add(u);
-			}
+			overloadedList.add(overloadedUsers.getOrDefault(u.getUUID().toLowerCase(), u));
 		}
 		}
 		return overloadedList;
@@ -194,9 +189,7 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 		if (!isOverloaded(userId)) {
 			User theUser = getUser(userId);
 			theUser = theUser.clone();
-			if (overloadedUsers.containsKey(theUser.getUUID().toLowerCase())) {
-				overloadedUsers.remove(theUser.getUUID().toLowerCase());
-			}
+			overloadedUsers.remove(theUser.getUUID().toLowerCase());
 			overloadedUsers.put(theUser.getUUID().toLowerCase(), theUser);
 		}
 	}
@@ -227,7 +220,6 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 		if (getUsers().containsKey(userId.toLowerCase())) {
 			return getUsers().get(userId.toLowerCase());
 		}
-		User newUser = createUser(userId);
-		return newUser;
+		return createUser(userId);
 	}
 }

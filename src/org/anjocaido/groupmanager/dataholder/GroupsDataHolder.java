@@ -41,7 +41,7 @@ public class GroupsDataHolder {
 	/**
 	 * The actual groups holder
 	 */
-	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<String, Group>());
+	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Constructor

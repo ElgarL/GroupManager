@@ -40,7 +40,7 @@ public class UsersDataHolder {
 	/**
 	 * The actual groups holder
 	 */
-	private final Map<String, User> users = Collections.synchronizedMap(new HashMap<String, User>());
+	private final Map<String, User> users = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Constructor

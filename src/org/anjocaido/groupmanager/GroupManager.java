@@ -98,22 +98,21 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author gabrielcouto, ElgarL
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
 public class GroupManager extends JavaPlugin {
 
 	public GroupManager() {}
 
 	private File backupFolder;
-	private Runnable commiter;
-	private Runnable cleanup;
 	private ScheduledThreadPoolExecutor scheduler;
-	private static Map<String, ArrayList<User>> overloadedUsers = new HashMap<String, ArrayList<User>>();
-	private static Map<String, String> selectedWorlds = new HashMap<String, String>();
+	private static Map<String, ArrayList<User>> overloadedUsers = new HashMap<>();
+	private static Map<String, String> selectedWorlds = new HashMap<>();
 
 	private static WorldsHolder worldsHolder;
 
 	private static boolean isLoaded = false;
 	private static GMConfiguration config;
-	private ReentrantLock saveLock = new ReentrantLock();
+	private final ReentrantLock saveLock = new ReentrantLock();
 
 	private String lastError = ""; //$NON-NLS-1$
 
@@ -191,8 +190,8 @@ public class GroupManager extends JavaPlugin {
 			/*
 			 * reset local variables.
 			 */
-			overloadedUsers = new HashMap<String, ArrayList<User>>();
-			selectedWorlds = new HashMap<String, String>();
+			overloadedUsers = new HashMap<>();
+			selectedWorlds = new HashMap<>();
 			lastError = ""; //$NON-NLS-1$
 
 			/*
@@ -373,7 +372,7 @@ public class GroupManager extends JavaPlugin {
 		}
 
 		if (!addons.isEmpty())
-			GroupManager.logger.info(String.format("Add-ons: " + String.join(", ", addons)));
+			GroupManager.logger.info("Add-ons: " + String.join(", ", addons));
 	}
 
 	/**
@@ -455,64 +454,71 @@ public class GroupManager extends JavaPlugin {
 			/*
 			 * Thread to handle saving data.
 			 */
-			commiter = new Runnable() {
+			// obtain a lock so we are the only thread saving (blocking).
+			//$NON-NLS-1$
+			/*
+			 * Release the lock.
+			 */
+			Runnable commiter = () -> {
 
-				@Override
-				public void run() {
+				if (isLoaded())
 
-					if (isLoaded())
+					try {
+						// obtain a lock so we are the only thread saving (blocking).
+						getSaveLock().lock();
 
-						try {
-							// obtain a lock so we are the only thread saving (blocking).
-							getSaveLock().lock();
+						if (worldsHolder.saveChanges(false)) {
 
-							if (worldsHolder.saveChanges(false)) {
-
-								GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-							}
-						} catch (IllegalStateException ex) {
-							GroupManager.logger.warning(ex.getMessage());
-						} finally {
-							/*
-							 * Release the lock.
-							 */
-							getSaveLock().unlock();
+							GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 						}
-				}
+					} catch (IllegalStateException ex) {
+						GroupManager.logger.warning(ex.getMessage());
+					} finally {
+						/*
+						 * Release the lock.
+						 */
+						getSaveLock().unlock();
+					}
 			};
 			/*
 			 * Thread for purging expired permissions.
 			 */
-			cleanup = new Runnable() {
+			// obtain a lock so we are the only thread saving (blocking).
+			/*
+			 * If we removed any permissions and saving is not disabled
+			 * update our data files so we are not updating perms
+			 * every 60 seconds.
+			 */
+			//$NON-NLS-1$
+			/*
+			 * Release the lock.
+			 */
+			Runnable cleanup = () -> {
 
-				@Override
-				public void run() {
+				if (isLoaded())
+					try {
+						// obtain a lock so we are the only thread saving (blocking).
+						getSaveLock().lock();
 
-					if (isLoaded())
-						try {
-							// obtain a lock so we are the only thread saving (blocking).
-							getSaveLock().lock();
+						/*
+						 * If we removed any permissions and saving is not disabled
+						 * update our data files so we are not updating perms
+						 * every 60 seconds.
+						 */
+						if (worldsHolder.purgeExpiredPerms()) {
 
-							/*
-							 * If we removed any permissions and saving is not disabled
-							 * update our data files so we are not updating perms
-							 * every 60 seconds.
-							 */
-							if (worldsHolder.purgeExpiredPerms()) {
+							if (worldsHolder.saveChanges(false))
+								GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 
-								if (worldsHolder.saveChanges(false))
-									GroupManager.logger.info(Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-
-							}
-						} catch (Exception ex) {
-							GroupManager.logger.warning(ex.getMessage());
-						} finally {
-							/*
-							 * Release the lock.
-							 */
-							getSaveLock().unlock();
 						}
-				}
+					} catch (Exception ex) {
+						GroupManager.logger.warning(ex.getMessage());
+					} finally {
+						/*
+						 * Release the lock.
+						 */
+						getSaveLock().unlock();
+					}
 			};
 
 			scheduler = new ScheduledThreadPoolExecutor(2);
@@ -536,7 +542,7 @@ public class GroupManager extends JavaPlugin {
 				scheduler.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
 				scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 				scheduler.shutdown();
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 			scheduler = null;
 			GroupManager.logger.warning(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
@@ -714,14 +720,6 @@ public class GroupManager extends JavaPlugin {
 	public String getLastError() {
 
 		return lastError;
-	}
-
-	/**
-	 * @param lastError the lastError to set
-	 */
-	public void setLastError(String lastError) {
-
-		this.lastError = lastError;
 	}
 
 	/**

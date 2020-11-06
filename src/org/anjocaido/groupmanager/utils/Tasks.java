@@ -63,19 +63,18 @@ public abstract class Tasks {
 
 	public static void copy(InputStream src, File dst) throws IOException {
 
-		InputStream in = src;
 		OutputStream out = new FileOutputStream(dst);
 
 		// Transfer bytes from in to out
 		byte[] buf = new byte[1024];
 		int len;
-		while ((len = in.read(buf)) > 0) {
+		while ((len = src.read(buf)) > 0) {
 			out.write(buf, 0, len);
 		}
 		out.close();
 		try {
-			in.close();
-		} catch (Exception e) {
+			src.close();
+		} catch (Exception ignored) {
 		}
 	}
 
@@ -116,7 +115,7 @@ public abstract class Tasks {
 					if (olds.lastModified() < oldTime) {
 						try {
 							olds.delete();
-						} catch (Exception e) {
+						} catch (Exception ignored) {
 						}
 					}
 				}
@@ -226,7 +225,7 @@ public abstract class Tasks {
 
 		if (arr.length == 0)
 			return "";
-		String out = arr[0].toString();
+		String out = arr[0];
 		for (int i = 1; i < arr.length; i++)
 			out += separator + arr[i];
 		return out;

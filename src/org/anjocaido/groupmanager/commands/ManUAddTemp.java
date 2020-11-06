@@ -18,7 +18,6 @@
 package org.anjocaido.groupmanager.commands;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -63,14 +62,12 @@ public class ManUAddTemp extends BaseCommand {
 			auxUser = dataHolder.getUser(args[0]);
 		}
 		// Validating permission
-		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+		if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
-		if (GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()) == null) {
-			GroupManager.getOverloadedUsers().put(dataHolder.getName().toLowerCase(), new ArrayList<User>());
-		}
+		GroupManager.getOverloadedUsers().computeIfAbsent(dataHolder.getName().toLowerCase(), k -> new ArrayList<>());
 		dataHolder.overloadUser(auxUser.getUUID());
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).add(dataHolder.getUser(auxUser.getUUID()));
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("PLAYER_OVERLOADED")); //$NON-NLS-1$
@@ -81,7 +78,7 @@ public class ManUAddTemp extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		
 		/*
 		 * Return a TabComplete for users.

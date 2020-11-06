@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class GroupVariables extends Variables implements Cloneable {
 
-	private Group owner;
+	private final Group owner;
 
 	public GroupVariables(Group owner) {
 
@@ -87,14 +87,18 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		try {
 			this.variables.remove(name);
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
-		if (name.equals("prefix")) {
-			addVar("prefix", "");
-		} else if (name.equals("suffix")) {
-			addVar("suffix", "");
-		} else if (name.equals("build")) {
-			addVar("build", false);
+		switch (name) {
+			case "prefix":
+				addVar("prefix", "");
+				break;
+			case "suffix":
+				addVar("suffix", "");
+				break;
+			case "build":
+				addVar("build", false);
+				break;
 		}
 		owner.flagAsChanged();
 	}

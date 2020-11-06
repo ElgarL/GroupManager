@@ -35,10 +35,9 @@ import com.google.gson.stream.JsonToken;
 
 public class UpdateTask implements Runnable {
 
-	private double newVersion;
-	private double currentVersion;
+	private final double currentVersion;
 	private String newVersionTitle;
-	private String currentVersionTitle;
+	private final String currentVersionTitle;
 
 	public UpdateTask(String version) {
 
@@ -51,7 +50,7 @@ public class UpdateTask implements Runnable {
 	public void run() {
 
 		try {
-			newVersion = updateCheck();
+			double newVersion = updateCheck();
 			
 			/*
 			 * A newer version is available or

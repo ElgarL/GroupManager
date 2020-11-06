@@ -91,7 +91,7 @@ public class ManCheckW extends BaseCommand {
 			return getWorlds();
 		}
 		
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 }

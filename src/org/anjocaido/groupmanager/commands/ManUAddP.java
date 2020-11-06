@@ -68,7 +68,7 @@ public class ManUAddP extends BaseCommand {
 		}
 		
 		// Validating your permissions
-		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+		if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
@@ -76,7 +76,7 @@ public class ManUAddP extends BaseCommand {
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			String[] split = null;
+			String[] split;
 			Instant timed = null;
 			Long period = null;
 			/*
@@ -133,7 +133,7 @@ public class ManUAddP extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 
 		/*
 		 * Return a TabComplete for users.

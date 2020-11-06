@@ -17,7 +17,7 @@
  */
 package org.anjocaido.groupmanager.commands;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.anjocaido.groupmanager.localization.Messages;
@@ -72,7 +72,7 @@ public class ManSave extends BaseCommand {
 
 		if (args.length == 1) {
 			
-			return Arrays.asList("force"); //$NON-NLS-1$
+			return Collections.singletonList("force"); //$NON-NLS-1$
 		}
 		return null;
 	}

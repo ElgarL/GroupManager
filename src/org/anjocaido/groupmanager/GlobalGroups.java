@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,10 +48,9 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  */
 public class GlobalGroups {
 
-	private GroupManager plugin;
-	//private Yaml GGroups;
+	private final GroupManager plugin;
 
-	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<String, Group>());
+	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<>());
 
 	protected long timeStampGroups = 0;
 	protected boolean haveGroupsChanged = false;
@@ -131,7 +131,7 @@ public class GlobalGroups {
 		 */
 		try {
 			FileInputStream groupsInputStream = new FileInputStream(GlobalGroupsFile);
-			GGroups = (Map<String, Object>) GGroupYAML.load(new UnicodeReader(groupsInputStream));
+			GGroups = GGroupYAML.load(new UnicodeReader(groupsInputStream));
 			groupsInputStream.close();
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), GlobalGroupsFile.getPath()), ex); //$NON-NLS-1$
@@ -142,7 +142,7 @@ public class GlobalGroups {
 
 		if (!GGroups.keySet().isEmpty()) {
 			// Read all global groups
-			Map<String, Object> allGroups = new HashMap<String, Object>();
+			Map<String, Object> allGroups;
 
 			try {
 				allGroups = (Map<String, Object>) GGroups.get("groups"); //$NON-NLS-1$
@@ -223,16 +223,16 @@ public class GlobalGroups {
 
 		if (haveGroupsChanged()) {
 			if (overwrite || (!overwrite && (getTimeStampGroups() >= GlobalGroupsFile.lastModified()))) {
-				Map<String, Object> root = new HashMap<String, Object>();
+				Map<String, Object> root = new HashMap<>();
 
-				Map<String, Object> groupsMap = new HashMap<String, Object>();
+				Map<String, Object> groupsMap = new HashMap<>();
 				root.put("groups", groupsMap); //$NON-NLS-1$
 				synchronized(groups) {
 				for (String groupKey : groups.keySet()) {
 					Group group = groups.get(groupKey);
 
 					// Group header
-					Map<String, Object> aGroupMap = new HashMap<String, Object>();
+					Map<String, Object> aGroupMap = new HashMap<>();
 					groupsMap.put(group.getName(), aGroupMap);
 
 					// Permission nodes
@@ -245,10 +245,8 @@ public class GlobalGroups {
 					opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 					final Yaml yaml = new Yaml(opt);
 					try {
-						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(GlobalGroupsFile), "UTF-8")); //$NON-NLS-1$
-					} catch (UnsupportedEncodingException ex) {
-					} catch (FileNotFoundException ex) {
-					}
+						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(GlobalGroupsFile), StandardCharsets.UTF_8)); //$NON-NLS-1$
+					} catch (FileNotFoundException ignored) {}
 				}
 				setTimeStampGroups(GlobalGroupsFile.lastModified());
 			} else {
@@ -270,9 +268,8 @@ public class GlobalGroups {
 	}
 
 	/**
-	 * Backup the BlobalGroups file
-	 * 
-	 * @param w
+	 * Backup the GlobalGroups file
+	 *
 	 */
 	private void backupFile() {
 
@@ -406,15 +403,6 @@ public class GlobalGroups {
 
 		return groups.get(groupName.toLowerCase()).getPermissionList();
 	}
-
-	/**
-	 * 
-	 * @return a Set containing all group names.
-	 */
-	/*public Set<String> getGlobalGroups() {
-
-		return groups.keySet();
-	}*/
 
 	/**
 	 * Resets GlobalGroups.

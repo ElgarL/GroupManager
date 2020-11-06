@@ -68,7 +68,7 @@ public class BukkitWrapper {
 		cache = null;
 		
 		// Search all known players (to this server) for a matching name.
-		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
+		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
 		
 		for (OfflinePlayer player : offlinePlayer)
 			if (player.getName() != null && player.getName().equalsIgnoreCase(name)) {
@@ -97,7 +97,7 @@ public class BukkitWrapper {
 		cache = null;
 		
 		// Search all known players (to this server) for a matching UUID.
-		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
+		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
 				
 		for (OfflinePlayer player : offlinePlayer)
 			if (player.getName() != null && player.getUniqueId().compareTo(uid) == 0) {

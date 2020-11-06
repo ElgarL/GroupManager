@@ -66,7 +66,7 @@ public class Messages {
 	static class UTF8Control extends Control {
 		
 	    public ResourceBundle newBundle (String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-	            throws IllegalAccessException, InstantiationException, IOException
+	            throws IOException
 	    {
 	        // The below is a copy of the default implementation.
 	        String bundleName = toBundleName(baseName, locale);

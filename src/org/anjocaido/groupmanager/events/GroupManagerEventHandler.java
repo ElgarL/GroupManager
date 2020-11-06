@@ -43,17 +43,17 @@ public class GroupManagerEventHandler {
 
 	protected void callEvent(GMGroupEvent event) {
 		
-		try { event.schedule(event); } catch (Exception ex) {}
+		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
 	protected void callEvent(GMUserEvent event) {
 
-		try { event.schedule(event); } catch (Exception ex) {}
+		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
 	protected void callEvent(GMSystemEvent event) {
 
-		try { event.schedule(event); } catch (Exception ex) {}
+		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
 	public void callEvent(Group group, GMGroupEvent.Action action) {

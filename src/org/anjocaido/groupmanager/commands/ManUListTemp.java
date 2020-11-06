@@ -47,7 +47,7 @@ public class ManUListTemp extends BaseCommand {
 		}
 		// WORKING
 		auxString = ""; //$NON-NLS-1$
-		ArrayList<User> removeList = new ArrayList<User>();
+		ArrayList<User> removeList = new ArrayList<>();
 		int count = 0;
 		
 		if (GroupManager.getOverloadedUsers().size() > 0)
@@ -65,9 +65,7 @@ public class ManUListTemp extends BaseCommand {
 			return true;
 		}
 		auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
-		if (GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()) == null) {
-			GroupManager.getOverloadedUsers().put(dataHolder.getName().toLowerCase(), new ArrayList<User>());
-		}
+		GroupManager.getOverloadedUsers().computeIfAbsent(dataHolder.getName().toLowerCase(), k -> new ArrayList<>());
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).removeAll(removeList);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("OVERLOADED_USERS"), count, ChatColor.WHITE + auxString)); //$NON-NLS-1$
 

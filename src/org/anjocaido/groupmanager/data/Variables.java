@@ -33,8 +33,8 @@ import java.util.Map;
  */
 public abstract class Variables implements Cloneable {
 
-	private DataUnit owner;
-	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<String, Object>());
+	private final DataUnit owner;
+	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
 
 	public Variables(DataUnit owner) {
 
@@ -55,9 +55,7 @@ public abstract class Variables implements Cloneable {
 		if (o == null) {
 			return;
 		}
-		if (variables.containsKey(name)) {
-			variables.remove(name);
-		}
+		variables.remove(name);
 		variables.put(name, o);
 		owner.flagAsChanged();
 	}
@@ -98,7 +96,7 @@ public abstract class Variables implements Cloneable {
 
 		Object o = variables.get(name);
 		try {
-			return o == null ? false : Boolean.parseBoolean(o.toString());
+			return o != null && Boolean.parseBoolean(o.toString());
 		} catch (Exception e) {
 			return false;
 		}
@@ -175,7 +173,7 @@ public abstract class Variables implements Cloneable {
 
 		try {
 			variables.remove(name);
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 		owner.flagAsChanged();
 	}
@@ -183,15 +181,11 @@ public abstract class Variables implements Cloneable {
 	public static Object parseVariableValue(String value) {
 
 		try {
-			Integer i = Integer.parseInt(value);
-			return i;
-		} catch (NumberFormatException e) {
-		}
+			return Integer.parseInt(value);
+		} catch (NumberFormatException ignored) {}
 		try {
-			Double d = Double.parseDouble(value);
-			return d;
-		} catch (NumberFormatException e) {
-		}
+			return Double.parseDouble(value);
+		} catch (NumberFormatException ignored) {}
 		if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("on")) {
 			return true;
 		} else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no") || value.equalsIgnoreCase("off")) {

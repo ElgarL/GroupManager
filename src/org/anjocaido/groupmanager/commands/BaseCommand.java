@@ -97,7 +97,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
 		// If parsSender fails return empty.
-		if (!parseSender(sender, alias) || isConsole) return new ArrayList<String>();
+		if (!parseSender(sender, alias) || isConsole) return new ArrayList<>();
 		
 		return tabComplete(sender, command, alias, args);
 	}
@@ -106,7 +106,6 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * Attempt to setup the data-sources for this command.
 	 * 
 	 * @param sender
-	 * @param command
 	 * @param alias
 	 * @return true if successful.
 	 */
@@ -204,8 +203,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 */
 	protected UUID validatePlayer(String playerName, CommandSender sender) {
 
-		List<Player> players = new ArrayList<Player>();
-		UUID match = null;
+		List<Player> players;
+		UUID match;
 
 		players = BukkitWrapper.getInstance().matchPlayer(playerName);
 		
@@ -237,7 +236,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 */
 	protected List<String> tabCompleteUsers(String arg) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
 		
 		/*
@@ -268,7 +267,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 */
 	protected List<String> tabCompleteGroups(String arg) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
 		
 		for (Group g : dataHolder.getGroupList()) {
@@ -285,7 +284,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 */
 	protected List<String> getWorlds() {
 		
-		List<String> worlds = new ArrayList<String>();
+		List<String> worlds = new ArrayList<>();
 		
 		for (OverloadedWorldHolder world : plugin.getWorldsHolder().allWorldsDataList())
 			if ((world != null) && (world.getName() != null))
@@ -301,6 +300,6 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		/*
 		 * Return an empty list so there is no TabComplete on this.
 		 */
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 }

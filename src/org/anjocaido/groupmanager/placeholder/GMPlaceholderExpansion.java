@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class will automatically register as a placeholder expansion 
@@ -61,7 +62,7 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
      * @return The name of the author as a String.
      */
     @Override
-    public String getAuthor(){
+    public @NotNull String getAuthor(){
     	return plugin.getDescription().getAuthors().toString();
     }
 
@@ -75,7 +76,7 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
      * @return The identifier in {@code %<identifier>_<value>%} as String.
      */
     @Override
-    public String getIdentifier(){
+    public @NotNull String getIdentifier(){
         return "groupmanager";
     }
 
@@ -86,7 +87,7 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
      * @return The version as a String.
      */
     @Override
-    public String getVersion(){
+    public @NotNull String getVersion(){
         return "1.0.0";
     }
   
@@ -104,7 +105,7 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
      * @return Possibly-null String of the requested identifier.
      */
     @Override
-    public String onRequest(OfflinePlayer player, String identifier){
+    public String onRequest(OfflinePlayer player, @NotNull String identifier){
   
     	if (player == null) {
 			return "";
@@ -153,17 +154,15 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
     		
     	default:
     		
-    		String split[] = identifier.split("_");
-    		
-    		switch (split[0]) {
-    		
-    		case "perm":	// Perm check via PAPI.
-    			
-    			if (split.length == 2) {
-    				
-    				return String.valueOf(handler.has(online, split[1]));
-    			}
-    		}
+    		String[] split = identifier.split("_");
+
+			if ("perm".equals(split[0])) {    // Perm check via PAPI.
+
+				if (split.length == 2) {
+
+					return String.valueOf(handler.has(online, split[1]));
+				}
+			}
     		
     		// We return null if an invalid placeholder (f.e. %groupmanager_placeholder3%) 
             // was provided

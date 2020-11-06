@@ -38,12 +38,12 @@ import org.anjocaido.groupmanager.utils.Tasks;
 public abstract class DataUnit {
 
 	private WorldDataHolder dataSource;
-	private String uUID;
+	private final String uUID;
 	private String lastName = "";
 	private boolean changed, sorted = false;
-	private List<String> permissions = Collections.unmodifiableList(Collections.<String>emptyList());
+	private List<String> permissions = Collections.unmodifiableList(Collections.emptyList());
 	
-	private Map<String, Long> timedPermissions = Collections.unmodifiableSortedMap(Collections.synchronizedSortedMap(Collections.<String, Long>emptySortedMap()));
+	private Map<String, Long> timedPermissions = Collections.unmodifiableSortedMap(Collections.synchronizedSortedMap(Collections.emptySortedMap()));
 
 	public DataUnit(WorldDataHolder dataSource, String name) {
 
@@ -78,8 +78,7 @@ public abstract class DataUnit {
 				if (this.dataSource != null && go.getDataSource() == null)
 					return false;
 				// Match on group name and world name.
-				if (this.dataSource.getName().equalsIgnoreCase(go.getDataSource().getName()))
-					return true;
+				return this.dataSource.getName().equalsIgnoreCase(go.getDataSource().getName());
 			}
 		}
 		return false;
@@ -154,7 +153,7 @@ public abstract class DataUnit {
 	public void flagAsChanged() {
 
 		WorldDataHolder testSource = getDataSource();
-		String source = "";
+		String source;
 
 		if (testSource == null)
 			source = "GlobalGroups";
@@ -177,7 +176,7 @@ public abstract class DataUnit {
 	public void flagAsSaved() {
 
 		WorldDataHolder testSource = getDataSource();
-		String source = "";
+		String source;
 
 		if (testSource == null)
 			source = "GlobalGroups";
@@ -203,7 +202,7 @@ public abstract class DataUnit {
 	public void addPermission(String permission) {
 
 		if (!hasSamePermissionNode(permission)) {
-			List<String> clone = new ArrayList<String>(permissions);
+			List<String> clone = new ArrayList<>(permissions);
 			clone.add(permission);
 			permissions = Collections.unmodifiableList(clone);
 		}
@@ -234,9 +233,8 @@ public abstract class DataUnit {
 				return;
 			}*/
 			
-			if ((timedPermissions.containsKey(permission) && timedPermissions.get(permission) < expires)
-					|| !timedPermissions.containsKey(permission)) {
-				Map<String, Long> clone = new HashMap<String, Long>(timedPermissions);
+			if (!timedPermissions.containsKey(permission) || timedPermissions.get(permission) < expires) {
+				Map<String, Long> clone = new HashMap<>(timedPermissions);
 				clone.put(permission, expires);
 				timedPermissions = Collections.unmodifiableMap(clone);
 				GroupManager.logger.info(String.format("Timed: %s - expires: %o", permission, expires));
@@ -249,36 +247,34 @@ public abstract class DataUnit {
 	 * Remove a permission.
 	 * 
 	 * @param permission
-	 * @return	true if the permission was found and removed.
 	 */
-	public boolean removePermission(String permission) {
+	public void removePermission(String permission) {
 
 		synchronized(timedPermissions) {
-			if (timedPermissions.containsKey(permission))
-				return removeTimedPermission(permission);
+			if (timedPermissions.containsKey(permission)) {
+				removeTimedPermission(permission);
+				return;
+			}
 		}
 		
 		flagAsChanged();
-		List<String> clone = new ArrayList<String>(permissions);
+		List<String> clone = new ArrayList<>(permissions);
 		boolean ret = clone.remove(permission);
 		permissions = Collections.unmodifiableList(clone);
-		return ret;
 	}
 	
 	/**
 	 * Remove a timed permission.
 	 * 
 	 * @param permission
-	 * @return	true if the permission was found and removed.
 	 */
-	private boolean removeTimedPermission(String permission) {
+	private void removeTimedPermission(String permission) {
 
 		synchronized(timedPermissions) {
 			flagAsChanged();
-			Map<String, Long> clone = new HashMap<String, Long>(timedPermissions);
+			Map<String, Long> clone = new HashMap<>(timedPermissions);
 			boolean ret = clone.remove(permission) != null;
 			timedPermissions = Collections.unmodifiableMap(clone);
-			return ret;
 		}
 	}
 
@@ -301,7 +297,7 @@ public abstract class DataUnit {
 	public List<String> getAllPermissionList() {
 		
 		synchronized(timedPermissions) {
-			List<String> perms = new ArrayList<String>();
+			List<String> perms = new ArrayList<>();
 			perms.addAll(permissions);
 			perms.addAll(timedPermissions.keySet());
 			Collections.sort(perms);
@@ -316,18 +312,17 @@ public abstract class DataUnit {
 	 * @return
 	 */
 	public List<String> getSavePermissionList() {
-		
-		List<String> perms = new ArrayList<String>();
+
 		/*
 		 * include static permissions.
 		 */
-		perms.addAll(getPermissionList());
+		List<String> perms = new ArrayList<>(getPermissionList());
 		synchronized(timedPermissions) {
 			/*
 			 * Include the concatenated timed permissions.
 			 */
 			for (Entry<String, Long> entry : timedPermissions.entrySet()) {
-				perms.add(entry.getKey() + "|" + Long.toString(entry.getValue()));
+				perms.add(entry.getKey() + "|" + entry.getValue());
 			}
 			Collections.sort(perms);
 		return perms;
@@ -342,7 +337,7 @@ public abstract class DataUnit {
 	 */
 	public Map<String, Long> getTimedPermissions() {
 		
-		return new TreeMap<String, Long>(timedPermissions);
+		return new TreeMap<>(timedPermissions);
 	}
 
 	public boolean isSorted() {
@@ -353,8 +348,8 @@ public abstract class DataUnit {
 	public void sortPermissions() {
 
 		if (!isSorted()) {
-			List<String> clone = new ArrayList<String>(permissions);
-			Collections.sort(clone, StringPermissionComparator.getInstance());
+			List<String> clone = new ArrayList<>(permissions);
+			clone.sort(StringPermissionComparator.getInstance());
 			permissions = Collections.unmodifiableList(clone);
 			
 			sorted = true;
@@ -372,7 +367,7 @@ public abstract class DataUnit {
 		
 		synchronized(timedPermissions) {	
 			
-			SortedMap<String, Long> clone = new TreeMap<String, Long>(timedPermissions);
+			SortedMap<String, Long> clone = new TreeMap<>(timedPermissions);
 			for (Entry<String, Long> perm : timedPermissions.entrySet()) {
 				if (Tasks.isExpired(perm.getValue())) {
 					if (clone.remove(perm.getKey()) != null) {
