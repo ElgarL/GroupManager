@@ -154,15 +154,17 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
     		
     	default:
     		
-    		String[] split = identifier.split("_");
+    		String split[] = identifier.split("_");
 
-			if ("perm".equals(split[0])) {    // Perm check via PAPI.
+    		switch (split[0]) {
 
-				if (split.length == 2) {
+    		case "perm":	// Perm check via PAPI.
 
-					return String.valueOf(handler.has(online, split[1]));
-				}
-			}
+    			if (split.length == 2) {
+
+    				return String.valueOf(handler.has(online, split[1]));
+    			}
+    		}
     		
     		// We return null if an invalid placeholder (f.e. %groupmanager_placeholder3%) 
             // was provided

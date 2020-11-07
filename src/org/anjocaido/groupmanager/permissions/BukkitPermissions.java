@@ -17,17 +17,6 @@
  */
 package org.anjocaido.groupmanager.permissions;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.events.GMUserEvent;
@@ -47,6 +36,17 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.PluginManager;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -420,7 +420,7 @@ public class BukkitPermissions {
 
 	/**
 	 * Force remove any attachments
-	 *
+	 * @param uuid
 	 */
 	private void removeAttachment(String uuid) {
 

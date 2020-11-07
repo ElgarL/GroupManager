@@ -17,14 +17,6 @@
  */
 package org.anjocaido.groupmanager.permissions;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
@@ -32,6 +24,14 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Everything here maintains the model created by Nijikokun
@@ -140,7 +140,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		// fetch all group permissions
 		for (String group : getGroups(userName)) {
 			// Don't process a group more than once.
-			if (!alreadyProcessed.contains(group)) {
+			if
+            (!alreadyProcessed.contains(group)) {
 				alreadyProcessed.add(group);
 
 				Set<String> groupPermArray;
