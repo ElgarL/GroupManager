@@ -40,7 +40,7 @@ public class ManToggleValidate extends BaseCommand {
 		// Toggle validation of player names.
 		GroupManager.getGMConfig().setToggleValidate(!GroupManager.getGMConfig().isToggleValidate());
 		
-		sender.sendMessage(ChatColor.YELLOW + Messages.getString("VALIDATE_STATUS") + Boolean.toString(GroupManager.getGMConfig().isToggleValidate()));
+		sender.sendMessage(ChatColor.YELLOW + Messages.getString("VALIDATE_STATUS") + GroupManager.getGMConfig().isToggleValidate());
 		if (!GroupManager.getGMConfig().isToggleValidate()) {
 			sender.sendMessage(ChatColor.GOLD + Messages.getString("VALIDATE_1"));
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + Messages.getString("VALIDATE_2"));

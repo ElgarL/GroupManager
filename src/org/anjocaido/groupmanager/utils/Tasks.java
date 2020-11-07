@@ -17,6 +17,9 @@
  */
 package org.anjocaido.groupmanager.utils;
 
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.Group;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +40,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
 
 /**
  * 
@@ -116,7 +116,7 @@ public abstract class Tasks {
 					if (olds.lastModified() < oldTime) {
 						try {
 							olds.delete();
-						} catch (Exception e) {
+						} catch (Exception ignored) {
 						}
 					}
 				}
@@ -226,7 +226,7 @@ public abstract class Tasks {
 
 		if (arr.length == 0)
 			return "";
-		String out = arr[0].toString();
+		String out = arr[0];
 		for (int i = 1; i < arr.length; i++)
 			out += separator + arr[i];
 		return out;

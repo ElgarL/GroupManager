@@ -66,7 +66,7 @@ public class ManUAddSub extends BaseCommand {
 		}
 
 		// Validating permission
-		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+		if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
@@ -74,9 +74,9 @@ public class ManUAddSub extends BaseCommand {
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			String[] split = null;
-			Instant timed = null;
-			Long period = null;
+			String[] split;
+			Instant timed;
+			Long period;
 			/*
 			 * check for a timed subgroup
 			 */

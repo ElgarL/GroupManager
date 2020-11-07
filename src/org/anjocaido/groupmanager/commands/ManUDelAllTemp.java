@@ -58,9 +58,7 @@ public class ManUDelAllTemp extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_OVERLOAD")); //$NON-NLS-1$
 			return true;
 		}
-		if (GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()) == null) {
-			GroupManager.getOverloadedUsers().put(dataHolder.getName().toLowerCase(), new ArrayList<User>());
-		}
+		GroupManager.getOverloadedUsers().computeIfAbsent(dataHolder.getName().toLowerCase(), k -> new ArrayList<>());
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).clear();
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("EMPTY_OVERLOAD")); //$NON-NLS-1$
 

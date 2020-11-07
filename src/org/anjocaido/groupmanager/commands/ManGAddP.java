@@ -67,7 +67,7 @@ public class ManGAddP extends BaseCommand {
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-			String[] split = null;
+			String[] split;
 			Instant timed = null;
 			Long period = null;
 			/*
@@ -122,7 +122,7 @@ public class ManGAddP extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for groups.
 		 */

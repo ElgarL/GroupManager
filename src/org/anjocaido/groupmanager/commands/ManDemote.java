@@ -72,7 +72,7 @@ public class ManDemote extends BaseCommand {
 			return true;
 		}
 		// Validating permission
-		if (!isConsole && !isOpOverride && (senderGroup != null ? permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()) : false)) {
+		if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_PERMISSIONS_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
@@ -103,7 +103,7 @@ public class ManDemote extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		
 		/*
 		 * Return a TabComplete for users.

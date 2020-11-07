@@ -18,7 +18,7 @@
 package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -113,7 +113,7 @@ public class ManUListP extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		
 		/*
 		 * Return a TabComplete for users.
@@ -128,7 +128,7 @@ public class ManUListP extends BaseCommand {
 		 */
 		if (args.length == 2) {
 			
-			return Arrays.asList("+");
+			return Collections.singletonList("+");
 		}
 		
 		return result;

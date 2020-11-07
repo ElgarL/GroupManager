@@ -71,8 +71,6 @@ public class ManUCheckV extends BaseCommand {
 			if (!auxUser.isSubGroupsEmpty() && auxGroup2 == null)
 				for (Group subGroup : auxUser.subGroupListCopy()) {
 					auxGroup2 = permissionHandler.nextGroupWithVariable(subGroup, args[1]);
-					if (auxGroup2 != null)
-						continue;
 				}
 			if (auxGroup2 == null) {
 				sender.sendMessage(ChatColor.YELLOW + Messages.getString("ERROR_USER_NO_ACCESS_VARIABLE")); //$NON-NLS-1$
@@ -95,7 +93,7 @@ public class ManUCheckV extends BaseCommand {
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		
 		/*
 		 * Return a TabComplete for users.

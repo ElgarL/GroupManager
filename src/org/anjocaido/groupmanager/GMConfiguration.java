@@ -36,19 +36,18 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  */
 public class GMConfiguration {
 	
-	private String language = "english";
-	private boolean allowCommandBlocks = false;
-	private boolean opOverride = true;
-	private boolean toggleValidate = true;
-	private boolean tabValidate = true;
-	private Integer saveInterval = 10;
-	private Integer backupDuration = 24;
-	private String loggerLevel = "OFF"; //$NON-NLS-1$
+	private String language;
+	private boolean allowCommandBlocks;
+	private boolean opOverride;
+	private boolean toggleValidate;
+	private boolean tabValidate;
+	private Integer saveInterval;
+	private Integer backupDuration;
+	private String loggerLevel; //$NON-NLS-1$
 	private Map<String, Object> mirrorsMap;
 	
 
-	private GroupManager plugin;
-	private Map<String, Object> GMconfig;
+	private final GroupManager plugin;
 
 	public GMConfiguration(GroupManager plugin) {
 
@@ -65,8 +64,6 @@ public class GMConfiguration {
 		saveInterval = 10;
 		backupDuration = 24;
 		loggerLevel = "OFF"; //$NON-NLS-1$
-				
-		//load();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -88,9 +85,10 @@ public class GMConfiguration {
 
 		Yaml configYAML = new Yaml(new SafeConstructor());
 
+		Map<String, Object> GMconfig;
 		try {
 			FileInputStream configInputStream = new FileInputStream(configFile);
-			GMconfig = (Map<String, Object>) configYAML.load(new UnicodeReader(configInputStream));
+			GMconfig = configYAML.load(new UnicodeReader(configInputStream));
 			configInputStream.close();
 
 		} catch (Exception ex) {
@@ -163,11 +161,11 @@ public class GMConfiguration {
 				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex); //$NON-NLS-1$
 			}
 
-			
 
-			Object level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			if (level instanceof String)
-				loggerLevel = (String) level;
+
+			String level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if (level != null)
+				loggerLevel = level;
 
 			/*
 			 * Store our mirrors map for parsing later.
@@ -183,7 +181,7 @@ public class GMConfiguration {
 			 */
 			GroupManager.logger.log(Level.SEVERE, Messages.getString("GMConfiguration.ERRORS_IN_CONFIG"), ex); //$NON-NLS-1$
 			
-			mirrorsMap = new HashMap<String, Object>();
+			mirrorsMap = new HashMap<>();
 		}
 		// Setup defaults
 		adjustLoggerLevel();
@@ -250,7 +248,7 @@ public class GMConfiguration {
 		try {
 			GroupManager.logger.setLevel(Level.parse(loggerLevel));
 			return;
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 
 		GroupManager.logger.setLevel(Level.INFO);
