@@ -17,6 +17,9 @@
  */
 package org.anjocaido.groupmanager.utils;
 
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.Group;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +40,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
 
 /**
  * 
@@ -63,18 +63,19 @@ public abstract class Tasks {
 
 	public static void copy(InputStream src, File dst) throws IOException {
 
+		InputStream in = src;
 		OutputStream out = new FileOutputStream(dst);
 
 		// Transfer bytes from in to out
 		byte[] buf = new byte[1024];
 		int len;
-		while ((len = src.read(buf)) > 0) {
+		while ((len = in.read(buf)) > 0) {
 			out.write(buf, 0, len);
 		}
 		out.close();
 		try {
-			src.close();
-		} catch (Exception ignored) {
+			in.close();
+		} catch (Exception e) {
 		}
 	}
 
