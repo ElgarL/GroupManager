@@ -98,7 +98,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author gabrielcouto, ElgarL
  */
-@SuppressWarnings("DeprecatedIsStillUsed")
 public class GroupManager extends JavaPlugin {
 
 	public GroupManager() {}
