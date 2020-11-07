@@ -33,8 +33,8 @@ import java.util.Map;
  */
 public abstract class Variables implements Cloneable {
 
-	private final DataUnit owner;
-	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
+	private DataUnit owner;
+	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<String, Object>());
 
 	public Variables(DataUnit owner) {
 

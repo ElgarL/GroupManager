@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class UserVariables extends Variables {
 
-	private final User owner;
+	private User owner;
 
 	public UserVariables(User owner) {
 
