@@ -17,16 +17,6 @@
  */
 package org.anjocaido.groupmanager.dataholder.worlds;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
-import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
-import org.anjocaido.groupmanager.localization.Messages;
-import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
-import org.anjocaido.groupmanager.utils.Tasks;
-import org.bukkit.World;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +29,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
+import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
+import org.anjocaido.groupmanager.localization.Messages;
+import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
+import org.anjocaido.groupmanager.utils.Tasks;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 /**
  * 
