@@ -245,36 +245,38 @@ public abstract class DataUnit {
 
 	/**
 	 * Remove a permission.
-	 * 
+	 *
 	 * @param permission
+	 * @return	true if the permission was found and removed.
 	 */
-	public void removePermission(String permission) {
+	public boolean removePermission(String permission) {
 
 		synchronized(timedPermissions) {
-			if (timedPermissions.containsKey(permission)) {
-				removeTimedPermission(permission);
-				return;
-			}
+			if (timedPermissions.containsKey(permission))
+				return removeTimedPermission(permission);
 		}
-		
+
 		flagAsChanged();
-		List<String> clone = new ArrayList<>(permissions);
+		List<String> clone = new ArrayList<String>(permissions);
 		boolean ret = clone.remove(permission);
 		permissions = Collections.unmodifiableList(clone);
+		return ret;
 	}
-	
+
 	/**
 	 * Remove a timed permission.
-	 * 
+	 *
 	 * @param permission
+	 * @return	true if the permission was found and removed.
 	 */
-	private void removeTimedPermission(String permission) {
+	private boolean removeTimedPermission(String permission) {
 
 		synchronized(timedPermissions) {
 			flagAsChanged();
-			Map<String, Long> clone = new HashMap<>(timedPermissions);
+			Map<String, Long> clone = new HashMap<String, Long>(timedPermissions);
 			boolean ret = clone.remove(permission) != null;
 			timedPermissions = Collections.unmodifiableMap(clone);
+			return ret;
 		}
 	}
 

@@ -723,6 +723,14 @@ public class GroupManager extends JavaPlugin {
 	}
 
 	/**
+	 * @param lastError the lastError to set
+	 */
+	public void setLastError(String lastError) {
+
+		this.lastError = lastError;
+	}
+
+	/**
 	 * @return the bukkitPermissions
 	 */
 	public static BukkitPermissions getBukkitPermissions() {

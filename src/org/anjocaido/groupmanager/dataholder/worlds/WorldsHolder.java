@@ -283,6 +283,41 @@ public class WorldsHolder {
 		}
 	}
 
+	/**
+     *
+     */
+	public void reloadAll() {
+
+		// Load global groups
+		GroupManager.getGlobalGroups().load();
+
+		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<WorldDataHolder>();
+		for (WorldDataHolder w : worldsData.values()) {
+			if (alreadyDone.contains(w)) {
+				continue;
+			}
+			if (!mirrorsGroup.containsKey(w.getName().toLowerCase()))
+				w.reloadGroups();
+			if (!mirrorsUser.containsKey(w.getName().toLowerCase()))
+				w.reloadUsers();
+
+			alreadyDone.add(w);
+		}
+
+	}
+
+	/**
+	 *
+	 * @param worldName
+	 */
+	public void reloadWorld(String worldName) {
+
+		if (!mirrorsGroup.containsKey(worldName.toLowerCase()))
+			getWorldData(worldName).reloadGroups();
+		if (!mirrorsUser.containsKey(worldName.toLowerCase()))
+			getWorldData(worldName).reloadUsers();
+	}
+
 	/*
 	 * Never call this. The Only access is via GM's clean up thread.
 	 */
@@ -315,6 +350,15 @@ public class WorldsHolder {
 
 		}
 		return result;
+	}
+
+	/**
+	 * Wrapper to retain backwards compatibility
+	 * (call this function to auto overwrite files)
+	 */
+	public void saveChanges() {
+
+		saveChanges(true);
 	}
 
 	/**
@@ -464,6 +508,22 @@ public class WorldsHolder {
 	}
 
 	/**
+	 * Do a matching of playerName, if its found only one player, do
+	 * getWorldData(player)
+	 *
+	 * @param playerName
+	 * @return null if matching returned no player, or more than one.
+	 */
+	public OverloadedWorldHolder getWorldDataByPlayerName(String playerName) {
+
+		List<Player> matchPlayer = plugin.getServer().matchPlayer(playerName);
+		if (matchPlayer.size() == 1) {
+			return getWorldData(matchPlayer.get(0));
+		}
+		return null;
+	}
+
+	/**
 	 * Retrieves the field player.getWorld().getName() and do
 	 * getWorld(worldName)
 	 * 
@@ -495,6 +555,22 @@ public class WorldsHolder {
 	public AnjoPermissionsHandler getWorldPermissions(Player player) {
 
 		return getWorldData(player).getPermissionsHandler();
+	}
+
+	/**
+	 * It does getWorldDataByPlayerName(playerName).
+	 * If it doesn't return null, it will return result.getPermissionsHandler()
+	 *
+	 * @param playerName
+	 * @return null if the player matching gone wrong.
+	 */
+	public AnjoPermissionsHandler getWorldPermissionsByPlayerName(String playerName) {
+
+		WorldDataHolder dh = getWorldDataByPlayerName(playerName);
+		if (dh != null) {
+			return dh.getPermissionsHandler();
+		}
+		return null;
 	}
 
 	private void verifyFirstRun() {
@@ -574,6 +650,38 @@ public class WorldsHolder {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Copies the specified world data to another world
+	 *
+	 * @param fromWorld
+	 * @param toWorld
+	 * @return true if successfully copied.
+	 */
+	public boolean cloneWorld(String fromWorld, String toWorld) {
+
+		File fromWorldFolder = new File(worldsFolder, fromWorld.toLowerCase());
+		File toWorldFolder = new File(worldsFolder, toWorld.toLowerCase());
+		if (toWorldFolder.exists() || !fromWorldFolder.exists()) {
+			return false;
+		}
+		File fromWorldGroups = new File(fromWorldFolder, "groups.yml"); //$NON-NLS-1$
+		File fromWorldUsers = new File(fromWorldFolder, "users.yml"); //$NON-NLS-1$
+		if (!fromWorldGroups.exists() || !fromWorldUsers.exists()) {
+			return false;
+		}
+		File toWorldGroups = new File(toWorldFolder, "groups.yml"); //$NON-NLS-1$
+		File toWorldUsers = new File(toWorldFolder, "users.yml"); //$NON-NLS-1$
+		toWorldFolder.mkdirs();
+		try {
+			Tasks.copy(fromWorldGroups, toWorldGroups);
+			Tasks.copy(fromWorldUsers, toWorldUsers);
+		} catch (IOException ex) {
+			Logger.getLogger(WorldsHolder.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -660,6 +768,20 @@ public class WorldsHolder {
 	public boolean isInList(String worldName) {
 
 		return worldsData.containsKey(worldName.toLowerCase()) || mirrorsGroup.containsKey(worldName.toLowerCase()) || mirrorsUser.containsKey(worldName.toLowerCase());
+	}
+
+	/**
+	 * Verify if world has it's own file permissions.
+	 *
+	 * @param worldName
+	 * @return true if it has its own holder. false if not.
+	 */
+	public boolean hasOwnData(String worldName) {
+
+		if (worldsData.containsKey(worldName.toLowerCase()) && (!mirrorsGroup.containsKey(worldName.toLowerCase()) || !mirrorsUser.containsKey(worldName.toLowerCase()))) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -316,6 +316,16 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
+	 * Total sub-groups, times and static.
+	 *
+	 * @return	amount of sub-groups on this user.
+	 */
+	public int subGroupsSize () {
+
+		return subGroups.size() + timedSubGroups.size();
+	}
+
+	/**
 	 * Does this User have ANY sub-groups
 	 * static or timed.
 	 * 
@@ -492,7 +502,7 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	@Deprecated
-	public User updatePlayer(){
+	public User updatePlayer() {
 
 		return this;
 	}

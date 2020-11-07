@@ -64,7 +64,6 @@ public class GMConfiguration {
 		saveInterval = 10;
 		backupDuration = 24;
 		loggerLevel = "OFF"; //$NON-NLS-1$
-
 	}
 
 	@SuppressWarnings("unchecked")
