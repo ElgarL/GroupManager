@@ -161,7 +161,7 @@ public class GMConfiguration {
 				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex); //$NON-NLS-1$
 			}
 
-			
+
 
 			String level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if (level != null)
