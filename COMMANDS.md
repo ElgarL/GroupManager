@@ -42,7 +42,7 @@ permission: groupmanager.manudel
 - /manuaddsub  
 Add a group to a player's subgroup list.
 ```
-syntax: <command> <player> <group>  
+syntax: <command> <player> <group> [group2] [group3]...  
 permission: groupmanager.manuaddsub
 ```
 - /manudelsub  
