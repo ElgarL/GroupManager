@@ -19,6 +19,7 @@ package org.anjocaido.groupmanager.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,7 +42,7 @@ public class User extends DataUnit implements Cloneable {
 
 	private String group;
 	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<>());
-	private Map<String, Long> timedSubGroups = Collections.synchronizedSortedMap(Collections.emptySortedMap());
+	private Map<String, Long> timedSubGroups = Collections.unmodifiableSortedMap(Collections.synchronizedSortedMap(Collections.emptySortedMap()));
 	/**
 	 * This one holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
@@ -300,17 +301,23 @@ public class User extends DataUnit implements Cloneable {
 			getDataSource().addGroup(subGroup);
 		}
 
-		if ((timedSubGroups.containsKey(subGroup.getName()) && timedSubGroups.get(subGroup.getName()) < expires)
-				|| !timedSubGroups.containsKey(subGroup.getName())) {
-
-			timedSubGroups.put(subGroup.getName(), expires);
-			GroupManager.logger.info(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
-		}
-		flagAsChanged();
-		if (GroupManager.isLoaded()) {
-			if (!GroupManager.getBukkitPermissions().isPlayer_join())
-				GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-			GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+		synchronized(timedSubGroups) {
+			
+			if ((timedSubGroups.containsKey(subGroup.getName()) && timedSubGroups.get(subGroup.getName()) < expires)
+					|| !timedSubGroups.containsKey(subGroup.getName())) {
+	
+				Map<String, Long> clone = new HashMap<>(timedSubGroups);
+				clone.put(subGroup.getName(), expires);
+				timedSubGroups = Collections.unmodifiableMap(clone);
+				
+				GroupManager.logger.info(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
+			}
+			flagAsChanged();
+			if (GroupManager.isLoaded()) {
+				if (!GroupManager.getBukkitPermissions().isPlayer_join())
+					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+			}
 		}
 		return true;
 	}
@@ -348,16 +355,16 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Remove a static sub-group.
+	 * Remove a sub-group.
 	 * 
 	 * @param subGroup	the Group to remove.
 	 * @return			true if a group was removed.
 	 */
 	public boolean removeSubGroup (Group subGroup){
-		synchronized(timedSubGroups) {
-			if (timedSubGroups.containsKey(subGroup.getName()))
-				return removeTimedSubGroup(subGroup);
-		}
+		
+		if (timedSubGroups.containsKey(subGroup.getName()))
+			return removeTimedSubGroup(subGroup);
+		
 		try {
 			if (subGroups.remove(subGroup.getName())) {
 				flagAsChanged();
@@ -368,6 +375,7 @@ public class User extends DataUnit implements Cloneable {
 				return true;
 			}
 		} catch (Exception ignored) {}
+		
 		return false;
 	}
 
@@ -380,8 +388,19 @@ public class User extends DataUnit implements Cloneable {
 	private boolean removeTimedSubGroup(Group subGroup) {
 
 		synchronized(timedSubGroups) {
-			flagAsChanged();
-			return timedSubGroups.remove(subGroup.getName()) != null;
+			
+			Map<String, Long> clone = new HashMap<String, Long>(timedSubGroups);
+			if (clone.remove(subGroup.getName()) != null) {
+				flagAsChanged();
+				timedSubGroups = Collections.unmodifiableMap(clone);
+				if (GroupManager.isLoaded())
+					if (!GroupManager.getBukkitPermissions().isPlayer_join())
+						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+				return true;
+			}
+			
+			return false;
 		}
 	}
 
@@ -421,13 +440,13 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Returns a map (copy) of any timed subGroups.
+	 * Returns an unmodifiable map of any timed subGroups.
 	 * 
 	 * @return	Map of times sub-groups.
 	 */
 	public Map<String, Long> getTimedSubGroups() {
 
-		return new TreeMap<>(timedSubGroups);
+		return timedSubGroups;
 	}
 
 	/**
