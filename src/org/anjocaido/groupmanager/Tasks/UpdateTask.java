@@ -125,7 +125,7 @@ public class UpdateTask implements Runnable {
 						
 						String name = reader.nextName();
                         
-                        if (name.equalsIgnoreCase("name")) { //$NON-NLS-1$
+                        if (name.equalsIgnoreCase("tag_name")) { //$NON-NLS-1$
                         	newVersionTitle = reader.nextString();
                         }
 						break;
