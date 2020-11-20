@@ -24,7 +24,7 @@ Then add as a dependency in your pom.xml
 >        <dependency>
 >            <groupId>com.github.ElgarL</groupId>
 >            <artifactId>groupmanager</artifactId>
->            <version>2.8</version>
+>            <version>2.9</version>
 >        </dependency>  
 
 ---
