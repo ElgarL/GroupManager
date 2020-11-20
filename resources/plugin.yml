@@ -1,5 +1,5 @@
-﻿name: GroupManager
-main: org.anjocaido.groupmanager.GroupManager
+﻿name: ${project.name}
+main: ${groupId}.${project.name}
 version: ${project.version} (Phoenix)
 api-version: ${project.bukkitAPIVersion}
 
