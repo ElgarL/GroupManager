@@ -34,9 +34,9 @@ import org.anjocaido.groupmanager.events.GMGroupEvent.Action;
 public class Group extends DataUnit implements Cloneable {
 
 	/**
-	 * The group it inherits DIRECTLY!
+	 * The groups it inherits DIRECTLY!
 	 */
-	private List<String> inherits = Collections.unmodifiableList(Collections.emptyList());
+	private List<String> inherits = Collections.synchronizedList(new ArrayList<>());
 	/**
 	 * This one holds the fields in INFO node.
 	 * like prefix = 'c'
@@ -96,9 +96,7 @@ public class Group extends DataUnit implements Cloneable {
 			clone = new Group(this.getName());
 		} else {
 			clone = new Group(getDataSource(), this.getName());
-			clone.inherits = this.getInherits().isEmpty() ?
-					Collections.unmodifiableList(Collections.emptyList())
-					: Collections.unmodifiableList(new ArrayList<>(this.getInherits()));
+			clone.inherits = new ArrayList<>(this.getInherits());
 		}
 
 		for (String perm : this.getPermissionList()) {
@@ -128,9 +126,7 @@ public class Group extends DataUnit implements Cloneable {
 
 		// Don't add inheritance for GlobalGroups
 		if (!isGlobal()) {
-			clone.inherits = this.getInherits().isEmpty() ?
-					Collections.unmodifiableList(Collections.emptyList())
-					: Collections.unmodifiableList(new ArrayList<>(this.getInherits()));
+			clone.inherits = new ArrayList<>(this.getInherits());
 		}
 		for (String perm : this.getPermissionList()) {
 			clone.addPermission(perm);
@@ -151,7 +147,7 @@ public class Group extends DataUnit implements Cloneable {
 	 * @return the inherits
 	 */
 	public List<String> getInherits() {
-		return inherits;
+		return Collections.unmodifiableList(inherits);
 	}
 
 	/**
@@ -164,9 +160,7 @@ public class Group extends DataUnit implements Cloneable {
 				getDataSource().addGroup(inherit);
 			}
 			if (!inherits.contains(inherit.getName().toLowerCase())) {
-				List<String> clone = new ArrayList<>(inherits);
-				clone.add(inherit.getName().toLowerCase());
-				inherits = Collections.unmodifiableList(clone);
+				inherits.add(inherit.getName().toLowerCase());
 			}
 			flagAsChanged();
 			if (GroupManager.isLoaded()) {
@@ -180,9 +174,8 @@ public class Group extends DataUnit implements Cloneable {
 
 		if (!isGlobal()) {
 			if (this.inherits.contains(inherit.toLowerCase())) {
-				List<String> clone = new ArrayList<>(inherits);
-				clone.remove(inherit.toLowerCase());
-				inherits = Collections.unmodifiableList(clone);
+				inherits.remove(inherit.toLowerCase());
+				
 				flagAsChanged();
 				GroupManager.getGMEventHandler().callEvent(this, Action.GROUP_INHERITANCE_CHANGED);
 				return true;

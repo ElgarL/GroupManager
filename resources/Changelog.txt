@@ -292,3 +292,5 @@ v2.9:
         %groupmanager_user_prefix%, %groupmanager_user_suffix%,
         %groupmanager_group_prefix%, %groupmanager_group_suffix%,
         PAPI permission checks - %groupmanager_perm_permission.here%
+v2.10:
+    - Stop using immutable objects internally to increase performance.
