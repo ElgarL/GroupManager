@@ -184,7 +184,7 @@ public class GroupManager extends JavaPlugin {
 	}
 
 	public void onEnable(boolean restarting) {
-
+		
 		try {
 			/*
 			 * reset local variables.
@@ -211,12 +211,18 @@ public class GroupManager extends JavaPlugin {
 			globalGroups = new GlobalGroups(this);
 
 			/*
+			 *  Prevent our registered events from triggering
+			 *  updates as we are not fully loaded.
+			 */
+			setLoaded(false);
+			
+			/*
 			 * Configure the worlds holder.
 			 */
 			if (!restarting)
 				worldsHolder = new WorldsHolder(this);
-			else
-				worldsHolder.resetWorldsHolder();
+			
+			worldsHolder.resetWorldsHolder();
 
 			/*
 			 * This should NEVER happen. No idea why it's still here.
@@ -227,12 +233,6 @@ public class GroupManager extends JavaPlugin {
 				this.getServer().getPluginManager().disablePlugin(this);
 				throw new IllegalStateException(Messages.getString("GroupManager.ERROR_LOADING")); //$NON-NLS-1$
 			}
-
-			/*
-			 *  Prevent our registered events from triggering
-			 *  updates as we are not fully loaded.
-			 */
-			setLoaded(false);
 
 			/*
 			 *  Initialize the world listener and Bukkit permissions

@@ -67,8 +67,8 @@ public class GMWorldListener implements Listener {
 				
 			}
 			
-			plugin.getWorldsHolder().setupWorldFolder(worldName);
-			plugin.getWorldsHolder().loadWorld(worldName);
+			plugin.getWorldsHolder().getDataSource().init(worldName);
+			plugin.getWorldsHolder().getDataSource().loadWorld(worldName, false);
 			
 			
 			if (plugin.getWorldsHolder().isInList(worldName)) {

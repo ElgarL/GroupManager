@@ -65,7 +65,7 @@ public class ManLoad extends BaseCommand {
 			GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
 
 			GroupManager.getGlobalGroups().load();
-			plugin.getWorldsHolder().loadWorld(auxString);
+			plugin.getWorldsHolder().getDataSource().loadWorld(auxString, false);
 
 			sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
 
