@@ -17,8 +17,8 @@
  */
 package org.anjocaido.groupmanager.data;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +36,7 @@ public class Group extends DataUnit implements Cloneable {
 	/**
 	 * The groups it inherits DIRECTLY!
 	 */
-	private List<String> inherits = Collections.synchronizedList(new ArrayList<>());
+	private List<String> inherits = Collections.synchronizedList(new LinkedList<>());
 	/**
 	 * This one holds the fields in INFO node.
 	 * like prefix = 'c'
@@ -96,14 +96,14 @@ public class Group extends DataUnit implements Cloneable {
 			clone = new Group(this.getName());
 		} else {
 			clone = new Group(getDataSource(), this.getName());
-			clone.inherits = new ArrayList<>(this.getInherits());
+			clone.inherits = new LinkedList<>(this.getInherits());
 		}
 
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		clone.variables = variables.clone(clone);
-		//clone.flagAsChanged();
+		
 		return clone;
 	}
 
@@ -123,7 +123,7 @@ public class Group extends DataUnit implements Cloneable {
 
 		// Don't add inheritance for GlobalGroups
 		if (!isGlobal()) {
-			clone.inherits = new ArrayList<>(this.getInherits());
+			clone.inherits = new LinkedList<>(this.getInherits());
 		}
 		
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {

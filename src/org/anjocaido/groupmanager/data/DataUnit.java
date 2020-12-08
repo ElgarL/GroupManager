@@ -297,9 +297,9 @@ public abstract class DataUnit {
 		synchronized (permissions) {
 
 			for (Entry<String, Long> perm : permissions.entrySet()) {
-				if (Tasks.isExpired(perm.getValue())) {
+				if ((perm.getValue() != 0) && Tasks.isExpired(perm.getValue())) {
 					if (permissions.remove(perm.getKey()) != null) {
-						//changed = true;
+						
 						expired = true;
 						GroupManager.logger.info(String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey()));
 					}

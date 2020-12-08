@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -48,7 +49,7 @@ public class WorldsHolder {
 	/**
 	 * Map with instances of loaded worlds.
 	 */
-	private Map<String, OverloadedWorldHolder> worldsData = new HashMap<>();
+	private Map<String, OverloadedWorldHolder> worldsData = new TreeMap<>();
 
 	/**
 	 * Map of mirrors: <nonExistingWorldName, existingAndLoadedWorldName>
@@ -57,8 +58,8 @@ public class WorldsHolder {
 	 * 
 	 * Mirror shows the same data of mirrored.
 	 */
-	private Map<String, String> mirrorsGroup = new HashMap<>();
-	private Map<String, String> mirrorsUser = new HashMap<>();
+	private Map<String, String> mirrorsGroup = new TreeMap<>();
+	private Map<String, String> mirrorsUser = new TreeMap<>();
 
 	private String serverDefaultWorldName;
 	private final GroupManager plugin;

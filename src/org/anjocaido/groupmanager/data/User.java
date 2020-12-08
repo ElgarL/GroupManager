@@ -39,8 +39,7 @@ import org.bukkit.entity.Player;
 public class User extends DataUnit implements Cloneable {
 
 	private String group;
-	private final List<String> subGroups = Collections.synchronizedList(new ArrayList<>());
-	private Map<String, Long> timedSubGroups = Collections.synchronizedSortedMap(new TreeMap<>());
+	private Map<String, Long> subGroups = Collections.synchronizedSortedMap(new TreeMap<>());
 	/**
 	 * This one holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
@@ -62,15 +61,12 @@ public class User extends DataUnit implements Cloneable {
 		User clone = new User(getDataSource(), this.getLastName());
 		clone.group = this.group;
 
-		// Clone all subgroups.
-		clone.subGroups.addAll(this.subGroups);
-
 		// Clone permissions.
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
-		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(this.timedSubGroups);
+		// Clone subgroups.
+		clone.subGroups.putAll(this.subGroups);
 
 		return clone;
 	}
@@ -95,16 +91,13 @@ public class User extends DataUnit implements Cloneable {
 			clone.setGroup(dataSource.getGroup(this.getGroupName()));
 		}
 
-		// Clone all subgroups.
-		clone.subGroups.addAll(this.subGroups);
-
 		// Clone permissions.
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 
-		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(this.timedSubGroups);
+		// Clone subgroups.
+		clone.subGroups.putAll(this.subGroups);
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
@@ -120,16 +113,13 @@ public class User extends DataUnit implements Cloneable {
 		// Set the group silently.
 		clone.setGroup(this.getDataSource().getGroup(this.getGroupName()), false);
 
-		// Clone all subgroups.
-		clone.subGroups.addAll(this.subGroups);
-
 		// Clone permissions.
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 
 		// Clone timed subgroups.
-		clone.timedSubGroups.putAll(this.timedSubGroups);
+		clone.subGroups.putAll(this.subGroups);
 
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
@@ -180,7 +170,7 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Silently set teh Users Group.
+	 * Silently set the Users Group.
 	 * 
 	 * @param group the group to set
 	 */
@@ -231,31 +221,7 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public boolean addSubGroup(Group subGroup) {
 
-		// Don't allow adding a subgroup if it's already set as the primary.
-		if (this.group.equalsIgnoreCase(subGroup.getName())) {
-			return false;
-		}
-		// User already has this subgroup
-		if (containsSubGroup(subGroup))
-			return false;
-
-		// If the group doesn't exists add it
-		if (!this.getDataSource().groupExists(subGroup.getName())) {
-			getDataSource().addGroup(subGroup);
-		}
-
-		subGroups.add(subGroup.getName());
-		flagAsChanged();
-		if (GroupManager.isLoaded()) {
-			if (!GroupManager.getBukkitPermissions().isPlayer_join())
-				GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-			GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-		}
-		return true;
-
-		//subGroup = getDataSource().getGroup(subGroup.getName());
-		//removeSubGroup(subGroup);
-		//subGroups.add(subGroup.getName());
+		return addTimedSubGroup(subGroup, 0L);
 	}
 
 	/**
@@ -270,64 +236,65 @@ public class User extends DataUnit implements Cloneable {
 		if (this.group.equalsIgnoreCase(subGroup.getName())) {
 			return false;
 		}
-		// User already has this subgroup
-		if (containsSubGroup(subGroup))
-			return false;
 
-		// If the group doesn't exists add it
+		// If the group doesn't exists add it (Mirroring)
 		if (!this.getDataSource().groupExists(subGroup.getName())) {
 			getDataSource().addGroup(subGroup);
 		}
 
-		synchronized(timedSubGroups) {
-			
-			if ((timedSubGroups.containsKey(subGroup.getName()) && timedSubGroups.get(subGroup.getName()) < expires)
-					|| !timedSubGroups.containsKey(subGroup.getName())) {
-	
-				timedSubGroups.put(subGroup.getName(), expires);
-				
-				GroupManager.logger.info(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
+		synchronized (subGroups) {
+
+			Long duration = subGroups.get(subGroup.getName());
+
+			// User already has this subgroup?
+			if (!containsSubGroup(subGroup) || (containsSubGroup(subGroup) && (duration < expires) && (duration != 0))) {
+
+				subGroups.put(subGroup.getName(), expires);
+
+				GroupManager.logger.finest(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
+
+				flagAsChanged();
+				if (GroupManager.isLoaded()) {
+					if (!GroupManager.getBukkitPermissions().isPlayer_join())
+						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+					GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+				}
+				return true;
 			}
-			flagAsChanged();
-			if (GroupManager.isLoaded()) {
-				if (!GroupManager.getBukkitPermissions().isPlayer_join())
-					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-			}
+
 		}
-		return true;
+		return false;
 	}
 
 	/**
-	 * Total sub-groups, times and static.
+	 * Total sub-groups.
 	 *
 	 * @return	amount of sub-groups on this user.
 	 */
-	public int subGroupsSize () {
+	public int subGroupsSize() {
 
-		return subGroups.size() + timedSubGroups.size();
+		return subGroups.size();
 	}
 
 	/**
 	 * Does this User have ANY sub-groups
-	 * static or timed.
 	 * 
 	 * @return	true if any sub-groups are present.
 	 */
-	public boolean isSubGroupsEmpty () {
+	public boolean isSubGroupsEmpty() {
 
-		return subGroups.isEmpty() && timedSubGroups.isEmpty();
+		return subGroups.isEmpty();
 	}
 
 	/**
-	 * Does the user have this as a SubGroup (not timed).
+	 * Does the user have this as a SubGroup.
 	 * 
 	 * @param subGroup	the Group to test.
 	 * @return			true if group is present.
 	 */
-	public boolean containsSubGroup (Group subGroup){
+	public boolean containsSubGroup(Group subGroup) {
 
-		return subGroups.contains(subGroup.getName());
+		return subGroups.containsKey(subGroup.getName());
 	}
 
 	/**
@@ -336,36 +303,11 @@ public class User extends DataUnit implements Cloneable {
 	 * @param subGroup	the Group to remove.
 	 * @return			true if a group was removed.
 	 */
-	public boolean removeSubGroup (Group subGroup){
-		
-		if (timedSubGroups.containsKey(subGroup.getName()))
-			return removeTimedSubGroup(subGroup);
-		
-		try {
-			if (subGroups.remove(subGroup.getName())) {
-				flagAsChanged();
-				if (GroupManager.isLoaded())
-					if (!GroupManager.getBukkitPermissions().isPlayer_join())
-						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-				return true;
-			}
-		} catch (Exception ignored) {}
-		
-		return false;
-	}
+	public boolean removeSubGroup(Group subGroup) {
 
-	/**
-	 * Remove a timed sub-group.
-	 * 
-	 * @param subGroup	the Group to remove.
-	 * @return			true if a group was removed.
-	 */
-	private boolean removeTimedSubGroup(Group subGroup) {
+		synchronized (subGroups) {
 
-		synchronized(timedSubGroups) {
-			
-			if (timedSubGroups.remove(subGroup.getName()) != null) {
+			if (subGroups.remove(subGroup.getName()) != null) {
 				flagAsChanged();
 
 				if (GroupManager.isLoaded())
@@ -374,14 +316,12 @@ public class User extends DataUnit implements Cloneable {
 				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
 				return true;
 			}
-			
 			return false;
 		}
 	}
 
 	/**
 	 * Returns a new array of the Sub-Groups attached to this user.
-	 * Includes timed Groups.
 	 *
 	 * @return List of sub-groups.
 	 */
@@ -389,23 +329,13 @@ public class User extends DataUnit implements Cloneable {
 
 		ArrayList<Group> groupList = new ArrayList<>();
 
-		synchronized(subGroups) {
+		synchronized (subGroups) {
 
-			subGroups.forEach(name -> {
+			subGroups.keySet().forEach(name -> {
 				Group g = getDataSource().getGroup(name);
 
 				if (g == null) {
-					removeTimedSubGroup(g);
-				} else {
-					groupList.add(g);
-				}
-			});
-
-			timedSubGroups.keySet().forEach(name -> {
-				Group g = getDataSource().getGroup(name);
-
-				if (g == null) {
-					removeTimedSubGroup(g);
+					removeSubGroup(g);
 				} else {
 					groupList.add(g);
 				}
@@ -415,26 +345,16 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Returns an unmodifiable map of any timed subGroups.
-	 * 
-	 * @return	Map of times sub-groups.
-	 */
-	public Map<String, Long> getTimedSubGroups() {
-
-		return Collections.unmodifiableMap(timedSubGroups);
-	}
-
-	/**
 	 * Fetch a SubGroup list formatted for saving.
 	 * 
 	 * @return	List of sub-group names.
 	 */
 	public List<String> getSaveSubGroupsList() {
 
-		synchronized(subGroups) {
-			ArrayList<String> val = new ArrayList<>(subGroups);
+		synchronized (subGroups) {
+			ArrayList<String> val = new ArrayList<>();
 
-			timedSubGroups.forEach((group, timer) -> val.add(group + "|" + timer));
+			subGroups.forEach((group, timer) -> val.add(group + ((timer != 0) ? "|" + timer : "")));
 
 			return val;
 		}
@@ -442,30 +362,15 @@ public class User extends DataUnit implements Cloneable {
 
 	/**
 	 * Compiles a list of Sub-Group Names attached to this user.
-	 * Excludes timed Groups.
-	 *
-	 * @return List of sub-group names.
-	 */
-	public ArrayList<String> subGroupListCloneStringCopy() {
-
-		synchronized(subGroups) {
-
-			return new ArrayList<>(subGroups);
-		}
-	}
-
-	/**
-	 * Compiles a list of Sub-Group Names attached to this user.
-	 * Includes timed Groups.
 	 *
 	 * @return List of sub-group names.
 	 */
 	public ArrayList<String> subGroupListStringCopy() {
 
-		synchronized(subGroups) {
-			ArrayList<String> val = new ArrayList<>(subGroups);
-			// TODO separate list for clone methods.
-			timedSubGroups.forEach((group, timer) -> val.add(group));
+		synchronized (subGroups) {
+			ArrayList<String> val = new ArrayList<>();
+			
+			subGroups.forEach((group, timer) -> val.add(group));
 
 			return val;
 		}
@@ -474,7 +379,7 @@ public class User extends DataUnit implements Cloneable {
 	/**
 	 * @return the variables
 	 */
-	public UserVariables getVariables () {
+	public UserVariables getVariables() {
 
 		return variables;
 	}
@@ -483,7 +388,7 @@ public class User extends DataUnit implements Cloneable {
 	 *
 	 * @param varList
 	 */
-	public void setVariables (Map < String, Object > varList){
+	public void setVariables(Map<String, Object> varList) {
 
 		variables.clearVars();
 		for (String key : varList.keySet()) {
@@ -506,7 +411,7 @@ public class User extends DataUnit implements Cloneable {
 	 *
 	 * @return Player object or null.
 	 */
-	public Player getBukkitPlayer () {
+	public Player getBukkitPlayer() {
 
 		return BukkitWrapper.getInstance().getPlayer(getLastName());
 	}
@@ -516,10 +421,11 @@ public class User extends DataUnit implements Cloneable {
 	 *
 	 * @return
 	 */
-	public boolean isOnline () {
+	public boolean isOnline() {
 
 		return getBukkitPlayer() != null;
 	}
+
 	/**
 	 * Remove any expired subGroups.
 	 *
@@ -529,19 +435,18 @@ public class User extends DataUnit implements Cloneable {
 
 		boolean expired = false;
 
-		synchronized (timedSubGroups) {
+		synchronized (subGroups) {
 
-			for (Entry<String, Long> entry : timedSubGroups.entrySet()) {
-				if (Tasks.isExpired(entry.getValue())) {
-					if (timedSubGroups.remove(entry.getKey()) != null) {
-						
+			for (Entry<String, Long> entry : subGroups.entrySet()) {
+				if ((entry.getValue() != 0) && Tasks.isExpired(entry.getValue())) {
+					if (subGroups.remove(entry.getKey()) != null) {
+
 						expired = true;
 						GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey()));
 					}
 				}
 			}
 		}
-
 		return expired || super.removeExpired();
 	}
 }

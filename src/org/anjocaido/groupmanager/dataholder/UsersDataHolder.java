@@ -19,8 +19,8 @@ package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.data.User;
 
@@ -40,7 +40,7 @@ public class UsersDataHolder {
 	/**
 	 * The actual groups holder
 	 */
-	private final Map<String, User> users = Collections.synchronizedMap(new HashMap<>());
+	private final SortedMap<String, User> users = Collections.synchronizedSortedMap(new TreeMap<>());
 
 	/**
 	 * Constructor
@@ -63,7 +63,7 @@ public class UsersDataHolder {
 	 * Note: Iteration over this object has to be synchronised!
 	 * @return the users
 	 */
-	public Map<String, User> getUsers() {
+	public SortedMap<String, User> getUsers() {
 
 		return users;
 	}

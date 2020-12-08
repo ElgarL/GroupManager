@@ -18,8 +18,8 @@
 package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -59,7 +59,7 @@ public class WorldDataHolder {
 	/**
 	 * List of UUID's associated with this user name.
 	 */
-	protected static Map<String, Set<String>> nameToUUIDLookup = new TreeMap<String, Set<String>>();
+	protected static Map<String, Set<String>> nameToUUIDLookup = new TreeMap<>();
 	/**
 	 *
 	 */
@@ -413,7 +413,7 @@ public class WorldDataHolder {
 	public Collection<Group> getGroupList() {
 
 		synchronized (getGroups()) {
-			return new ArrayList<Group>(getGroups().values());
+			return new LinkedList<Group>(getGroups().values());
 		}
 	}
 
@@ -423,7 +423,7 @@ public class WorldDataHolder {
 	public Collection<User> getUserList() {
 
 		synchronized (getUsers()) {
-			return new ArrayList<User>(getUsers().values());
+			return new LinkedList<User>(getUsers().values());
 		}
 	}
 
@@ -594,7 +594,6 @@ public class WorldDataHolder {
 	 */
 	public void resetGroups() {
 
-		// setDefaultGroup(null);
 		groups.resetGroups();
 	}
 
@@ -695,6 +694,7 @@ public class WorldDataHolder {
 
 		if (getGroupsFile() != null)
 			setTimeStampGroups(getGroupsFile().lastModified());
+		
 		if (getUsersFile() != null)
 			setTimeStampUsers(getUsersFile().lastModified());
 	}

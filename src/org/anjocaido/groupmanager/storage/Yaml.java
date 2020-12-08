@@ -861,7 +861,7 @@ public class Yaml implements DataSource {
 
 		Map<String, Object> root = new HashMap<String, Object>();
 
-		Map<String, Object> groupsMap = new HashMap<String, Object>();
+		LinkedHashMap<String, Object> groupsMap = new LinkedHashMap<>();
 
 		root.put("groups", groupsMap);
 		synchronized (dataHolder.getGroups()) {
