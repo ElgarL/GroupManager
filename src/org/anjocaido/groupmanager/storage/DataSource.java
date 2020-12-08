@@ -14,20 +14,20 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
  */
 public interface DataSource {
 
-	public void init(String worldName);
+	void init(String worldName);
 
-	public void loadWorld(String worldName, Boolean isMirror);
-	public void loadAllSearchedWorlds();
+	void loadWorld(String worldName, Boolean isMirror);
+	void loadAllSearchedWorlds();
 
-	public void loadGroups(WorldDataHolder dataHolder) throws IOException;
-	public void loadUsers(WorldDataHolder dataHolder) throws IOException;
+	void loadGroups(WorldDataHolder dataHolder) throws IOException;
+	void loadUsers(WorldDataHolder dataHolder) throws IOException;
 
-	public void reload(WorldDataHolder dataHolder);
-	public void reloadGroups(WorldDataHolder dataHolder);
-	public void reloadUsers(WorldDataHolder dataHolder);
+	void reload(WorldDataHolder dataHolder);
+	void reloadGroups(WorldDataHolder dataHolder);
+	void reloadUsers(WorldDataHolder dataHolder);
 
-	public void saveGroups(WorldDataHolder dataHolder);
-	public void saveUsers(WorldDataHolder dataHolder);
+	void saveGroups(WorldDataHolder dataHolder);
+	void saveUsers(WorldDataHolder dataHolder);
 
-	public void backup(OverloadedWorldHolder world, Boolean groupsOrUsers);
+	void backup(OverloadedWorldHolder world, Boolean groupsOrUsers);
 }
