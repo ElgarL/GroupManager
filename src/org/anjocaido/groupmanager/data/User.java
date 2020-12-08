@@ -386,13 +386,13 @@ public class User extends DataUnit implements Cloneable {
 
 	/**
 	 *
-	 * @param varList
+	 * @param nodeData
 	 */
-	public void setVariables(Map<String, Object> varList) {
+	public void setVariables(Map<?, ?> nodeData) {
 
 		variables.clearVars();
-		for (String key : varList.keySet()) {
-			variables.addVar(key, varList.get(key));
+		for (Object key : nodeData.keySet()) {
+			variables.addVar((String) key, nodeData.get(key));
 		}
 		flagAsChanged();
 		if (GroupManager.isLoaded()) {

@@ -36,7 +36,7 @@ public class GroupVariables extends Variables implements Cloneable {
 		addVar("build", false);
 	}
 
-	public GroupVariables(Group owner, Map<String, Object> varList) {
+	public GroupVariables(Group owner, Map<? extends String, ? extends Object> varList) {
 
 		super(owner);
 		variables.clear();

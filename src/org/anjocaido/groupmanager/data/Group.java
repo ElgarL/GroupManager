@@ -189,15 +189,14 @@ public class Group extends DataUnit implements Cloneable {
 
 	/**
 	 * 
-	 * @param varList
+	 * @param nodeData
 	 */
-	public void setVariables(Map<String, Object> varList) {
+	public void setVariables(Map<?, ?> nodeData) {
 
 		if (!isGlobal()) {
-			GroupVariables temp = new GroupVariables(this, varList);
 			variables.clearVars();
-			for (String key : temp.getVarKeyList()) {
-				variables.addVar(key, temp.getVarObject(key));
+			for (Object key : nodeData.keySet()) {
+				variables.addVar((String) key, nodeData.get(key));
 			}
 			flagAsChanged();
 			if (GroupManager.isLoaded()) {

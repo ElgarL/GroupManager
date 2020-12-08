@@ -33,7 +33,7 @@ public class UserVariables extends Variables {
 		this.owner = owner;
 	}
 
-	public UserVariables(User owner, Map<String, Object> varList) {
+	public UserVariables(User owner, Map<? extends String, ? extends Object> varList) {
 
 		super(owner);
 		this.variables.clear();

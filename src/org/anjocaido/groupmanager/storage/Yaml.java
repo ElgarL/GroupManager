@@ -229,7 +229,6 @@ public class Yaml implements DataSource {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void loadGroups(WorldDataHolder dataHolder) throws IOException {
 
@@ -254,13 +253,13 @@ public class Yaml implements DataSource {
 		// PROCESS GROUPS FILE
 
 		Map<String, List<String>> inheritance = new HashMap<>();
-		Map<String, Object> allGroupsNode;
+		Map<?, ?> allGroupsNode;
 
 		/*
 		 * Fetch all groups under the 'groups' entry.
 		 */
 		try {
-			allGroupsNode = (Map<String, Object>) groupsRootDataNode.get("groups");
+			allGroupsNode = (Map<?, ?>) groupsRootDataNode.get("groups");
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath()), ex);
 		}
@@ -269,7 +268,7 @@ public class Yaml implements DataSource {
 			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS"), groupsFile.getPath()));
 		}
 
-		Iterator<String> groupItr = allGroupsNode.keySet().iterator();
+		Iterator<?> groupItr = allGroupsNode.keySet().iterator();
 		String groupKey;
 		Integer groupCount = 0;
 
@@ -281,7 +280,7 @@ public class Yaml implements DataSource {
 			try {
 				groupCount++;
 				// Attempt to fetch the next group name.
-				groupKey = groupItr.next();
+				groupKey = (String) groupItr.next();
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_GROUP_NAME"), groupCount, groupsFile.getPath()), ex);
 			}
@@ -289,10 +288,10 @@ public class Yaml implements DataSource {
 			/*
 			 * Fetch this groups child nodes
 			 */
-			Map<String, Object> thisGroupNode;
+			Map<?, ?> thisGroupNode;
 
 			try {
-				thisGroupNode = (Map<String, Object>) allGroupsNode.get(groupKey);
+				thisGroupNode = (Map<?, ?>) allGroupsNode.get(groupKey);
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_CHILD_NODE"), groupKey, groupsFile.getPath()), ex);
 			}
@@ -315,9 +314,9 @@ public class Yaml implements DataSource {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "default", groupKey, groupsFile.getPath()));
 			}
 
-				/*
-				 * If no 'default' node is found do nothing.
-				 */
+			/*
+			 * If no 'default' node is found do nothing.
+			 */
 			if ((nodeData != null && Boolean.parseBoolean(nodeData.toString()))) {
 				/*
 				 * Set this as the default group. Warn if some other group has
@@ -434,7 +433,7 @@ public class Yaml implements DataSource {
 
 			} else if (nodeData != null && nodeData instanceof Map) {
 				try {
-					thisGrp.setVariables((Map<String, Object>) nodeData);
+					thisGrp.setVariables((Map<?, ?>) nodeData);
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", thisGrp.getName(), groupsFile.getPath()), ex);
 				}
@@ -449,20 +448,20 @@ public class Yaml implements DataSource {
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", groupKey, groupsFile.getPath()));
 			}
-					/*
-					 * If no inheritance node is found, or it's empty do
-					 * nothing.
-					 */
-					if (nodeData instanceof List) {
-					try {
-						for (String grp : (List<String>) nodeData) {
-							inheritance.computeIfAbsent(groupKey, k -> new ArrayList<>());
-							inheritance.get(groupKey).add(grp);
-						}
-
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
+			/*
+			 * If no inheritance node is found, or it's empty do
+			 * nothing.
+			 */
+			if (nodeData instanceof List) {
+				try {
+					for (Object grp : (List<?>) nodeData) {
+						inheritance.computeIfAbsent(groupKey, k -> new ArrayList<>());
+						inheritance.get(groupKey).add((String) grp);
 					}
+
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
+				}
 			} else
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "inheritance", thisGrp.getName(), groupsFile.getPath()));
 
@@ -498,7 +497,6 @@ public class Yaml implements DataSource {
 		dataHolder.setTimeStampGroups(groupsFile.lastModified());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void loadUsers(WorldDataHolder dataHolder) throws IOException {
 
@@ -507,6 +505,7 @@ public class Yaml implements DataSource {
 
 		org.yaml.snakeyaml.Yaml yamlUsers = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
 		Map<String, Object> usersRootDataNode;
+
 		if (!dataHolder.getUsersFile().exists()) {
 			throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_USERS_FILE") + System.lineSeparator() + usersFile.getPath());
 		}
@@ -521,13 +520,13 @@ public class Yaml implements DataSource {
 
 		// PROCESS USERS FILE
 
-		Map<String, Object> allUsersNode;
+		Map<?, ?> allUsersNode;
 
 		/*
 		 * Fetch all child nodes under the 'users' entry.
 		 */
 		try {
-			allUsersNode = (Map<String, Object>) usersRootDataNode.get("users");
+			allUsersNode = (Map<?, ?>) usersRootDataNode.get("users");
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
 		}
@@ -536,7 +535,7 @@ public class Yaml implements DataSource {
 
 		if (allUsersNode != null) {
 
-			Iterator<String> usersItr = allUsersNode.keySet().iterator();
+			Iterator<?> usersItr = allUsersNode.keySet().iterator();
 			String usersKey;
 			Object node;
 			Integer userCount = 0;
@@ -555,9 +554,9 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_NODE_USER"), userCount, usersFile.getPath()), ex);
 				}
 
-				Map<String, Object> thisUserNode;
+				Map<?, ?> thisUserNode;
 				try {
-					thisUserNode = (Map<String, Object>) allUsersNode.get(node);
+					thisUserNode = (Map<?, ?>) allUsersNode.get(node);
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), usersKey, usersFile.getPath()));
 				}
@@ -591,52 +590,52 @@ public class Yaml implements DataSource {
 				}
 
 				{ try {
-						if (nodeData instanceof List) {
-							for (Object o : ((List<?>) nodeData)) {
-								/*
-								 * Only add this permission if it's not empty
-								 */
-								if (!o.toString().isEmpty()) {
-									/*
-									 * check for a timed permission
-									 */
-									if (o.toString().contains("|")) {
-										String[] split = o.toString().split("\\|");
-										try {
-											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
-										} catch (Exception e) {
-											GroupManager.logger.warning("TimedPermission error: " + o.toString());
-										}
-									} else {
-										thisUser.addPermission(o.toString());
-									}
-								}
-							}
-						} else if (nodeData instanceof String) {
-
+					if (nodeData instanceof List) {
+						for (Object o : ((List<?>) nodeData)) {
 							/*
 							 * Only add this permission if it's not empty
 							 */
-							if (!nodeData.toString().isEmpty()) {
+							if (!o.toString().isEmpty()) {
 								/*
 								 * check for a timed permission
 								 */
-								if (nodeData.toString().contains("|")) {
-									String[] split = nodeData.toString().split("\\|");
+								if (o.toString().contains("|")) {
+									String[] split = o.toString().split("\\|");
 									try {
 										thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 									} catch (Exception e) {
-										GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+										GroupManager.logger.warning("TimedPermission error: " + o.toString());
 									}
 								} else {
-									thisUser.addPermission(nodeData.toString());
+									thisUser.addPermission(o.toString());
 								}
 							}
-
 						}
-					} catch (NullPointerException e) {
-						// Ignore this entry as it's null.
+					} else if (nodeData instanceof String) {
+
+						/*
+						 * Only add this permission if it's not empty
+						 */
+						if (!nodeData.toString().isEmpty()) {
+							/*
+							 * check for a timed permission
+							 */
+							if (nodeData.toString().contains("|")) {
+								String[] split = nodeData.toString().split("\\|");
+								try {
+									thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
+								} catch (Exception e) {
+									GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+								}
+							} else {
+								thisUser.addPermission(nodeData.toString());
+							}
+						}
+
 					}
+				} catch (NullPointerException e) {
+					// Ignore this entry as it's null.
+				}
 				}
 
 				// USER INFO NODE
@@ -648,7 +647,7 @@ public class Yaml implements DataSource {
 				}
 
 				if (nodeData instanceof Map) {
-					thisUser.setVariables((Map<String, Object>) nodeData);
+					thisUser.setVariables((Map<?, ?>) nodeData);
 
 				} else
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY_USER"), "info", thisUser.getLastName(), usersFile.getPath()));
