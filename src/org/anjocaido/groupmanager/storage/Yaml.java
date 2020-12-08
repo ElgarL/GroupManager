@@ -5,12 +5,11 @@ package org.anjocaido.groupmanager.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +44,7 @@ public class Yaml implements DataSource {
 	private File worldsFolder;
 
 	/**
-	 * 
+	 *
 	 */
 	public Yaml(GroupManager plugin) {
 
@@ -243,22 +242,19 @@ public class Yaml implements DataSource {
 		if (!groupsFile.exists()) {
 			throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS_FILE") + System.lineSeparator() + groupsFile.getPath());
 		}
-		FileInputStream groupsInputStream = new FileInputStream(groupsFile);
-		try {
-			groupsRootDataNode = (Map<String, Object>) yamlGroups.load(new UnicodeReader(groupsInputStream));
+		try (FileInputStream groupsInputStream = new FileInputStream(groupsFile)) {
+			groupsRootDataNode = yamlGroups.load(new UnicodeReader(groupsInputStream));
 			if (groupsRootDataNode == null) {
 				throw new NullPointerException();
 			}
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath(), ex));
-		} finally {
-			groupsInputStream.close();
 		}
 
 		// PROCESS GROUPS FILE
 
-		Map<String, List<String>> inheritance = new HashMap<String, List<String>>();
-		Map<String, Object> allGroupsNode = null;
+		Map<String, List<String>> inheritance = new HashMap<>();
+		Map<String, Object> allGroupsNode;
 
 		/*
 		 * Fetch all groups under the 'groups' entry.
@@ -293,7 +289,7 @@ public class Yaml implements DataSource {
 			/*
 			 * Fetch this groups child nodes
 			 */
-			Map<String, Object> thisGroupNode = null;
+			Map<String, Object> thisGroupNode;
 
 			try {
 				thisGroupNode = (Map<String, Object>) allGroupsNode.get(groupKey);
@@ -312,18 +308,17 @@ public class Yaml implements DataSource {
 
 			// DEFAULT NODE
 
-			Object nodeData = null;
+			Object nodeData;
 			try {
 				nodeData = thisGroupNode.get("default");
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "default", groupKey, groupsFile.getPath()));
 			}
 
-			if (nodeData == null) {
 				/*
 				 * If no 'default' node is found do nothing.
 				 */
-			} else if ((Boolean.parseBoolean(nodeData.toString()))) {
+			if ((nodeData != null && Boolean.parseBoolean(nodeData.toString()))) {
 				/*
 				 * Set this as the default group. Warn if some other group has
 				 * already claimed that position.
@@ -337,7 +332,6 @@ public class Yaml implements DataSource {
 
 			// PERMISSIONS NODE
 
-			nodeData = null;
 			try {
 				nodeData = thisGroupNode.get("permissions");
 			} catch (Exception ex) {
@@ -424,7 +418,6 @@ public class Yaml implements DataSource {
 
 			// INFO NODE
 
-			nodeData = null;
 			try {
 				nodeData = thisGroupNode.get("info");
 			} catch (Exception ex) {
@@ -439,11 +432,9 @@ public class Yaml implements DataSource {
 				GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_GROUP_NO_INFO"), thisGrp.getName()));
 				GroupManager.logger.warning(Messages.getString("WorldDatHolder.WARN_USING_DEFAULT") + groupsFile.getPath());
 
-			} else if (nodeData instanceof Map) {
+			} else if (nodeData != null && nodeData instanceof Map) {
 				try {
-					if (nodeData != null) {
-						thisGrp.setVariables((Map<String, Object>) nodeData);
-					}
+					thisGrp.setVariables((Map<String, Object>) nodeData);
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", thisGrp.getName(), groupsFile.getPath()), ex);
 				}
@@ -453,34 +444,25 @@ public class Yaml implements DataSource {
 
 			// INHERITANCE NODE
 
-			nodeData = null;
 			try {
 				nodeData = thisGroupNode.get("inheritance");
 			} catch (Exception ex) {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", groupKey, groupsFile.getPath()));
 			}
-
-			if (nodeData == null || nodeData instanceof List) {
-				if (nodeData == null) {
 					/*
 					 * If no inheritance node is found, or it's empty do
 					 * nothing.
 					 */
-				} else if (nodeData instanceof List) {
-
+					if (nodeData instanceof List) {
 					try {
 						for (String grp : (List<String>) nodeData) {
-							if (inheritance.get(groupKey) == null) {
-								inheritance.put(groupKey, new ArrayList<String>());
-							}
+							inheritance.computeIfAbsent(groupKey, k -> new ArrayList<>());
 							inheritance.get(groupKey).add(grp);
 						}
 
 					} catch (Exception ex) {
 						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
 					}
-
-				}
 			} else
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "inheritance", thisGrp.getName(), groupsFile.getPath()));
 
@@ -493,7 +475,7 @@ public class Yaml implements DataSource {
 		}
 
 		/*
-		 * Build the inheritance map and recored any errors
+		 * Build the inheritance map and record any errors
 		 */
 		for (String group : inheritance.keySet()) {
 			List<String> inheritedList = inheritance.get(group);
@@ -528,21 +510,18 @@ public class Yaml implements DataSource {
 		if (!dataHolder.getUsersFile().exists()) {
 			throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_USERS_FILE") + System.lineSeparator() + usersFile.getPath());
 		}
-		FileInputStream usersInputStream = new FileInputStream(usersFile);
-		try {
-			usersRootDataNode = (Map<String, Object>) yamlUsers.load(new UnicodeReader(usersInputStream));
+		try (FileInputStream usersInputStream = new FileInputStream(usersFile)) {
+			usersRootDataNode = yamlUsers.load(new UnicodeReader(usersInputStream));
 			if (usersRootDataNode == null) {
 				throw new NullPointerException();
 			}
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
-		} finally {
-			usersInputStream.close();
 		}
 
 		// PROCESS USERS FILE
 
-		Map<String, Object> allUsersNode = null;
+		Map<String, Object> allUsersNode;
 
 		/*
 		 * Fetch all child nodes under the 'users' entry.
@@ -576,7 +555,7 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_NODE_USER"), userCount, usersFile.getPath()), ex);
 				}
 
-				Map<String, Object> thisUserNode = null;
+				Map<String, Object> thisUserNode;
 				try {
 					thisUserNode = (Map<String, Object>) allUsersNode.get(node);
 				} catch (Exception ex) {
@@ -590,7 +569,7 @@ public class Yaml implements DataSource {
 
 				// LASTNAME NODES
 
-				Object nodeData = null;
+				Object nodeData;
 				try {
 
 					nodeData = thisUserNode.get("lastname");
@@ -599,28 +578,19 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "lastname", usersKey, usersFile.getPath()));
 				}
 
-				if ((nodeData != null) && (nodeData instanceof String)) {
-
+				if ((nodeData instanceof String)) {
 					thisUser.setLastName((String) nodeData);
-
 				}
 
 				// USER PERMISSIONS NODES
 
-				nodeData = null;
 				try {
 					nodeData = thisUserNode.get("permissions");
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), "permissions", usersKey, usersFile.getPath()));
 				}
 
-				if (nodeData == null) {
-					/*
-					 * If no permissions node is found, or it's empty do
-					 * nothing.
-					 */
-				} else {
-					try {
+				{ try {
 						if (nodeData instanceof List) {
 							for (Object o : ((List<?>) nodeData)) {
 								/*
@@ -671,18 +641,13 @@ public class Yaml implements DataSource {
 
 				// USER INFO NODE
 
-				nodeData = null;
 				try {
 					nodeData = thisUserNode.get("info");
 				} catch (Exception ex) {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "info", usersKey, usersFile.getPath()));
 				}
 
-				if (nodeData == null) {
-					/*
-					 * If no info node is found, or it's empty do nothing.
-					 */
-				} else if (nodeData instanceof Map) {
+				if (nodeData instanceof Map) {
 					thisUser.setVariables((Map<String, Object>) nodeData);
 
 				} else
@@ -692,7 +657,6 @@ public class Yaml implements DataSource {
 
 				// PRIMARY GROUP
 
-				nodeData = null;
 				try {
 					nodeData = thisUserNode.get("group");
 				} catch (Exception ex) {
@@ -712,7 +676,6 @@ public class Yaml implements DataSource {
 
 				// SUBGROUPS NODES
 
-				nodeData = null;
 				try {
 					nodeData = thisUserNode.get("subgroups");
 				} catch (Exception ex) {
@@ -813,7 +776,6 @@ public class Yaml implements DataSource {
 			dataHolder.removeGroupsChangedFlag();
 			dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
 
-			ph = null;
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
@@ -848,7 +810,6 @@ public class Yaml implements DataSource {
 			dataHolder.removeUsersChangedFlag();
 			dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
 
-			ph = null;
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
@@ -859,7 +820,7 @@ public class Yaml implements DataSource {
 	@Override
 	public void saveGroups(WorldDataHolder dataHolder) {
 
-		Map<String, Object> root = new HashMap<String, Object>();
+		Map<String, Object> root = new HashMap<>();
 
 		LinkedHashMap<String, Object> groupsMap = new LinkedHashMap<>();
 
@@ -868,7 +829,7 @@ public class Yaml implements DataSource {
 			for (String groupKey : dataHolder.getGroups().keySet()) {
 				Group group = dataHolder.getGroups().get(groupKey);
 
-				Map<String, Object> aGroupMap = new HashMap<String, Object>();
+				Map<String, Object> aGroupMap = new HashMap<>();
 				groupsMap.put(group.getName(), aGroupMap);
 
 				if (dataHolder.getDefaultGroup() == null) {
@@ -876,7 +837,7 @@ public class Yaml implements DataSource {
 				}
 				aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
 
-				Map<String, Object> infoMap = new HashMap<String, Object>();
+				Map<String, Object> infoMap = new HashMap<>();
 				aGroupMap.put("info", infoMap);
 
 				for (String infoKey : group.getVariables().getVarKeyList()) {
@@ -894,7 +855,7 @@ public class Yaml implements DataSource {
 			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
 			try {
-				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), "UTF-8");
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
 
 				String newLine = System.getProperty("line.separator");
 
@@ -911,10 +872,7 @@ public class Yaml implements DataSource {
 
 				yaml.dump(root, out);
 				out.close();
-			} catch (UnsupportedEncodingException ex) {
-			} catch (FileNotFoundException ex) {
-			} catch (IOException e) {
-			}
+			} catch (Exception ignored) {}
 		}
 
 		// Update the LastModified time.
@@ -929,20 +887,20 @@ public class Yaml implements DataSource {
 	@Override
 	public void saveUsers(WorldDataHolder dataHolder) {
 
-		Map<String, Object> root = new HashMap<String, Object>();
-		LinkedHashMap<String, Object> usersMap = new LinkedHashMap<String, Object>();
+		Map<String, Object> root = new HashMap<>();
+		LinkedHashMap<String, Object> usersMap = new LinkedHashMap<>();
 
 		root.put("users", usersMap);
 		synchronized (dataHolder.getUsers()) {
 
 			// A sorted list of users.
-			for (String userKey : new TreeSet<String>(dataHolder.getUsers().keySet())) {
+			for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
 				User user = dataHolder.getUsers().get(userKey);
 				if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
 					continue;
 				}
 
-				LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<String, Object>();
+				LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
 				usersMap.put(user.getUUID(), aUserMap);
 
 				if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
@@ -964,7 +922,7 @@ public class Yaml implements DataSource {
 
 				// USER INFO NODE - BETA
 				if (user.getVariables().getSize() > 0) {
-					Map<String, Object> infoMap = new HashMap<String, Object>();
+					Map<String, Object> infoMap = new HashMap<>();
 					aUserMap.put("info", infoMap);
 					for (String infoKey : user.getVariables().getVarKeyList()) {
 						infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
@@ -980,12 +938,10 @@ public class Yaml implements DataSource {
 			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
 			try {
-				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), "UTF-8");
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
 				yaml.dump(root, out);
 				out.close();
-			} catch (UnsupportedEncodingException ex) {
-			} catch (FileNotFoundException ex) {
-			} catch (IOException e) {
+			} catch (Exception ignored) {
 			}
 		}
 
