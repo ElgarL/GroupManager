@@ -38,7 +38,7 @@ public class ManWorld extends BaseCommand {
 	protected boolean parseCommand(@NotNull String[] args) {
 
 		auxString = GroupManager.getSelectedWorlds().get(sender.getName());
-		
+
 		if (auxString != null) {
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("YOU_HAVE_SELECTED_WORLD"), dataHolder.getName()));
 		} else {

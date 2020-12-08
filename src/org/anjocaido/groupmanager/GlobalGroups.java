@@ -70,11 +70,11 @@ public class GlobalGroups {
 			return true;
 		}
 		synchronized(groups) {
-		for (Group g : groups.values()) {
-			if (g.isChanged()) {
-				return true;
+			for (Group g : groups.values()) {
+				if (g.isChanged()) {
+					return true;
+				}
 			}
-		}
 		}
 		return false;
 	}
@@ -109,7 +109,7 @@ public class GlobalGroups {
 
 		Yaml GGroupYAML = new Yaml(new SafeConstructor());
 		Map<String, Object> GGroups;
-		
+
 		GroupManager.setLoaded(false);
 
 		// READ globalGroups FILE
@@ -195,7 +195,7 @@ public class GlobalGroups {
 							}
 						} else if (element instanceof String) {
 							if ((element != null) && !((String)element).isEmpty())
-							newGroup.addPermission((String) element);
+								newGroup.addPermission((String) element);
 						} else
 							throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.UNKNOWN_PERMISSION_TYPE"), groupName)); //$NON-NLS-1$
 
@@ -227,16 +227,16 @@ public class GlobalGroups {
 				Map<String, Object> groupsMap = new HashMap<>();
 				root.put("groups", groupsMap); //$NON-NLS-1$
 				synchronized(groups) {
-				for (String groupKey : groups.keySet()) {
-					Group group = groups.get(groupKey);
+					for (String groupKey : groups.keySet()) {
+						Group group = groups.get(groupKey);
 
-					// Group header
-					Map<String, Object> aGroupMap = new HashMap<>();
-					groupsMap.put(group.getName(), aGroupMap);
+						// Group header
+						Map<String, Object> aGroupMap = new HashMap<>();
+						groupsMap.put(group.getName(), aGroupMap);
 
-					// Permission nodes
-					aGroupMap.put("permissions", group.getPermissionList()); //$NON-NLS-1$
-				}
+						// Permission nodes
+						aGroupMap.put("permissions", group.getPermissionList()); //$NON-NLS-1$
+					}
 				}
 
 				if (!root.isEmpty()) {
@@ -444,15 +444,15 @@ public class GlobalGroups {
 	}
 
 	/**
-    *
-    */
+	 *
+	 */
 	public void removeGroupsChangedFlag() {
 
 		setGroupsChanged(false);
 		synchronized(groups) {
-		for (Group g : groups.values()) {
-			g.flagAsSaved();
-		}
+			for (Group g : groups.values()) {
+				g.flagAsSaved();
+			}
 		}
 	}
 

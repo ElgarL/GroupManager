@@ -160,7 +160,7 @@ public abstract class DataUnit {
 			source = testSource.getName();
 
 		GroupManager.logger.finest(String.format("DataSource: %s - DataUnit: %s flagged as ", source, getUUID()) + "changed!");
-		
+
 		changed = true;
 	}
 
@@ -254,7 +254,7 @@ public abstract class DataUnit {
 
 		return Collections.unmodifiableList(new ArrayList<>(permissions.keySet()));
 	}
-	
+
 	/**
 	 * Use this only to list permissions.
 	 * You can't edit the permissions using the returned Map instance
@@ -262,7 +262,7 @@ public abstract class DataUnit {
 	 * @return
 	 */
 	public Map<String, Long> getPermissions() {
-		
+
 		return Collections.unmodifiableMap(permissions);
 	}
 
@@ -299,7 +299,7 @@ public abstract class DataUnit {
 			for (Entry<String, Long> perm : permissions.entrySet()) {
 				if ((perm.getValue() != 0) && Tasks.isExpired(perm.getValue())) {
 					if (permissions.remove(perm.getKey()) != null) {
-						
+
 						expired = true;
 						GroupManager.logger.info(String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey()));
 					}

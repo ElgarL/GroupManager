@@ -50,9 +50,9 @@ public class UserVariables extends Variables {
 
 		UserVariables clone = new UserVariables(newOwner);
 		synchronized(variables) {
-		for (String key : variables.keySet()) {
-			clone.variables.put(key, variables.get(key));
-		}
+			for (String key : variables.keySet()) {
+				clone.variables.put(key, variables.get(key));
+			}
 		}
 		newOwner.flagAsChanged();
 		return clone;

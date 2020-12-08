@@ -103,7 +103,7 @@ public class Group extends DataUnit implements Cloneable {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		clone.variables = variables.clone(clone);
-		
+
 		return clone;
 	}
 
@@ -125,7 +125,7 @@ public class Group extends DataUnit implements Cloneable {
 		if (!isGlobal()) {
 			clone.inherits = new LinkedList<>(this.getInherits());
 		}
-		
+
 		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
@@ -170,7 +170,7 @@ public class Group extends DataUnit implements Cloneable {
 		if (!isGlobal()) {
 			if (this.inherits.contains(inherit.toLowerCase())) {
 				inherits.remove(inherit.toLowerCase());
-				
+
 				flagAsChanged();
 				GroupManager.getGMEventHandler().callEvent(this, Action.GROUP_INHERITANCE_CHANGED);
 				return true;

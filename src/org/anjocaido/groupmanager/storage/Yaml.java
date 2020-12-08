@@ -43,7 +43,7 @@ public class Yaml implements DataSource {
 
 	private GroupManager plugin;
 	private File worldsFolder;
-	
+
 	/**
 	 * 
 	 */
@@ -58,7 +58,7 @@ public class Yaml implements DataSource {
 
 		WorldsHolder holder = plugin.getWorldsHolder();
 		String worldNameLowered = worldName.toLowerCase();
-		
+
 		if (!worldsFolder.exists()) {
 			worldsFolder.mkdirs();
 		}
@@ -110,7 +110,7 @@ public class Yaml implements DataSource {
 			}
 		}
 	}
-	
+
 	@Override
 	public void loadWorld(String worldName, Boolean isMirror) {
 
@@ -229,7 +229,7 @@ public class Yaml implements DataSource {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void loadGroups(WorldDataHolder dataHolder) throws IOException {
@@ -780,7 +780,7 @@ public class Yaml implements DataSource {
 		dataHolder.setUsersFile(usersFile);
 		dataHolder.setTimeStampUsers(usersFile.lastModified());
 	}
-	
+
 	@Override
 	public void reload(WorldDataHolder dataHolder) {
 

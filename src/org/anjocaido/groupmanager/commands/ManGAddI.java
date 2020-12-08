@@ -84,7 +84,7 @@ public class ManGAddI extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for base groups.
@@ -98,14 +98,14 @@ public class ManGAddI extends BaseCommand {
 			 * Include global groups.
 			 */
 			if (args.length == 2) {
-				
+
 				for (Group g : GroupManager.getGlobalGroups().getGroupList()) {
 					result.add(g.getName());
 				}
 			}
 			return result;
 		}
-		
+
 		return null;
 	}
 

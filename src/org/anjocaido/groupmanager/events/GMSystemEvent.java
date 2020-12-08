@@ -51,7 +51,7 @@ public class GMSystemEvent extends Event {
 	public GMSystemEvent(Action action) {
 
 		super();
-		
+
 		this.action = action;
 	}
 

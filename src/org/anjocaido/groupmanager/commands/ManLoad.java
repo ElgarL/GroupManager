@@ -96,17 +96,17 @@ public class ManLoad extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		/*
 		 * Populate the first argument of TabComplete with a list of valid world roots.
 		 */
 		if (args.length == 1) {
 			return getWorlds();
 		}
-		
+
 		return new ArrayList<>();
 	}
 

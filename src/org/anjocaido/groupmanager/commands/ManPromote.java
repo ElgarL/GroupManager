@@ -99,10 +99,10 @@ public class ManPromote extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for users.
@@ -111,9 +111,9 @@ public class ManPromote extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		if (args.length == 2) {
-			
+
 			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
 			}
@@ -123,13 +123,13 @@ public class ManPromote extends BaseCommand {
 			} else {
 				auxUser = dataHolder.getUser(args[0]);
 			}
-			
+
 			for (Group g : dataHolder.getGroupList()) {
 				if (permissionHandler.hasGroupInInheritance(g, auxUser.getGroupName()) && !auxUser.getGroup().equals(g))
 					if (g.getName().toLowerCase().contains(args[1].toLowerCase()))
 						result.add(g.getName());
 			}
-			
+
 		}
 		return result;
 	}

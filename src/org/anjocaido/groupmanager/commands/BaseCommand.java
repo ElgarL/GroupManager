@@ -47,61 +47,61 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 	protected GroupManager plugin;
-	
+
 	protected boolean isConsole = false;
 	protected boolean playerCanDo = false;
 	protected boolean isOpOverride = false;
 	protected boolean isAllowCommandBlocks = false;
-	
+
 	protected Player senderPlayer = null, targetPlayer = null;
 	protected CommandSender sender = null;
 	protected Group senderGroup = null;
 	protected User senderUser = null;
-	
+
 	protected UUID match = null;
 	protected User auxUser = null;
 	protected Group auxGroup = null;
 	protected Group auxGroup2 = null;
 	protected String auxString = null;
 	protected PermissionCheckResult permissionResult = null;
-	
+
 	// PERMISSIONS FOR COMMAND BEING LOADED
 	protected OverloadedWorldHolder dataHolder = null;
 	protected AnjoPermissionsHandler permissionHandler = null;
-	
-	
+
+
 	/**
 	 * 
 	 */
 	public BaseCommand() {
-		
+
 		plugin = GroupManager.getPlugin(GroupManager.class);
 	}
 
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-		
+
 		// If parsSender fails exit.
 		if (!parseSender(sender, label)) return true;
-		
+
 		try {
 			return parseCommand(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		// If parsSender fails return empty.
 		if (!parseSender(sender, alias) || isConsole) return new ArrayList<>();
-		
+
 		return tabComplete(sender, command, alias, args);
 	}
-	
+
 	/**
 	 * Attempt to setup the data-sources for this command.
 	 * 
@@ -113,22 +113,22 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 		playerCanDo = false;
 		isConsole = false;
-		
+
 		isOpOverride = GroupManager.getGMConfig().isOpOverride();
 		isAllowCommandBlocks = GroupManager.getGMConfig().isAllowCommandBlocks();
-		
+
 		// Prevent all commands other than /manload if we are in an error state.
 		if (!plugin.getLastError().isEmpty() && !alias.equalsIgnoreCase("manload")) { //$NON-NLS-1$
 			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_ERROR")); //$NON-NLS-1$
 			return false;
 		}
-		
+
 		// PREVENT GM COMMANDS BEING USED ON COMMANDBLOCKS
 		if (sender instanceof BlockCommandSender && !isAllowCommandBlocks) {
 			Block block = ((BlockCommandSender)sender).getBlock();
 			GroupManager.logger.warning(ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
 			GroupManager.logger.warning(ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		  	return false;
+			return false;
 		}
 
 		// DETERMINING PLAYER INFORMATION
@@ -146,7 +146,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 			isConsole = true;
 		}
-		
+
 		// PERMISSIONS FOR COMMAND BEING LOADED
 		dataHolder = null;
 		permissionHandler = null;
@@ -163,17 +163,17 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		if (dataHolder != null) {
 			permissionHandler = dataHolder.getPermissionsHandler();
 		}
-		
+
 		this.sender = sender;
-		
+
 		if (!isConsole && !playerCanDo) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_NOT_PERMITTED"));
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Sets up the default world for use.
 	 */
@@ -193,7 +193,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		return false;
 
 	}
-	
+
 	/**
 	 * Load a List of players matching the name given. If none online, check
 	 * Offline.
@@ -207,18 +207,18 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		UUID match;
 
 		players = BukkitWrapper.getInstance().matchPlayer(playerName);
-		
+
 		if (players.isEmpty()) {
 			// Check for an offline player (exact match, ignoring case).
 			match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
-			
+
 			if (match == null) {
 				sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
 				return null;
 			}
-			
+
 			return match;
-				
+
 		} else if (players.size() > 1) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
 			return null;
@@ -227,7 +227,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		return players.get(0).getUniqueId();
 
 	}
-	
+
 	/**
 	 * Return any users with partial name matches.
 	 * 
@@ -235,17 +235,17 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @return
 	 */
 	protected List<String> tabCompleteUsers(String arg) {
-		
+
 		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
 			// Possible matching player
 			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg))) {
-				
+
 				// If validating check for online state.
 				if (GroupManager.getGMConfig().isTabValidate() && GroupManager.getGMConfig().isToggleValidate()) {
 					if (user.isOnline())
@@ -258,7 +258,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return a List of groups with partial name matches.
 	 * 
@@ -266,26 +266,26 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @return
 	 */
 	protected List<String> tabCompleteGroups(String arg) {
-		
+
 		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
-		
+
 		for (Group g : dataHolder.getGroupList()) {
 			if ((g != null) && (g.getName() != null) && (g.getName().toLowerCase().contains(arg.toLowerCase())))
 				result.add(g.getName());
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Fetch a list of available worlds for tab Complete.
 	 * 
 	 * @return	a List of all root world names.
 	 */
 	protected List<String> getWorlds() {
-		
+
 		List<String> worlds = new ArrayList<>();
-		
+
 		for (OverloadedWorldHolder world : plugin.getWorldsHolder().allWorldsDataList())
 			if ((world != null) && (world.getName() != null))
 				worlds.add(world.getName());
@@ -294,9 +294,9 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	}
 
 	protected abstract boolean parseCommand(@NotNull String[] args);
-	
+
 	protected @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		/*
 		 * Return an empty list so there is no TabComplete on this.
 		 */

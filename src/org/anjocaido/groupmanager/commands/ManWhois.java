@@ -79,15 +79,15 @@ public class ManWhois extends BaseCommand {
 		if (!auxGroup.equals(auxUser.getGroup())) {
 			sender.sendMessage(ChatColor.YELLOW + Messages.getString("ORIGINAL_GROUP") + ChatColor.GREEN + auxGroup.getName()); //$NON-NLS-1$
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -95,7 +95,7 @@ public class ManWhois extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 

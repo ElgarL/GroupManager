@@ -55,7 +55,7 @@ public class ManUCheckP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCHECKP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		auxString = args[1].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
@@ -105,12 +105,12 @@ public class ManUCheckP extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -118,7 +118,7 @@ public class ManUCheckP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 }

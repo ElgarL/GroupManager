@@ -53,13 +53,13 @@ public class ManGCheckP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGCHECKP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		auxString = args[1];
 		if (auxString.startsWith("'") && auxString.endsWith("'")) //$NON-NLS-1$ //$NON-NLS-2$
 		{
 			auxString = auxString.substring(1, auxString.length() - 1);
 		}
-		
+
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"),args[0])); //$NON-NLS-1$
@@ -72,7 +72,7 @@ public class ManGCheckP extends BaseCommand {
 			return true;
 		}
 		// Seems OK
-		
+
 		if (permissionResult.owner instanceof Group) {
 			if (permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION)) {
 				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUP_INHERITS_NEGATION_FROM_GROUP") + permissionResult.owner.getLastName()); //$NON-NLS-1$
@@ -89,7 +89,7 @@ public class ManGCheckP extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for groups.
@@ -98,7 +98,7 @@ public class ManGCheckP extends BaseCommand {
 
 			result = tabCompleteGroups(args[0]);
 		}
-		
+
 		return result;
 	}
 

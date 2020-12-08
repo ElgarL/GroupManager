@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -369,7 +369,7 @@ public class User extends DataUnit implements Cloneable {
 
 		synchronized (subGroups) {
 			ArrayList<String> val = new ArrayList<>();
-			
+
 			subGroups.forEach((group, timer) -> val.add(group));
 
 			return val;

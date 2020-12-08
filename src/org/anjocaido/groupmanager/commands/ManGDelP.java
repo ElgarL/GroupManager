@@ -53,7 +53,7 @@ public class ManGDelP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANGDELP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		auxGroup = dataHolder.getGroup(args[0]);
 		if (auxGroup == null) {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_DOES_NOT_EXIST"), args[0])); //$NON-NLS-1$
@@ -62,7 +62,7 @@ public class ManGDelP extends BaseCommand {
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		
+
 			// Validating your permissions
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
@@ -89,10 +89,10 @@ public class ManGDelP extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for base groups.

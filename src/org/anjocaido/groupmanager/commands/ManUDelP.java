@@ -54,7 +54,7 @@ public class ManUDelP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
@@ -64,11 +64,11 @@ public class ManUDelP extends BaseCommand {
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
 		}
-		
+
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		
+
 			if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 				sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 				continue;
@@ -107,9 +107,9 @@ public class ManUDelP extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -117,7 +117,7 @@ public class ManUDelP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		if (args.length >= 2) {
 			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
@@ -132,7 +132,7 @@ public class ManUDelP extends BaseCommand {
 			return auxUser.getPermissionList();
 
 		}
-		
+
 		return result;
 	}
 

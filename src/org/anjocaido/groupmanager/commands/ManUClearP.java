@@ -54,7 +54,7 @@ public class ManUClearP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCLEARP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
@@ -90,12 +90,12 @@ public class ManUClearP extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -103,7 +103,7 @@ public class ManUClearP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 

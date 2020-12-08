@@ -155,7 +155,7 @@ public class ManUAddSub extends BaseCommand {
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -163,7 +163,7 @@ public class ManUAddSub extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		/*
 		 * Populate the second argument of TabComplete with a list of group names.
 		 */
@@ -171,7 +171,7 @@ public class ManUAddSub extends BaseCommand {
 
 			result = tabCompleteGroups(args[1]);
 		}
-		
+
 		return result;
 	}
 

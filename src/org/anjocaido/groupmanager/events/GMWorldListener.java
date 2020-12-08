@@ -53,24 +53,24 @@ public class GMWorldListener implements Listener {
 		if (GroupManager.isLoaded() && !plugin.getWorldsHolder().isInList(worldName)) {
 			GroupManager.logger.info(Messages.getString("GMWorldListener.DETECTED_NEW_WORLD")); //$NON-NLS-1$
 			GroupManager.logger.info(Messages.getString("GMWorldListener.CREATING_DATA") + worldName); //$NON-NLS-1$
-			
+
 			if (plugin.getWorldsHolder().isWorldKnown("all_unnamed_worlds")) { //$NON-NLS-1$
-				
+
 				String usersMirror = plugin.getWorldsHolder().getMirrorsUser().get("all_unnamed_worlds"); //$NON-NLS-1$
 				String groupsMirror = plugin.getWorldsHolder().getMirrorsGroup().get("all_unnamed_worlds"); //$NON-NLS-1$
-				
+
 				if (usersMirror != null)
 					plugin.getWorldsHolder().getMirrorsUser().put(worldName.toLowerCase(), usersMirror);
-				
+
 				if (groupsMirror != null)
 					plugin.getWorldsHolder().getMirrorsGroup().put(worldName.toLowerCase(), groupsMirror);
-				
+
 			}
-			
+
 			plugin.getWorldsHolder().getDataSource().init(worldName);
 			plugin.getWorldsHolder().getDataSource().loadWorld(worldName, false);
-			
-			
+
+
 			if (plugin.getWorldsHolder().isInList(worldName)) {
 				GroupManager.logger.info(Messages.getString("GMWorldListener.CONFIGURE_NEW_WORLD")); //$NON-NLS-1$
 			} else

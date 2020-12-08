@@ -184,7 +184,7 @@ public class GroupManager extends JavaPlugin {
 	}
 
 	public void onEnable(boolean restarting) {
-		
+
 		try {
 			/*
 			 * reset local variables.
@@ -215,13 +215,13 @@ public class GroupManager extends JavaPlugin {
 			 *  updates as we are not fully loaded.
 			 */
 			setLoaded(false);
-			
+
 			/*
 			 * Configure the worlds holder.
 			 */
 			if (!restarting)
 				worldsHolder = new WorldsHolder(this);
-			
+
 			worldsHolder.resetWorldsHolder();
 
 			/*

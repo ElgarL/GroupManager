@@ -69,9 +69,9 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		GroupVariables clone = new GroupVariables(newOwner);
 		synchronized(variables) {
-		for (String key : variables.keySet()) {
-			clone.variables.put(key, variables.get(key));
-		}
+			for (String key : variables.keySet()) {
+				clone.variables.put(key, variables.get(key));
+			}
 		}
 		newOwner.flagAsChanged();
 		return clone;
@@ -90,15 +90,15 @@ public class GroupVariables extends Variables implements Cloneable {
 		} catch (Exception ignored) {
 		}
 		switch (name) {
-			case "prefix":
-				addVar("prefix", "");
-				break;
-			case "suffix":
-				addVar("suffix", "");
-				break;
-			case "build":
-				addVar("build", false);
-				break;
+		case "prefix":
+			addVar("prefix", "");
+			break;
+		case "suffix":
+			addVar("suffix", "");
+			break;
+		case "build":
+			addVar("build", false);
+			break;
 		}
 		owner.flagAsChanged();
 	}

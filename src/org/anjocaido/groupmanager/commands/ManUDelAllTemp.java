@@ -47,7 +47,7 @@ public class ManUDelAllTemp extends BaseCommand {
 		}
 		// WORKING
 		int count = 0;
-		
+
 		for (User u : GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase())) {
 			if (dataHolder.isOverloaded(u.getUUID())) {
 				dataHolder.removeOverload(u.getUUID());

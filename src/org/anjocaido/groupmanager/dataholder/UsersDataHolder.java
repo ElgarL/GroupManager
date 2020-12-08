@@ -54,8 +54,8 @@ public class UsersDataHolder {
 		this.dataSource = dataSource;
 		//push this data source to the users, so they pull the correct groups data.
 		synchronized(users) {
-		for (User user : users.values())
-			user.setDataSource(this.dataSource);
+			for (User user : users.values())
+				user.setDataSource(this.dataSource);
 		}
 	}
 
@@ -67,9 +67,9 @@ public class UsersDataHolder {
 
 		return users;
 	}
-	
+
 	public WorldDataHolder getDataSource() {
-		
+
 		return this.dataSource;
 	}
 

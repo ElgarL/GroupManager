@@ -35,7 +35,7 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  * @author gabrielcouto
  */
 public class GMConfiguration {
-	
+
 	private String language;
 	private boolean allowCommandBlocks;
 	private boolean opOverride;
@@ -45,14 +45,14 @@ public class GMConfiguration {
 	private Integer backupDuration;
 	private String loggerLevel; //$NON-NLS-1$
 	private Map<String, Object> mirrorsMap;
-	
+
 
 	private final GroupManager plugin;
 
 	public GMConfiguration(GroupManager plugin) {
 
 		this.plugin = plugin;
-		
+
 		/*
 		 * Set defaults
 		 */
@@ -108,28 +108,28 @@ public class GMConfiguration {
 			}
 			if (language == null || language.isEmpty()) language = "english";
 			Messages.setLanguage();
-			
+
 			try {
 				allowCommandBlocks = (Boolean) config.get("allow_commandblocks"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex); //$NON-NLS-1$
 				allowCommandBlocks = false;
 			}
-			
+
 			try {
 				opOverride = (Boolean) config.get("opOverrides"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex); //$NON-NLS-1$
 				opOverride = true;
 			}
-			
+
 			try {
 				toggleValidate = (Boolean) config.get("validate_toggle"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex); //$NON-NLS-1$
 				toggleValidate = true;
 			}
-			
+
 			try {
 				tabValidate = (Boolean) config.get("tab_validate"); //$NON-NLS-1$
 			} catch (Exception ex) {
@@ -142,21 +142,21 @@ public class GMConfiguration {
 			 */
 			try {
 				Map<String, Object> save = getElement("save", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				
+
 				try {
 					saveInterval = (Integer) save.get("minutes"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex); //$NON-NLS-1$
 					saveInterval = 10;
 				}
-				
+
 				try {
 					backupDuration = (Integer) save.get("hours"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex); //$NON-NLS-1$
 					backupDuration = 24;
 				}
-				
+
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex); //$NON-NLS-1$
 			}
@@ -171,7 +171,7 @@ public class GMConfiguration {
 			 * Store our mirrors map for parsing later.
 			 */
 			mirrorsMap = (Map<String, Object>) ((Map<String, Object>) GMconfig.get("settings")).get("mirrors"); //$NON-NLS-1$ //$NON-NLS-2$
-			
+
 			if (mirrorsMap == null)
 				throw new Exception();
 
@@ -180,34 +180,34 @@ public class GMConfiguration {
 			 * Flag the error and use defaults
 			 */
 			GroupManager.logger.log(Level.SEVERE, Messages.getString("GMConfiguration.ERRORS_IN_CONFIG"), ex); //$NON-NLS-1$
-			
+
 			mirrorsMap = new HashMap<>();
 		}
 		// Setup defaults
 		adjustLoggerLevel();
 	}
-	
+
 	private String nodeError(String node) {
-		
+
 		return String.format(Messages.getString("GMConfiguration.CORRUPT_NODE"), node); //$NON-NLS-1$
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> getElement(String element, Map<String, Object> map) {
-		
+
 		if (!map.containsKey(element)) {
 			throw new IllegalArgumentException(String.format(Messages.getString("GMConfiguration.MISSING_NODE"), element)); //$NON-NLS-1$
 		}
-		
+
 		return (Map<String, Object>) map.get(element);
-		
+
 	}
-	
+
 	public String getLanguage() {
 
 		return language;
 	}
-	
+
 	public boolean isAllowCommandBlocks() {
 
 		return allowCommandBlocks;
@@ -219,17 +219,17 @@ public class GMConfiguration {
 	}
 
 	public boolean isToggleValidate() {
-		
+
 		return toggleValidate;
 	}
-	
+
 	public void setToggleValidate(Boolean value) {
-		
+
 		this.toggleValidate = value;
 	}
-	
+
 	public boolean isTabValidate() {
-		
+
 		return tabValidate;
 	}
 
@@ -253,7 +253,7 @@ public class GMConfiguration {
 
 		GroupManager.logger.setLevel(Level.INFO);
 	}
-	
+
 	public Map<String, Object> getMirrorsMap() {
 
 		if (!mirrorsMap.isEmpty()) {

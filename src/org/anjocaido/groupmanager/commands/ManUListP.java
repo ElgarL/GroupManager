@@ -85,7 +85,7 @@ public class ManUListP extends BaseCommand {
 		} else {
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_NO_SPECIFIC_PERMISSIONS"), auxUser.getLastName())); //$NON-NLS-1$
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("AND_ALL_PERMISSIONS_GROUPS"), auxUser.getGroupName())); //$NON-NLS-1$
-			
+
 			auxString = ""; //$NON-NLS-1$
 			for (String subGroup : auxUser.subGroupListStringCopy()) {
 				auxString += subGroup + ", "; //$NON-NLS-1$
@@ -109,12 +109,12 @@ public class ManUListP extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -122,15 +122,15 @@ public class ManUListP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		/*
 		 * Optional + to display Superperms values for an online player.
 		 */
 		if (args.length == 2) {
-			
+
 			return Collections.singletonList("+");
 		}
-		
+
 		return result;
 	}
 

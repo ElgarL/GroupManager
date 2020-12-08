@@ -52,13 +52,13 @@ public class ManSave extends BaseCommand {
 			 * Obtain a lock so we can save.
 			 */
 			plugin.getSaveLock().lock();
-			
+
 			plugin.getWorldsHolder().saveChanges(forced);
 			sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-			
+
 		} catch (IllegalStateException ex) {
 			sender.sendMessage(ChatColor.RED + ex.getMessage());
-			
+
 		} finally {
 			// Release lock.
 			if(plugin.getSaveLock().isHeldByCurrentThread())
@@ -71,7 +71,7 @@ public class ManSave extends BaseCommand {
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 
 		if (args.length == 1) {
-			
+
 			return Collections.singletonList("force"); //$NON-NLS-1$
 		}
 		return null;

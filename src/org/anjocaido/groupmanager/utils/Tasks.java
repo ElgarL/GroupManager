@@ -135,34 +135,34 @@ public abstract class Tasks {
 		date += now.get(Calendar.MINUTE);
 		return date;
 	}
-	
+
 	private static final Pattern periodPattern = Pattern.compile("([0-9]+)([mhd])");
-	
+
 	public static Long parsePeriod(String period){
-		
-	    if(period == null) return null;
-	    period = period.toLowerCase(Locale.ENGLISH);
-	    Matcher matcher = periodPattern.matcher(period);
-	    Instant instant=Instant.EPOCH;
-	    
-	    while(matcher.find()){
-	        int num = Integer.parseInt(matcher.group(1));
-	        String typ = matcher.group(2);
-	        switch (typ) {
-	        case "m":
-                instant=instant.plus(Duration.ofMinutes(num));
-                break;
-	        case "h":
-	            instant=instant.plus(Duration.ofHours(num));
-	            break;
-	        case "d":
-	            instant=instant.plus(Duration.ofDays(num));
-	            break;
-	        }
-	    }
-	    return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
+
+		if(period == null) return null;
+		period = period.toLowerCase(Locale.ENGLISH);
+		Matcher matcher = periodPattern.matcher(period);
+		Instant instant=Instant.EPOCH;
+
+		while(matcher.find()){
+			int num = Integer.parseInt(matcher.group(1));
+			String typ = matcher.group(2);
+			switch (typ) {
+			case "m":
+				instant=instant.plus(Duration.ofMinutes(num));
+				break;
+			case "h":
+				instant=instant.plus(Duration.ofHours(num));
+				break;
+			case "d":
+				instant=instant.plus(Duration.ofDays(num));
+				break;
+			}
+		}
+		return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
 	}
-	
+
 	/**
 	 * Is this time in the past?
 	 * 
@@ -170,7 +170,7 @@ public abstract class Tasks {
 	 * @return	true if it has expired.
 	 */
 	public static boolean isExpired(Long expires) {
-		
+
 		if (expires == 0) return false;
 		/*
 		 * Time has expired?

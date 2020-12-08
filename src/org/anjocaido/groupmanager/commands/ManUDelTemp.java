@@ -74,12 +74,12 @@ public class ManUDelTemp extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -87,7 +87,7 @@ public class ManUDelTemp extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 
