@@ -171,6 +171,7 @@ public abstract class Tasks {
 	 */
 	public static boolean isExpired(Long expires) {
 		
+		if (expires == 0) return false;
 		/*
 		 * Time has expired?
 		 */

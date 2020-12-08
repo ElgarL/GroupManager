@@ -67,7 +67,7 @@ public class ManUListP extends BaseCommand {
 		// Validating permission
 		// Seems OK
 		auxString = ""; //$NON-NLS-1$
-		for (String perm : auxUser.getAllPermissionList()) {
+		for (String perm : auxUser.getPermissionList()) {
 			auxString += perm + ", "; //$NON-NLS-1$
 		}
 		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$

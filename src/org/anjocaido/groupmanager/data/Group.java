@@ -99,10 +99,7 @@ public class Group extends DataUnit implements Cloneable {
 			clone.inherits = new ArrayList<>(this.getInherits());
 		}
 
-		for (String perm : this.getPermissionList()) {
-			clone.addPermission(perm);
-		}
-		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		clone.variables = variables.clone(clone);
@@ -128,10 +125,8 @@ public class Group extends DataUnit implements Cloneable {
 		if (!isGlobal()) {
 			clone.inherits = new ArrayList<>(this.getInherits());
 		}
-		for (String perm : this.getPermissionList()) {
-			clone.addPermission(perm);
-		}
-		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+		
+		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		clone.variables = variables.clone(clone);

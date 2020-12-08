@@ -132,7 +132,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		Set<String> overrides = new LinkedHashSet<>();
 
 		// Add the players own permissions.
-		Set<String> playerPermArray = new LinkedHashSet<>(populatePerms(ph.getUser(userName).getAllPermissionList(), includeChildren));
+		Set<String> playerPermArray = new LinkedHashSet<>(populatePerms(ph.getUser(userName).getPermissionList(), includeChildren));
 
 		ArrayList<String> alreadyProcessed = new ArrayList<>();
 
@@ -150,7 +150,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
 				} else {
 					// World Groups
-					groupPermArray = populatePerms(ph.getGroup(group).getAllPermissionList(), includeChildren);
+					groupPermArray = populatePerms(ph.getGroup(group).getPermissionList(), includeChildren);
 				}
 
 				// Add all group permissions, unless negated by earlier permissions.
@@ -779,11 +779,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public PermissionCheckResult checkUserOnlyPermission(User user, String permission) {
 
-		user.sortPermissions();
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.askedPermission = permission;
 		result.owner = user;
-		for (String access : user.getAllPermissionList()) {
+		for (String access : user.getPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;
@@ -804,11 +803,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public PermissionCheckResult checkGroupOnlyPermission(Group group, String permission) {
 
-		group.sortPermissions();
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.owner = group;
 		result.askedPermission = permission;
-		for (String access : group.getAllPermissionList()) {
+		for (String access : group.getPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;

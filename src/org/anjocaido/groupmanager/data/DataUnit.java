@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -38,10 +40,9 @@ public abstract class DataUnit {
 	private WorldDataHolder dataSource;
 	private final String uUID;
 	private String lastName = "";
-	private boolean changed, sorted = false;
-	private List<String> permissions = Collections.synchronizedList(new ArrayList<>());
-	
-	private Map<String, Long> timedPermissions = Collections.synchronizedSortedMap(new TreeMap<>());
+	private boolean changed;
+
+	private Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
 
 	public DataUnit(WorldDataHolder dataSource, String name) {
 
@@ -109,7 +110,7 @@ public abstract class DataUnit {
 
 		return dataSource;
 	}
-	
+
 	/**
 	 * Read the UUID for this object, or the name if it has no UUID.
 	 * 
@@ -119,7 +120,7 @@ public abstract class DataUnit {
 
 		return uUID;
 	}
-	
+
 	/**
 	 * Fetch the name of this object.
 	 * 
@@ -133,17 +134,17 @@ public abstract class DataUnit {
 		 */
 		if (uUID.length() < 36)
 			return this.uUID;
-		
+
 		return this.lastName;
 	}
-	
+
 	public void setLastName(String lastName) {
 
 		if (!lastName.equals(this.lastName)) {
-			
+
 			this.lastName = lastName;
 			dataSource.putUUIDLookup(lastName, uUID);
-			
+
 			changed = true;
 		}
 	}
@@ -159,10 +160,7 @@ public abstract class DataUnit {
 			source = testSource.getName();
 
 		GroupManager.logger.finest(String.format("DataSource: %s - DataUnit: %s flagged as ", source, getUUID()) + "changed!");
-		// for(StackTraceElement st: Thread.currentThread().getStackTrace()){
-		// GroupManager.logger.finest(st.toString());
-		// }
-		sorted = false;
+		
 		changed = true;
 	}
 
@@ -187,8 +185,8 @@ public abstract class DataUnit {
 
 	public boolean hasSamePermissionNode(String permission) {
 
-		synchronized(timedPermissions) {
-			return permissions.contains(permission) || timedPermissions.containsKey(permission);
+		synchronized (permissions) {
+			return permissions.containsKey(permission);
 		}
 	}
 
@@ -199,12 +197,9 @@ public abstract class DataUnit {
 	 */
 	public void addPermission(String permission) {
 
-		if (!hasSamePermissionNode(permission)) {
-			permissions.add(permission);
-		}
-		flagAsChanged();
+		addTimedPermission(permission, 0L);
 	}
-	
+
 	/**
 	 * Add a timed permission if the duration is longer than an existing one
 	 * or this permission does not exist.
@@ -214,26 +209,18 @@ public abstract class DataUnit {
 	 */
 	public void addTimedPermission(String permission, Long expires) {
 
-		/*
-		 * Do not add a timed permission if there is already a static one.
-		 */
-		if (permissions.contains(permission))
-			return;
-		
-		synchronized(timedPermissions) {
+		synchronized (permissions) {
 			/*
-			 * Has the Permission expired?
+			 * Do not add a timed permission if there is
+			 * already a static one, or this Permission
+			 * has a longer duration.
 			 */
-			/*if (Tasks.isExpired(expires)) {
-				GroupManager.logger.warning("Failed to add expired permission: " + getLastName() + " : " + permission);
-				return;
-			}*/
-			
-			if (!timedPermissions.containsKey(permission) || timedPermissions.get(permission) < expires) {
-				timedPermissions.put(permission, expires);
-				GroupManager.logger.info(String.format("Timed: %s - expires: %o", permission, expires));
+			Long duration = permissions.get(permission);
+			if (!permissions.containsKey(permission) || ((duration != 0) && (duration < expires))) {
+				permissions.put(permission, expires);
+				GroupManager.logger.finest(String.format("Added Timed: %s - expires: %o", permission, expires));
+				flagAsChanged();
 			}
-			flagAsChanged();
 		}
 	}
 
@@ -245,29 +232,16 @@ public abstract class DataUnit {
 	 */
 	public boolean removePermission(String permission) {
 
-		synchronized(timedPermissions) {
-			if (timedPermissions.containsKey(permission))
-				return removeTimedPermission(permission);
+		boolean result = false;
+
+		synchronized (permissions) {
+			if (permissions.containsKey(permission))
+				result = permissions.remove(permission) != null;
 		}
-		flagAsChanged();
-
-		return permissions.remove(permission);
-
-	}
-
-	/**
-	 * Remove a timed permission.
-	 *
-	 * @param permission
-	 * @return	true if the permission was found and removed.
-	 */
-	private boolean removeTimedPermission(String permission) {
-
-		synchronized(timedPermissions) {
+		if (result)
 			flagAsChanged();
-			
-			return timedPermissions.remove(permission) != null;
-		}
+
+		return result;
 	}
 
 	/**
@@ -277,27 +251,21 @@ public abstract class DataUnit {
 	 * @return a copy of the permission list
 	 */
 	public List<String> getPermissionList() {
-		sortPermissions();
-		return Collections.unmodifiableList(permissions);
+
+		return Collections.unmodifiableList(new ArrayList<>(permissions.keySet()));
 	}
 	
 	/**
-	 * This contains static and timed permissions.
+	 * Use this only to list permissions.
+	 * You can't edit the permissions using the returned Map instance
 	 * 
 	 * @return
 	 */
-	public List<String> getAllPermissionList() {
+	public Map<String, Long> getPermissions() {
 		
-		synchronized(timedPermissions) {
-			List<String> perms = new ArrayList<>();
-			perms.addAll(permissions);
-			perms.addAll(timedPermissions.keySet());
-			Collections.sort(perms);
-	
-			return Collections.unmodifiableList(perms);
-		}
+		return Collections.unmodifiableMap(permissions);
 	}
-	
+
 	/**
 	 * Only use this for saving.
 	 * 
@@ -305,61 +273,32 @@ public abstract class DataUnit {
 	 */
 	public List<String> getSavePermissionList() {
 
-		/*
-		 * include static permissions.
-		 */
-		List<String> perms = new ArrayList<>(getPermissionList());
-		synchronized(timedPermissions) {
+		SortedSet<String> perms = new TreeSet<>();
+		synchronized (permissions) {
 			/*
-			 * Include the concatenated timed permissions.
+			 * Include concatenated timed permissions.
 			 */
-			for (Entry<String, Long> entry : timedPermissions.entrySet()) {
-				perms.add(entry.getKey() + "|" + entry.getValue());
+			for (Entry<String, Long> entry : permissions.entrySet()) {
+				perms.add(entry.getKey() + ((entry.getValue() != 0) ? "|" + entry.getValue() : ""));
 			}
-			Collections.sort(perms);
-		return Collections.unmodifiableList(perms);
+			return new ArrayList<String>(perms);
 		}
 	}
-	
-	/**
-	 * Use this only to list timed permissions.
-	 * You can't edit the permissions using the returned Map instance
-	 * 
-	 * @return
-	 */
-	public Map<String, Long> getTimedPermissions() {
-		
-		return Collections.unmodifiableMap(timedPermissions);
-	}
 
-	public boolean isSorted() {
-
-		return this.sorted;
-	}
-
-	public void sortPermissions() {
-
-		if (!isSorted()) {
-			permissions.sort(StringPermissionComparator.getInstance());
-
-			sorted = true;
-		}
-	}
-	
 	/**
 	 * Remove any expired permissions.
 	 * 
 	 * @return true if any permissions were removed.
 	 */
 	public boolean removeExpired() {
-		
+
 		boolean expired = false;
-		
-		synchronized(timedPermissions) {	
-			
-			for (Entry<String, Long> perm : timedPermissions.entrySet()) {
+
+		synchronized (permissions) {
+
+			for (Entry<String, Long> perm : permissions.entrySet()) {
 				if (Tasks.isExpired(perm.getValue())) {
-					if (timedPermissions.remove(perm.getKey()) != null) {
+					if (permissions.remove(perm.getKey()) != null) {
 						//changed = true;
 						expired = true;
 						GroupManager.logger.info(String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey()));
@@ -367,7 +306,6 @@ public abstract class DataUnit {
 				}
 			}
 		}
-		
 		return expired;
 	}
 }

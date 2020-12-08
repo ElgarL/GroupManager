@@ -62,7 +62,7 @@ public class ManGListP extends BaseCommand {
 
 		// Seems OK
 		auxString = ""; //$NON-NLS-1$
-		for (String perm : auxGroup.getAllPermissionList()) {
+		for (String perm : auxGroup.getPermissionList()) {
 			auxString += perm + ", "; //$NON-NLS-1$
 		}
 		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$

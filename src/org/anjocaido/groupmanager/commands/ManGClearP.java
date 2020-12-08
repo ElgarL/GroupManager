@@ -60,7 +60,7 @@ public class ManGClearP extends BaseCommand {
 			return true;
 		}
 		
-		for (String perm : auxGroup.getAllPermissionList()) {
+		for (String perm : auxGroup.getPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), perm)); //$NON-NLS-1$

@@ -21,7 +21,7 @@ import java.util.Comparator;
 
 /**
  * 
- * @author gabrielcouto
+ * @author ElgarL
  */
 public class StringPermissionComparator implements Comparator<String> {
 
@@ -32,34 +32,24 @@ public class StringPermissionComparator implements Comparator<String> {
 		boolean bp = permB.startsWith("+");
 		boolean am = permA.startsWith("-");
 		boolean bm = permB.startsWith("-");
-		if (ap && bp) {
-			return 0;
+		if (ap && bp) {		// Exceptions first.
+			return permA.compareToIgnoreCase(permB);
 		}
-		if (ap && !bp) {
+		if (ap && !bp) {	// Exceptions over all other nodes.
 			return -1;
 		}
 		if (!ap && bp) {
 			return 1;
 		}
-		if (am && bm) {
-			return 0;
+		if (am && bm) {		// Negation nodes next.
+			return permA.compareToIgnoreCase(permB);
 		}
-		if (am && !bm) {
+		if (am && !bm) {	//Negation over normal nodes.
 			return -1;
 		}
 		if (!am && bm) {
 			return 1;
 		}
 		return permA.compareToIgnoreCase(permB);
-	}
-
-	private static StringPermissionComparator instance;
-
-	public static StringPermissionComparator getInstance() {
-
-		if (instance == null) {
-			instance = new StringPermissionComparator();
-		}
-		return instance;
 	}
 }

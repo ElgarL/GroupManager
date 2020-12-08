@@ -420,7 +420,6 @@ public class Yaml implements DataSource {
 				 * Sort all permissions so they are in the correct order for
 				 * checking.
 				 */
-				thisGrp.sortPermissions();
 			}
 
 			// INFO NODE
@@ -668,7 +667,6 @@ public class Yaml implements DataSource {
 					} catch (NullPointerException e) {
 						// Ignore this entry as it's null.
 					}
-					thisUser.sortPermissions();
 				}
 
 				// USER INFO NODE

@@ -65,12 +65,8 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroups);
 
-		// Clone permissions
-		for (String perm : this.getPermissionList()) {
-			clone.addPermission(perm);
-		}
-		// Clone timed permissions.
-		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+		// Clone permissions.
+		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 		// Clone timed subgroups.
@@ -102,13 +98,8 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroups);
 
-		// Clone permissions
-		for (String perm : this.getPermissionList()) {
-			clone.addPermission(perm);
-		}
-
-		// Clone timed permissions.
-		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+		// Clone permissions.
+		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 
@@ -132,13 +123,8 @@ public class User extends DataUnit implements Cloneable {
 		// Clone all subgroups.
 		clone.subGroups.addAll(this.subGroups);
 
-		// Clone permissions
-		for (String perm : this.getPermissionList()) {
-			clone.addPermission(perm);
-		}
-
-		// Clone timed permissions.
-		for (Entry<String, Long> perm : this.getTimedPermissions().entrySet()) {
+		// Clone permissions.
+		for (Entry<String, Long> perm : this.getPermissions().entrySet()) {
 			clone.addTimedPermission(perm.getKey(), perm.getValue());
 		}
 

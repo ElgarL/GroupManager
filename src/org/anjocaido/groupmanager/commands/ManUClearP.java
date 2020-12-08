@@ -69,7 +69,7 @@ public class ManUClearP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
-		for (String perm : auxUser.getAllPermissionList()) {
+		for (String perm : auxUser.getPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), perm)); //$NON-NLS-1$
