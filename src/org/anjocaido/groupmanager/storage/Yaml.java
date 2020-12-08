@@ -589,7 +589,7 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), "permissions", usersKey, usersFile.getPath()));
 				}
 
-				{ try {
+				try {
 					if (nodeData instanceof List) {
 						for (Object o : ((List<?>) nodeData)) {
 							/*
@@ -635,7 +635,6 @@ public class Yaml implements DataSource {
 					}
 				} catch (NullPointerException e) {
 					// Ignore this entry as it's null.
-				}
 				}
 
 				// USER INFO NODE
