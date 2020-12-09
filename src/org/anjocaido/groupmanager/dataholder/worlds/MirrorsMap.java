@@ -24,6 +24,7 @@ public class MirrorsMap extends WorldsHolder {
 	/**
 	 * Parse the mirrorsMap and setup data for all worlds.
 	 */
+	@Override
 	public void parseMirrors() {
 
 		Map<String, Object> mirrorsMap = GroupManager.getGMConfig().getMirrorsMap();
