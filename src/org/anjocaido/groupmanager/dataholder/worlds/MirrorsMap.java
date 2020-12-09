@@ -4,6 +4,7 @@
 package org.anjocaido.groupmanager.dataholder.worlds;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -15,7 +16,9 @@ import org.anjocaido.groupmanager.localization.Messages;
  *
  */
 public class MirrorsMap extends WorldsHolder {
-	
+
+	HashSet<String> mirroredWorlds = new HashSet<>();
+
 	public MirrorsMap(GroupManager plugin) {
 
 		super(plugin);
@@ -52,7 +55,7 @@ public class MirrorsMap extends WorldsHolder {
 			 */
 			try {
 
-				if (!isParentWorld(rootWorld) && !hasGroupsMirror(rootWorld) && !hasUsersMirror(rootWorld))
+				if (!isParentWorld(rootWorld) && (!hasGroupsMirror(rootWorld) || !hasUsersMirror(rootWorld)))
 					addWorldData(rootWorld, null);
 
 			} catch (Exception ignored) {}
@@ -89,6 +92,14 @@ public class MirrorsMap extends WorldsHolder {
 		 * worlds we need to load.
 		 */
 		loadParentWorlds();
+
+		// Create a data-set for any worlds not already loaded.
+		for (String world : mirroredWorlds) {
+			if (!hasOwnData(world.toLowerCase())) {
+				GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.NO_DATA"), world)); //$NON-NLS-1$
+				getDataSource().loadWorld(world, true);
+			}
+		}
 	}
 
 	private void parseSubSection(ArrayList<?> subSection, String rootWorld) {
@@ -103,6 +114,9 @@ public class MirrorsMap extends WorldsHolder {
 				putUsersMirror(world, getUsersMirrorParent(rootWorld));
 				logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.ADDING_USERS_MIRROR"), world)); //$NON-NLS-1$
 
+				// Track this world so we can create data for it later.
+				mirroredWorlds.add(o.toString());
+
 			} else
 				logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.MIRRORING_ERROR"), world)); //$NON-NLS-1$
 		}
@@ -113,7 +127,7 @@ public class MirrorsMap extends WorldsHolder {
 		for (Object element : subSection.keySet()) {
 
 			String world = element.toString();
-			
+
 			if (world.equalsIgnoreCase(serverDefaultWorldName)) {
 				// Mirroring ourselves?!
 				logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.MIRRORING_ERROR"), world)); //$NON-NLS-1$
@@ -142,6 +156,9 @@ public class MirrorsMap extends WorldsHolder {
 						logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.ADDING_USERS_MIRROR"), world)); //$NON-NLS-1$
 					}
 				}
+
+				// Track this world so we can create data for it later.
+				mirroredWorlds.add(world);
 
 			} else {
 				/*
