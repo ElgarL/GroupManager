@@ -74,6 +74,7 @@ import org.anjocaido.groupmanager.commands.ManUListV;
 import org.anjocaido.groupmanager.commands.ManWhois;
 import org.anjocaido.groupmanager.commands.ManWorld;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.dataholder.worlds.MirrorsMap;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
 import org.anjocaido.groupmanager.events.GroupManagerEventHandler;
@@ -220,7 +221,7 @@ public class GroupManager extends JavaPlugin {
 			 * Configure the worlds holder.
 			 */
 			if (!restarting)
-				worldsHolder = new WorldsHolder(this);
+				worldsHolder = new MirrorsMap(this);
 
 			worldsHolder.resetWorldsHolder();
 

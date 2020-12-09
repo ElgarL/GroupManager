@@ -141,7 +141,7 @@ public class Yaml implements DataSource {
 
 			// Map the group object for any mirror
 			if (holder.hasGroupsMirror(worldNameLowered)) {
-				tempHolder.setGroupsObject(holder.getWorldData(holder.getMirrorsGroup().get(worldNameLowered)).getGroupsObject());
+				tempHolder.setGroupsObject(holder.getWorldData(holder.getGroupsMirror(worldNameLowered)).getGroupsObject());
 			} else {
 				tempHolder.setGroupsFile(groupsFile);
 				try {
@@ -153,7 +153,7 @@ public class Yaml implements DataSource {
 
 			// Map the user object for any mirror
 			if (holder.hasUsersMirror(worldNameLowered)) {
-				tempHolder.setUsersObject(holder.getWorldData(holder.getMirrorsUser().get(worldNameLowered)).getUsersObject());
+				tempHolder.setUsersObject(holder.getWorldData(holder.getUsersMirror(worldNameLowered)).getUsersObject());
 			} else {
 				tempHolder.setUsersFile(usersFile);
 				try {
@@ -189,14 +189,14 @@ public class Yaml implements DataSource {
 
 				if (holder.hasOwnData("all_unnamed_worlds")) { //$NON-NLS-1$
 
-					String usersMirror = holder.getMirrorsUser().get("all_unnamed_worlds"); //$NON-NLS-1$
-					String groupsMirror = holder.getMirrorsGroup().get("all_unnamed_worlds"); //$NON-NLS-1$
+					String usersMirror = holder.getUsersMirror("all_unnamed_worlds"); //$NON-NLS-1$
+					String groupsMirror = holder.getGroupsMirror("all_unnamed_worlds"); //$NON-NLS-1$
 
 					if (usersMirror != null)
-						holder.getMirrorsUser().put(world.getName().toLowerCase(), usersMirror);
+						holder.putUsersMirror(world.getName().toLowerCase(), usersMirror);
 
 					if (groupsMirror != null)
-						holder.getMirrorsGroup().put(world.getName().toLowerCase(), groupsMirror);
+						holder.putGroupsMirror(world.getName().toLowerCase(), groupsMirror);
 
 				}
 
@@ -570,7 +570,6 @@ public class Yaml implements DataSource {
 
 				Object nodeData;
 				try {
-
 					nodeData = thisUserNode.get("lastname");
 
 				} catch (Exception ex) {
@@ -589,52 +588,54 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), "permissions", usersKey, usersFile.getPath()));
 				}
 
-				try {
-					if (nodeData instanceof List) {
-						for (Object o : ((List<?>) nodeData)) {
+				if (nodeData != null) {
+					try {
+						if (nodeData instanceof List) {
+							for (Object o : ((List<?>) nodeData)) {
+								/*
+								 * Only add this permission if it's not empty
+								 */
+								if (!o.toString().isEmpty()) {
+									/*
+									 * check for a timed permission
+									 */
+									if (o.toString().contains("|")) {
+										String[] split = o.toString().split("\\|");
+										try {
+											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
+										} catch (Exception e) {
+											GroupManager.logger.warning("TimedPermission error: " + o.toString());
+										}
+									} else {
+										thisUser.addPermission(o.toString());
+									}
+								}
+							}
+						} else if (nodeData instanceof String) {
+
 							/*
 							 * Only add this permission if it's not empty
 							 */
-							if (!o.toString().isEmpty()) {
+							if (!nodeData.toString().isEmpty()) {
 								/*
 								 * check for a timed permission
 								 */
-								if (o.toString().contains("|")) {
-									String[] split = o.toString().split("\\|");
+								if (nodeData.toString().contains("|")) {
+									String[] split = nodeData.toString().split("\\|");
 									try {
 										thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 									} catch (Exception e) {
-										GroupManager.logger.warning("TimedPermission error: " + o.toString());
+										GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
 									}
 								} else {
-									thisUser.addPermission(o.toString());
+									thisUser.addPermission(nodeData.toString());
 								}
 							}
-						}
-					} else if (nodeData instanceof String) {
 
-						/*
-						 * Only add this permission if it's not empty
-						 */
-						if (!nodeData.toString().isEmpty()) {
-							/*
-							 * check for a timed permission
-							 */
-							if (nodeData.toString().contains("|")) {
-								String[] split = nodeData.toString().split("\\|");
-								try {
-									thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
-								} catch (Exception e) {
-									GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
-								}
-							} else {
-								thisUser.addPermission(nodeData.toString());
-							}
 						}
-
+					} catch (NullPointerException e) {
+						// Ignore this entry as it's null.
 					}
-				} catch (NullPointerException e) {
-					// Ignore this entry as it's null.
 				}
 
 				// USER INFO NODE
@@ -645,12 +646,13 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "info", usersKey, usersFile.getPath()));
 				}
 
-				if (nodeData instanceof Map) {
-					thisUser.setVariables((Map<?, ?>) nodeData);
+				if (nodeData != null) {
+					if (nodeData instanceof Map) {
+						thisUser.setVariables((Map<?, ?>) nodeData);
 
-				} else
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY_USER"), "info", thisUser.getLastName(), usersFile.getPath()));
-
+					} else
+						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY_USER"), "info", thisUser.getLastName(), usersFile.getPath()));
+				}
 				// END INFO NODE
 
 				// PRIMARY GROUP

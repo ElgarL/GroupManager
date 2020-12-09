@@ -22,12 +22,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
@@ -44,68 +44,35 @@ import org.bukkit.entity.Player;
  * 
  * @author gabrielcouto, ElgarL
  */
-public class WorldsHolder {
+public abstract class WorldsHolder extends ChildMirrors {
 
 	/**
 	 * Map with instances of loaded worlds.
 	 */
 	private Map<String, OverloadedWorldHolder> worldsData = new TreeMap<>();
 
-	/**
-	 * Map of mirrors: <nonExistingWorldName, existingAndLoadedWorldName>
-	 * The key is the mirror.
-	 * The object is the mirrored.
-	 * 
-	 * Mirror shows the same data of mirrored.
-	 */
-	private Map<String, String> mirrorsGroup = new TreeMap<>();
-	private Map<String, String> mirrorsUser = new TreeMap<>();
+	protected String serverDefaultWorldName;
 
-	private String serverDefaultWorldName;
 	private final GroupManager plugin;
-
+	protected final Logger logger;
 	private DataSource dataSource;
 
 	/**
 	 * 
 	 * @param plugin
 	 */
-	public WorldsHolder(GroupManager plugin) {
+	protected WorldsHolder(GroupManager plugin) {
 
 		this.plugin = plugin;
-		dataSource = new Yaml(plugin);
+		dataSource = new Yaml(plugin); // TODO create this from config setting.
+		this.logger = plugin.getLogger();
 	}
 
-	/**
-	 * @return the mirrorsGroup
-	 */
-	public Map<String, String> getMirrorsGroup() {
-
-		return mirrorsGroup;
-	}
-
-	/**
-	 * @return the mirrorsUser
-	 */
-	public Map<String, String> getMirrorsUser() {
-
-		return mirrorsUser;
-	}
+	public abstract void parseMirrors();
 
 	public void addWorldData(String key, OverloadedWorldHolder worldData) {
 
-		worldsData.put(key, worldData);
-	}
-
-	/**
-	 * Has data already been loaded for this world?
-	 * 
-	 * @param name
-	 * @return	true if data is found.
-	 */
-	public boolean isWorldKnown(String name) {
-
-		return worldsData.containsKey(name.toLowerCase());
+		worldsData.put(key.toLowerCase(), worldData);
 	}
 
 	/**
@@ -114,12 +81,12 @@ public class WorldsHolder {
 	public void resetWorldsHolder() {
 
 		worldsData = new HashMap<>();
-		mirrorsGroup = new HashMap<>();
-		mirrorsUser = new HashMap<>();
+		clearGroupsMirror();
+		clearUsersMirror();
 
 		// Initialize our DataSource.
-		verifyFirstRun();
-		// Load all data and setup mirrors.
+		detectDefaultWorldName();
+		// Setup mirrors and load all data.
 		initialLoad();
 
 		if (serverDefaultWorldName == null)
@@ -128,17 +95,15 @@ public class WorldsHolder {
 
 	private void initialLoad() {
 
-		// load the initial world
-		dataSource.loadWorld(serverDefaultWorldName, false);
-		// Configure and load any mirrors and additional worlds as defined in config.yml
-		mirrorSetUp();
+		// Load all worlds and mirrors as defined in config.yml
+		parseMirrors();
 		// search the worlds folder for any manually created worlds (not listed in config.yml)
 		dataSource.loadAllSearchedWorlds();
 	}
 
-	private void verifyFirstRun() {
+	private void detectDefaultWorldName() {
 
-		/* Do not use the folder name if this 
+		/* Do not use the folder name if this
 		 * is a Bukkit Forge server.
 		 */
 		if (plugin.getServer().getName().equalsIgnoreCase("BukkitForge")) { //$NON-NLS-1$
@@ -153,101 +118,17 @@ public class WorldsHolder {
 				GroupManager.logger.log(Level.SEVERE, null, ex);
 			}
 		}
-		dataSource.init(serverDefaultWorldName);
+		//dataSource.init(serverDefaultWorldName);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public void mirrorSetUp() {
+	/**
+	 * Load data for all listed parent worlds.
+	 */
+	public void loadParentWorlds() {
 
-		mirrorsGroup.clear();
-		mirrorsUser.clear();
-		Map<String, Object> mirrorsMap = GroupManager.getGMConfig().getMirrorsMap();
-
-		HashSet<String> mirroredWorlds = new HashSet<>();
-
-		if (mirrorsMap != null) {
-			for (String source : mirrorsMap.keySet()) {
-				// Make sure all non mirrored worlds have a set of data files.
-				dataSource.init(source);
-				// Load the world data
-				if (!worldsData.containsKey(source.toLowerCase()))
-					dataSource.loadWorld(source, false);
-
-				if (mirrorsMap.get(source) instanceof ArrayList) {
-					ArrayList mirrorList = (ArrayList) mirrorsMap.get(source);
-
-					// These worlds fully mirror their parent
-					for (Object o : mirrorList) {
-						String world = o.toString().toLowerCase();
-						if (!world.equalsIgnoreCase(serverDefaultWorldName)) {
-							try {
-								mirrorsGroup.remove(world);
-								mirrorsUser.remove(world);
-							} catch (Exception ignored) {
-							}
-							mirrorsGroup.put(world, getWorldData(source).getName());
-							mirrorsUser.put(world, getWorldData(source).getName());
-
-							// Track this world so we can create data for it later
-							mirroredWorlds.add(o.toString());
-
-						} else
-							GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.MIRRORING_ERROR"), o.toString())); //$NON-NLS-1$
-					}
-				} else if (mirrorsMap.get(source) instanceof Map) {
-					Map subSection = (Map) mirrorsMap.get(source);
-
-					for (Object key : subSection.keySet()) {
-
-						if (!((String) key).equalsIgnoreCase(serverDefaultWorldName)) {
-
-							if (subSection.get(key) instanceof ArrayList) {
-								ArrayList mirrorList = (ArrayList) subSection.get(key);
-
-								// These worlds have defined mirroring
-								for (Object o : mirrorList) {
-									String type = o.toString().toLowerCase();
-									try {
-										if (type.equals("groups")) //$NON-NLS-1$
-											mirrorsGroup.remove(((String) key).toLowerCase());
-
-										if (type.equals("users")) //$NON-NLS-1$
-											mirrorsUser.remove(((String) key).toLowerCase());
-
-									} catch (Exception ignored) {
-									}
-									if (type.equals("groups")) { //$NON-NLS-1$
-										mirrorsGroup.put(((String) key).toLowerCase(), getWorldData(source).getName());
-										GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.ADDING_GROUPS_MIRROR"), key.toString())); //$NON-NLS-1$
-									}
-
-									if (type.equals("users")) { //$NON-NLS-1$
-										mirrorsUser.put(((String) key).toLowerCase(), getWorldData(source).getName());
-										GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.ADDING_USERS_MIRROR"), key.toString())); //$NON-NLS-1$
-									}
-								}
-
-								// Track this world so we can create data for it later
-								mirroredWorlds.add((String) key);
-
-							} else
-								throw new IllegalStateException(String.format(Messages.getString("WorldsHolder.UNKNOWN_MIRRORING_FORMAT"), key)); //$NON-NLS-1$
-
-						} else {
-							GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.MIRRORING_ERROR"), key)); //$NON-NLS-1$
-						}
-					}
-				}
-			}
-
-			// Create data for any worlds not already loaded
-			for (String world : mirroredWorlds) {
-				if (!worldsData.containsKey(world.toLowerCase())) {
-					GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.NO_DATA"), world)); //$NON-NLS-1$
-					dataSource.init(world);
-					dataSource.loadWorld(world, true);
-				}
-			}
+		for (String world : worldsData.keySet()) {
+			dataSource.init(world);
+			dataSource.loadWorld(world, false);
 		}
 	}
 
@@ -264,10 +145,10 @@ public class WorldsHolder {
 			if (alreadyDone.contains(w)) {
 				continue;
 			}
-			if (!mirrorsGroup.containsKey(w.getName().toLowerCase()))
+			if (!hasGroupsMirror(w.getName()))
 				dataSource.reloadGroups(w);
 
-			if (!mirrorsUser.containsKey(w.getName().toLowerCase()))
+			if (!hasUsersMirror(w.getName()))
 				dataSource.reloadUsers(w);
 
 			alreadyDone.add(w);
@@ -280,12 +161,11 @@ public class WorldsHolder {
 	 */
 	public void reloadWorld(String worldName) {
 
-		if (!mirrorsGroup.containsKey(worldName.toLowerCase()))
+		if (!hasGroupsMirror(worldName))
 			dataSource.reloadGroups(getWorldData(worldName));
-		//getWorldData(worldName).reloadGroups();
-		if (!mirrorsUser.containsKey(worldName.toLowerCase()))
+
+		if (!hasUsersMirror(worldName))
 			dataSource.reloadGroups(getWorldData(worldName));
-		//getWorldData(worldName).reloadUsers();
 	}
 
 	/*
@@ -356,7 +236,7 @@ public class WorldsHolder {
 				GroupManager.logger.severe(Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
 				continue;
 			}
-			if (!mirrorsGroup.containsKey(w.getName().toLowerCase()))
+			if (!hasGroupsMirror(w.getName()))
 				if (w.haveGroupsChanged()) {
 					if (overwrite || (!overwrite && (w.getTimeStampGroups() >= w.getGroupsFile().lastModified()))) { // TODO
 						// Backup Groups file
@@ -382,7 +262,7 @@ public class WorldsHolder {
 						changed = true;
 					}
 				}
-			if (!mirrorsUser.containsKey(w.getName().toLowerCase()))
+			if (!hasUsersMirror(w.getName()))
 				if (w.haveUsersChanged()) {
 					if (overwrite || (!overwrite && (w.getTimeStampUsers() >= w.getUsersFile().lastModified()))) { // TODO
 						// Backup Users file
@@ -456,7 +336,7 @@ public class WorldsHolder {
 
 		if (worldsData.containsKey(worldNameLowered)) {
 			OverloadedWorldHolder data = worldsData.get(worldNameLowered);
-			data.updateDataSource();
+			if (data != null) data.updateDataSource();
 			return data;
 		}
 		return null;
@@ -531,38 +411,41 @@ public class WorldsHolder {
 	/**
 	 * Tells if the world has been mapped.
 	 * 
-	 * It will return true if world is a mirror.
+	 * Returns true if world is a parent or mirror.
 	 * 
 	 * @param worldName
 	 * @return true if world is loaded or mirrored. false if not listed
 	 */
-	public boolean isInList(String worldName) {
+	public boolean isWorldKnown(String worldName) {
 
-		return worldsData.containsKey(worldName.toLowerCase()) || mirrorsGroup.containsKey(worldName.toLowerCase()) || mirrorsUser.containsKey(worldName.toLowerCase());
+		return worldsData.containsKey(worldName.toLowerCase()) || hasGroupsMirror(worldName) || hasUsersMirror(worldName);
 	}
 
 	/**
-	 * Verify if world has it's own file permissions.
+	 * Verify if world has it's own data (or partially mirrored).
 	 *
 	 * @param worldName
 	 * @return true if it has its own holder. false if not.
 	 */
 	public boolean hasOwnData(String worldName) {
 
-		if (worldsData.containsKey(worldName.toLowerCase()) && (!mirrorsGroup.containsKey(worldName.toLowerCase()) || !mirrorsUser.containsKey(worldName.toLowerCase()))) {
+		String key = worldName.toLowerCase();
+		if (worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key))) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean hasGroupsMirror(String worldName) {
+	/**
+	 * Has data already been loaded for this world?
+	 * Is a parent world.
+	 * 
+	 * @param name
+	 * @return	true if data is found.
+	 */
+	public boolean isParentWorld(String name) {
 
-		return mirrorsGroup.containsKey(worldName.toLowerCase());
-	}
-
-	public boolean hasUsersMirror(String worldName) {
-
-		return mirrorsUser.containsKey(worldName.toLowerCase());
+		return worldsData.containsKey(name.toLowerCase());
 	}
 
 	/**
@@ -609,8 +492,8 @@ public class WorldsHolder {
 				if (!list.contains(data)) {
 
 					String worldNameLowered = data.getName().toLowerCase();
-					String usersMirror = mirrorsUser.get(worldNameLowered);
-					String groupsMirror = mirrorsGroup.get(worldNameLowered);
+					String usersMirror = getUsersMirror(worldNameLowered);
+					String groupsMirror = getGroupsMirror(worldNameLowered);
 
 					// is users mirrored?
 					if (usersMirror != null) {
