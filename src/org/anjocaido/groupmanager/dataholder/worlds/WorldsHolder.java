@@ -68,6 +68,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 		this.logger = plugin.getLogger();
 	}
 
+	/**
+	 * Parse the mirrorsMap and setup data for all worlds.
+	 */
 	public abstract void parseMirrors();
 
 	public void addWorldData(String key, OverloadedWorldHolder worldData) {
@@ -118,7 +121,6 @@ public abstract class WorldsHolder extends ChildMirrors {
 				GroupManager.logger.log(Level.SEVERE, null, ex);
 			}
 		}
-		//dataSource.init(serverDefaultWorldName);
 	}
 
 	/**
@@ -241,11 +243,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (overwrite || (!overwrite && (w.getTimeStampGroups() >= w.getGroupsFile().lastModified()))) { // TODO
 						// Backup Groups file
 						dataSource.backup(w, true); // TODO
-
 						dataSource.saveGroups(w);
-						//WorldDataHolder.writeGroups(w, w.getGroupsFile());
 						changed = true;
-						//w.removeGroupsChangedFlag();
+
 					} else {
 						// Newer file found.
 						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
@@ -255,10 +255,10 @@ public abstract class WorldsHolder extends ChildMirrors {
 					//Check for newer file as no local changes.
 					if (w.getTimeStampGroups() < w.getGroupsFile().lastModified()) { // TODO
 						System.out.print(Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
+
 						// Backup Groups file
 						dataSource.backup(w, true); // TODO
 						dataSource.reloadGroups(w);
-						//w.reloadGroups();
 						changed = true;
 					}
 				}
@@ -267,11 +267,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (overwrite || (!overwrite && (w.getTimeStampUsers() >= w.getUsersFile().lastModified()))) { // TODO
 						// Backup Users file
 						dataSource.backup(w, false);
-
-						//WorldDataHolder.writeUsers(w, w.getUsersFile());
 						dataSource.saveUsers(w);
 						changed = true;
-						//w.removeUsersChangedFlag();
+
 					} else {
 						// Newer file found.
 						GroupManager.logger.log(Level.WARNING, Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE") + w.getName()); //$NON-NLS-1$
@@ -281,10 +279,10 @@ public abstract class WorldsHolder extends ChildMirrors {
 					//Check for newer file as no local changes.
 					if (w.getTimeStampUsers() < w.getUsersFile().lastModified()) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
+
 						// Backup Users file
 						dataSource.backup(w, false); // TODO
 						dataSource.reloadUsers(w);
-						//w.reloadUsers();
 						changed = true;
 					}
 				}

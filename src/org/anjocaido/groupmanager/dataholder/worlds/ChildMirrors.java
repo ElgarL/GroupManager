@@ -15,15 +15,15 @@ public class ChildMirrors {
 	/**
 	 * Map of mirrors: <nonExistingWorldName, existingAndLoadedWorldName>
 	 * The key is the mirror.
-	 * The object is the mirrored.
+	 * The object is the parent.
 	 * 
-	 * Mirror shows the same data of mirrored.
+	 * Mirror shows the same data as parent.
 	 */
 	private Map<String, String> groupsMirror = new TreeMap<>();
 	private Map<String, String> usersMirror = new TreeMap<>();
 	
 	/**
-	 * Find the highest parent mirror or the
+	 * Find the top level parent world or the
 	 * same world name if no mirror exists.
 	 * 
 	 * @param worldName

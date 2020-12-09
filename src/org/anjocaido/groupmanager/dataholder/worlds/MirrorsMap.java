@@ -112,7 +112,7 @@ public class MirrorsMap extends WorldsHolder {
 
 		for (Object element : subSection.keySet()) {
 
-			String world = (String) element;
+			String world = element.toString();
 			
 			if (world.equalsIgnoreCase(serverDefaultWorldName)) {
 				// Mirroring ourselves?!
