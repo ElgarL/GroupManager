@@ -63,7 +63,7 @@ public class MirrorsMap extends WorldsHolder {
 			/*
 			 * Load all child entries for this node.
 			 */
-			Object child = mirrorsMap.get(root);
+			Object child = mirrorsMap.get(root.toString());
 
 			if (child instanceof ArrayList) {
 
