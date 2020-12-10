@@ -44,7 +44,8 @@ public class Yaml implements DataSource {
 	private File worldsFolder;
 
 	/**
-	 *
+	 * 
+	 * @param plugin
 	 */
 	public Yaml(GroupManager plugin) {
 
@@ -166,7 +167,6 @@ public class Yaml implements DataSource {
 			OverloadedWorldHolder thisWorldData = new OverloadedWorldHolder(tempHolder);
 
 			// Set the file TimeStamps as it will be default from the initial load.
-			//thisWorldData.setTimeStamps();
 			thisWorldData.setTimeStampUsers(usersFile.lastModified());
 			thisWorldData.setTimeStampGroups(groupsFile.lastModified());
 
