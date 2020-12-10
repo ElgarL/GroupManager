@@ -29,5 +29,21 @@ public interface DataSource {
 	void saveGroups(WorldDataHolder dataHolder);
 	void saveUsers(WorldDataHolder dataHolder);
 
+	/**
+	 * Do we have newer Groups data than the saved data?
+	 * 
+	 * @param dataHolder
+	 * @return
+	 */
+	boolean hasNewGroupsData(WorldDataHolder dataHolder);
+	
+	/**
+	 * Do we have newer Users data than the saved data?
+	 * 
+	 * @param dataHolder
+	 * @return
+	 */
+	boolean hasNewUsersData(WorldDataHolder dataHolder);
+	
 	void backup(OverloadedWorldHolder world, Boolean groupsOrUsers);
 }

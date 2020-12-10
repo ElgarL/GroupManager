@@ -690,15 +690,6 @@ public class WorldDataHolder {
 		users.setTimeStampUsers(timeStampUsers);
 	}
 
-	public void setTimeStamps() {
-
-		if (getGroupsFile() != null)
-			setTimeStampGroups(getGroupsFile().lastModified());
-		
-		if (getUsersFile() != null)
-			setTimeStampUsers(getUsersFile().lastModified());
-	}
-
 	/** Name to UUID lookups **/
 
 	/**

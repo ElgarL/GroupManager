@@ -240,9 +240,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 			}
 			if (!hasGroupsMirror(w.getName()))
 				if (w.haveGroupsChanged()) {
-					if (overwrite || (!overwrite && (w.getTimeStampGroups() >= w.getGroupsFile().lastModified()))) { // TODO
+					if (overwrite || (!overwrite && dataSource.hasNewGroupsData(w))) {
 						// Backup Groups file
-						dataSource.backup(w, true); // TODO
+						dataSource.backup(w, true);
 						dataSource.saveGroups(w);
 						changed = true;
 
@@ -253,18 +253,18 @@ public abstract class WorldsHolder extends ChildMirrors {
 					}
 				} else {
 					//Check for newer file as no local changes.
-					if (w.getTimeStampGroups() < w.getGroupsFile().lastModified()) { // TODO
+					if (!dataSource.hasNewGroupsData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
 						// Backup Groups file
-						dataSource.backup(w, true); // TODO
+						dataSource.backup(w, true);
 						dataSource.reloadGroups(w);
 						changed = true;
 					}
 				}
 			if (!hasUsersMirror(w.getName()))
 				if (w.haveUsersChanged()) {
-					if (overwrite || (!overwrite && (w.getTimeStampUsers() >= w.getUsersFile().lastModified()))) { // TODO
+					if (overwrite || (!overwrite && dataSource.hasNewUsersData(w))) {
 						// Backup Users file
 						dataSource.backup(w, false);
 						dataSource.saveUsers(w);
@@ -277,11 +277,11 @@ public abstract class WorldsHolder extends ChildMirrors {
 					}
 				} else {
 					//Check for newer file as no local changes.
-					if (w.getTimeStampUsers() < w.getUsersFile().lastModified()) {
+					if (!dataSource.hasNewUsersData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
 						// Backup Users file
-						dataSource.backup(w, false); // TODO
+						dataSource.backup(w, false);
 						dataSource.reloadUsers(w);
 						changed = true;
 					}
