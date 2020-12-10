@@ -134,8 +134,7 @@ public class WorldDataHolder {
 		}
 
 		// No user account found so create a new one.
-		User newUser = createUser(userId);
-		return newUser;
+		return createUser(userId);
 	}
 
 	/**
@@ -413,7 +412,7 @@ public class WorldDataHolder {
 	public Collection<Group> getGroupList() {
 
 		synchronized (getGroups()) {
-			return new LinkedList<Group>(getGroups().values());
+			return new LinkedList<>(getGroups().values());
 		}
 	}
 
@@ -423,7 +422,7 @@ public class WorldDataHolder {
 	public Collection<User> getUserList() {
 
 		synchronized (getUsers()) {
-			return new LinkedList<User>(getUsers().values());
+			return new LinkedList<>(getUsers().values());
 		}
 	}
 
@@ -690,7 +689,7 @@ public class WorldDataHolder {
 		users.setTimeStampUsers(timeStampUsers);
 	}
 
-	/** Name to UUID lookups **/
+	/* Name to UUID lookups **/
 
 	/**
 	 * Add a new name to UUID lookup.
@@ -703,7 +702,7 @@ public class WorldDataHolder {
 		Set<String> lookup = getUUIDLookup(name.toLowerCase());
 
 		if (lookup == null)
-			lookup = new TreeSet<String>();
+			lookup = new TreeSet<>();
 
 		lookup.add(UUID);
 
