@@ -17,7 +17,6 @@
  */
 package org.anjocaido.groupmanager.dataholder.worlds;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -115,7 +114,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		} else {
 			Properties server = new Properties();
 			try {
-				server.load(new FileInputStream(new File("server.properties"))); //$NON-NLS-1$
+				server.load(new FileInputStream("server.properties")); //$NON-NLS-1$
 				serverDefaultWorldName = server.getProperty("level-name").toLowerCase(); //$NON-NLS-1$
 			} catch (IOException ex) {
 				GroupManager.logger.log(Level.SEVERE, null, ex);
@@ -142,7 +141,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		// Load global groups
 		GroupManager.getGlobalGroups().load();
 
-		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<WorldDataHolder>();
+		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<>();
 		for (WorldDataHolder w : worldsData.values()) {
 			if (alreadyDone.contains(w)) {
 				continue;
@@ -428,10 +427,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public boolean hasOwnData(String worldName) {
 
 		String key = worldName.toLowerCase();
-		if (worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key))) {
-			return true;
-		}
-		return false;
+		return worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key));
 	}
 
 	/**

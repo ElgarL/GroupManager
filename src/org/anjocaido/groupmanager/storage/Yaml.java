@@ -167,8 +167,8 @@ public class Yaml implements DataSource {
 			OverloadedWorldHolder thisWorldData = new OverloadedWorldHolder(tempHolder);
 
 			// Set the file TimeStamps as it will be default from the initial load.
-			thisWorldData.setTimeStampUsers(usersFile.lastModified());
-			thisWorldData.setTimeStampGroups(groupsFile.lastModified());
+			thisWorldData.setTimeStampUsers(usersFile != null ? usersFile.lastModified() : 0);
+			thisWorldData.setTimeStampGroups(groupsFile != null ? groupsFile.lastModified() : 0);
 
 			if (thisWorldData != null) {
 				GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.WORLD_LOAD_SUCCESS"), worldName)); //$NON-NLS-1$
