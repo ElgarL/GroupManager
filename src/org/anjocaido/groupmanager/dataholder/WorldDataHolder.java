@@ -162,7 +162,8 @@ public class WorldDataHolder {
 			 * event (to grab a UUID). This would
 			 * force create a user .
 			 */
-			getUsers().remove(currentName.toLowerCase());
+			if (getUsers().containsKey(currentName.toLowerCase()))
+				getUsers().remove(currentName.toLowerCase());
 
 			return user;
 		}
