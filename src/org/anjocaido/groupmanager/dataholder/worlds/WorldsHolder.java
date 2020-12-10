@@ -341,7 +341,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	}
 
 	/**
-	 * Do a matching of playerName, if its found only one player, do
+	 * Do a matching of playerName, if  one player is found, do
 	 * getWorldData(player)
 	 *
 	 * @param playerName
