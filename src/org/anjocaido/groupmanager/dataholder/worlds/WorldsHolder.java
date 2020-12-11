@@ -416,7 +416,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	public boolean isWorldKnown(String worldName) {
 
-		return worldsData.containsKey(worldName.toLowerCase()) || hasGroupsMirror(worldName) || hasUsersMirror(worldName);
+		return isParentWorld(worldName) || hasGroupsMirror(worldName) || hasUsersMirror(worldName);
 	}
 
 	/**
