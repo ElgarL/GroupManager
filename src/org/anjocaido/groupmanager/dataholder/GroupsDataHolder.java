@@ -83,6 +83,7 @@ public class GroupsDataHolder {
 
 	/**
 	 * Note: Iteration over this object has to be synchronised!
+	 * 
 	 * @return the groups
 	 */
 	public SortedMap<String, Group> getGroups() {

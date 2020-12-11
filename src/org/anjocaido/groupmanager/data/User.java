@@ -19,10 +19,10 @@ package org.anjocaido.groupmanager.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -39,7 +39,8 @@ import org.bukkit.entity.Player;
 public class User extends DataUnit implements Cloneable {
 
 	private String group;
-	private Map<String, Long> subGroups = Collections.synchronizedSortedMap(new TreeMap<>());
+	private Map<String, Long> subGroups = Collections.synchronizedMap(new LinkedHashMap<>());
+	
 	/**
 	 * This one holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.

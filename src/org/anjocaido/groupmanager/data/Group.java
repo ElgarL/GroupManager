@@ -37,8 +37,9 @@ public class Group extends DataUnit implements Cloneable {
 	 * The groups it inherits DIRECTLY!
 	 */
 	private List<String> inherits = Collections.synchronizedList(new LinkedList<>());
+	
 	/**
-	 * This one holds the fields in INFO node.
+	 * This holds the fields in INFO node.
 	 * like prefix = 'c'
 	 * or build = false
 	 */
