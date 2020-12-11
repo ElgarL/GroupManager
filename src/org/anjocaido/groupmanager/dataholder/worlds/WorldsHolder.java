@@ -36,7 +36,6 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
 import org.anjocaido.groupmanager.storage.Yaml;
-import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.entity.Player;
 
 /**
@@ -217,7 +216,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		boolean changed = false;
 		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<>();
-		Tasks.removeOldFiles(plugin.getBackupFolder());
+
+		// Remove old backups.
+		dataSource.purgeBackups();
 
 		// Write Global Groups
 		if (GroupManager.getGlobalGroups().haveGroupsChanged()) {
@@ -239,7 +240,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 			}
 			if (!hasGroupsMirror(w.getName()))
 				if (w.haveGroupsChanged()) {
-					if (overwrite || (!overwrite && dataSource.hasNewGroupsData(w))) {
+					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(w))) {
 						// Backup Groups file
 						dataSource.backup(w, true);
 						dataSource.saveGroups(w);
@@ -252,7 +253,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 					}
 				} else {
 					//Check for newer file as no local changes.
-					if (!dataSource.hasNewGroupsData(w)) {
+					if (dataSource.hasNewGroupsData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
 						// Backup Groups file
@@ -263,7 +264,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 				}
 			if (!hasUsersMirror(w.getName()))
 				if (w.haveUsersChanged()) {
-					if (overwrite || (!overwrite && dataSource.hasNewUsersData(w))) {
+					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(w))) {
 						// Backup Users file
 						dataSource.backup(w, false);
 						dataSource.saveUsers(w);
@@ -276,7 +277,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 					}
 				} else {
 					//Check for newer file as no local changes.
-					if (!dataSource.hasNewUsersData(w)) {
+					if (dataSource.hasNewUsersData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
 						// Backup Users file

@@ -955,17 +955,17 @@ public class Yaml implements DataSource {
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 	}
-	
+
 	@Override
 	public boolean hasNewGroupsData(WorldDataHolder dataHolder) {
-		
-		return dataHolder.getTimeStampGroups() >= dataHolder.getGroupsFile().lastModified();
+
+		return dataHolder.getTimeStampGroups() < dataHolder.getGroupsFile().lastModified();
 	}
-	
+
 	@Override
 	public boolean hasNewUsersData(WorldDataHolder dataHolder) {
-		
-		return dataHolder.getTimeStampUsers() >= dataHolder.getUsersFile().lastModified();
+
+		return dataHolder.getTimeStampUsers() < dataHolder.getUsersFile().lastModified();
 	}
 
 	@Override
@@ -977,5 +977,11 @@ public class Yaml implements DataSource {
 		} catch (IOException ex) {
 			GroupManager.logger.log(Level.SEVERE, null, ex);
 		}
+	}
+
+	@Override
+	public void purgeBackups() {
+
+		Tasks.removeOldFiles(plugin.getBackupFolder());
 	}
 }

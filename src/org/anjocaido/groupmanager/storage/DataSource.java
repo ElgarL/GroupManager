@@ -30,7 +30,7 @@ public interface DataSource {
 	 * @param isMirror	if this world is a full or partial mirror.
 	 */
 	void loadWorld(String worldName, Boolean isMirror);
-	
+
 	/**
 	 * Search the servers world folders for any unknown
 	 * world folders and load data for them.
@@ -44,7 +44,7 @@ public interface DataSource {
 	 * @throws IOException
 	 */
 	void loadGroups(WorldDataHolder dataHolder) throws IOException;
-	
+
 	/**
 	 * Load Users data into this world holder.
 	 * 
@@ -60,7 +60,7 @@ public interface DataSource {
 	 * @param dataHolder	the world container to load data into.
 	 */
 	void reload(WorldDataHolder dataHolder);
-	
+
 	/**
 	 * Reload Groups data for this world.
 	 * Do not overwrite current data unless the load is successful.
@@ -68,7 +68,7 @@ public interface DataSource {
 	 * @param dataHolder	the world container to load data into.
 	 */
 	void reloadGroups(WorldDataHolder dataHolder);
-	
+
 	/**
 	 * Reload Users data for this world.
 	 * Do not overwrite current data unless the load is successful.
@@ -83,7 +83,7 @@ public interface DataSource {
 	 * @param dataHolder	the world container to save data from.
 	 */
 	void saveGroups(WorldDataHolder dataHolder);
-	
+
 	/**
 	 * Save this worlds Users data.
 	 * 
@@ -92,21 +92,21 @@ public interface DataSource {
 	void saveUsers(WorldDataHolder dataHolder);
 
 	/**
-	 * Do we have newer Groups data than the saved data?
+	 * Does the dataSource have newer Groups data?
 	 * 
 	 * @param dataHolder	the data object to test.
-	 * @return				true if our data is the same or newer.
+	 * @return				true if the saved data is newer.
 	 */
 	boolean hasNewGroupsData(WorldDataHolder dataHolder);
-	
+
 	/**
-	 * Do we have newer Users data than the saved data?
+	 * Does the dataSource have newer Users data?
 	 * 
 	 * @param dataHolder	the data object to test.
-	 * @return				true if our data is the same or newer.
+	 * @return				true if the saved data is newer.
 	 */
 	boolean hasNewUsersData(WorldDataHolder dataHolder);
-	
+
 	/**
 	 * Backup old data.
 	 * 
@@ -114,4 +114,9 @@ public interface DataSource {
 	 * @param groupsOrUsers	true for groups, false for users.
 	 */
 	void backup(OverloadedWorldHolder world, Boolean groupsOrUsers);
+
+	/**
+	 * Remove old backups as per the settings in the config.
+	 */
+	void purgeBackups();
 }
