@@ -42,7 +42,7 @@ public class User extends DataUnit implements Cloneable {
 	private Map<String, Long> subGroups = Collections.synchronizedMap(new LinkedHashMap<>());
 	
 	/**
-	 * This one holds the fields in INFO node,
+	 * This holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
 	 */
 	private UserVariables variables = new UserVariables(this);
