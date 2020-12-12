@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
@@ -83,11 +82,9 @@ import org.anjocaido.groupmanager.metrics.Metrics;
 import org.anjocaido.groupmanager.permissions.BukkitPermissions;
 import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
 import org.anjocaido.groupmanager.utils.GMLoggerHandler;
-import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -187,6 +184,8 @@ public class GroupManager extends JavaPlugin {
 	public void onEnable(boolean restarting) {
 
 		try {
+			PluginDescriptionFile pdfFile = this.getDescription();
+
 			/*
 			 * reset local variables.
 			 */
@@ -202,20 +201,12 @@ public class GroupManager extends JavaPlugin {
 				ch = new GMLoggerHandler();
 				GroupManager.logger.addHandler(ch);
 			}
-			GroupManager.logger.setLevel(Level.ALL);
-
-			// Create the backup folder, if it doesn't exist.
-			prepareBackupFolder();
-			// Load the config.yml
-			prepareConfig();
-			// Load the global groups
-			globalGroups = new GlobalGroups(this);
 
 			/*
-			 *  Prevent our registered events from triggering
-			 *  updates as we are not fully loaded.
+			 * Load our config.yml
 			 */
-			setLoaded(false);
+			prepareBackupFolder();
+			config = new GMConfiguration(this).load();
 
 			/*
 			 * Configure the worlds holder.
@@ -223,12 +214,20 @@ public class GroupManager extends JavaPlugin {
 			if (!restarting)
 				worldsHolder = new MirrorsMap(this);
 
+			/*
+			 * Load the global groups before we load our worlds
+			 */
+			globalGroups = new GlobalGroups(this);
+			setLoaded(false); // Reset as GG flags us loaded too early.
+
+			/*
+			 * Load our world data.
+			 */
 			worldsHolder.resetWorldsHolder();
 
 			/*
 			 * This should NEVER happen. No idea why it's still here.
 			 */
-			PluginDescriptionFile pdfFile = this.getDescription();
 			if (worldsHolder == null) {
 				GroupManager.logger.severe(String.format(Messages.getString("GroupManager.CANT_ENABLE"), pdfFile.getName(), pdfFile.getVersion())); //$NON-NLS-1$
 				this.getServer().getPluginManager().disablePlugin(this);
@@ -238,11 +237,6 @@ public class GroupManager extends JavaPlugin {
 			/*
 			 *  Initialize the world listener and Bukkit permissions
 			 *  to handle events and initialize our command handlers
-			 *  if this is a fresh start
-			 *  
-			 *  else
-			 *  
-			 *  Reset bukkit permissions.
 			 */
 			if (!restarting) {
 				WorldEvents = new GMWorldListener(this);
@@ -264,20 +258,32 @@ public class GroupManager extends JavaPlugin {
 			 * Schedule a Bukkit Permissions update for 1 tick later.
 			 * All plugins will be loaded by then
 			 */
-
-			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1) {
+			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1)
 				GroupManager.logger.severe(Messages.getString("GroupManager.ERROR_SCHEDULING_SUPERPERMS")); //$NON-NLS-1$
+
+			/*
+			 * Register as a service and Metrics.
+			 */
+			if (!restarting) {
+				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
+
 				/*
-				 * Flag that we are now loaded and should start processing events.
+				 * Register Metrics
 				 */
-				setLoaded(true);
+				try {
+					Metrics metrics = new Metrics(this, 7982);
+
+					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
+				} catch (Exception e) {
+					System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
+				}
 			}
 
+			/*
+			 * Flag that we are now loaded and should start processing events.
+			 */
+			setLoaded(true);
 			GroupManager.logger.info(String.format(Messages.getString("GroupManager.ENABLED"), pdfFile.getVersion())); //$NON-NLS-1$
-
-			// Register as a service
-			if (!restarting)
-				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
 
 			/*
 			 * Version check.
@@ -295,21 +301,6 @@ public class GroupManager extends JavaPlugin {
 			 * Throw an error so Bukkit knows about it.
 			 */
 			throw new IllegalArgumentException(ex.getMessage(), ex);
-
-		}
-
-		if (!restarting) {
-
-			/*
-			 * Register Metrics
-			 */
-			try {
-				Metrics metrics = new Metrics(this, 7982);
-
-				metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
-			} catch (Exception e) {
-				System.err.println("[GroupManager] Error setting up metrics"); //$NON-NLS-1$
-			}
 		}
 	}
 
@@ -378,7 +369,7 @@ public class GroupManager extends JavaPlugin {
 	/**
 	 * Write an error.log
 	 * 
-	 * @param ex
+	 * @param ex	the Exception to save to the log.
 	 */
 	private void saveErrorLog(Exception ex) {
 
@@ -441,23 +432,12 @@ public class GroupManager extends JavaPlugin {
 		}
 	}
 
-	private void prepareConfig() {
-
-		config = new GMConfiguration(this);
-		config.load();
-	}
-
 	public void enableScheduler() {
 
 		if (worldsHolder != null) {
 			disableScheduler();
 			/*
 			 * Thread to handle saving data.
-			 */
-			// obtain a lock so we are the only thread saving (blocking).
-			//$NON-NLS-1$
-			/*
-			 * Release the lock.
 			 */
 			Runnable commiter = () -> {
 
@@ -482,16 +462,6 @@ public class GroupManager extends JavaPlugin {
 			};
 			/*
 			 * Thread for purging expired permissions.
-			 */
-			// obtain a lock so we are the only thread saving (blocking).
-			/*
-			 * If we removed any permissions and saving is not disabled
-			 * update our data files so we are not updating perms
-			 * every 60 seconds.
-			 */
-			//$NON-NLS-1$
-			/*
-			 * Release the lock.
 			 */
 			Runnable cleanup = () -> {
 
@@ -549,12 +519,19 @@ public class GroupManager extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * Get the World data containers.
+	 * 
+	 * @return the WorldsHolder.
+	 */
 	public WorldsHolder getWorldsHolder() {
 
 		return worldsHolder;
 	}
 
 	/**
+	 * Get all Users in an overloaded state.
+	 * 
 	 * @return the overloadedUsers
 	 */
 	public static Map<String, ArrayList<User>> getOverloadedUsers() {
@@ -563,61 +540,9 @@ public class GroupManager extends JavaPlugin {
 	}
 
 	/**
-	 * Checks if a permission exists and has lower/same priority
-	 */
-	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
-
-
-		if (newPerm.startsWith("+")) //$NON-NLS-1$
-		{
-			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-				return true;
-			}
-		}
-		else if (newPerm.startsWith("-")) //$NON-NLS-1$
-		{
-			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-				return true;
-			}
-			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-				return true;
-			}
-		}
-		else
-		{
-			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION_ALREADY"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-			}
-			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION_ALREADY"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-			}
-			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.FOUND))
-			{
-				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS_ALREADY"), type)); //$NON-NLS-1$
-				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
-
-				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.
-				return (oldPerm.accessLevel.equalsIgnoreCase(newPerm));
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * @return the selectedWorlds
+	 * Get all command senders who have a world selected for commands.
+	 * 
+	 * @return the selectedWorlds.
 	 */
 	public static Map<String, String> getSelectedWorlds() {
 
@@ -657,7 +582,6 @@ public class GroupManager extends JavaPlugin {
 				player.sendMessage(ChatColor.YELLOW + Messages.getString("YOU_WERE") + msg); //$NON-NLS-1$
 			}
 		}
-
 	}
 
 	/**
@@ -679,7 +603,6 @@ public class GroupManager extends JavaPlugin {
 	public static GlobalGroups getGlobalGroups() {
 
 		return globalGroups;
-
 	}
 
 	/**
@@ -747,5 +670,4 @@ public class GroupManager extends JavaPlugin {
 
 		GMEventHandler = gMEventHandler;
 	}
-
 }

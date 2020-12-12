@@ -67,7 +67,7 @@ public class GMConfiguration {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void load() {
+	public GMConfiguration load() {
 
 		if (!plugin.getDataFolder().exists()) {
 			plugin.getDataFolder().mkdirs();
@@ -185,6 +185,8 @@ public class GMConfiguration {
 		}
 		// Setup defaults
 		adjustLoggerLevel();
+		
+		return this;
 	}
 
 	private String nodeError(String node) {

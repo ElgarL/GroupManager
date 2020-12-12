@@ -191,7 +191,6 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.RED + Messages.getString("WORLD_SELECTION_NEEDED"));
 		sender.sendMessage(ChatColor.RED + Messages.getString("USE_MANSELECT"));
 		return false;
-
 	}
 
 	/**
@@ -225,7 +224,66 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		}
 
 		return players.get(0).getUniqueId();
+	}
+	
+	/**
+	 * Checks if a permission exists and has lower/same priority
+	 * 
+	 * @param sender	the sender who asked for the test.
+	 * @param newPerm	the permission to check for a match.
+	 * @param oldPerm	the existing test result to compare against.
+	 * @param type		the type of this test 'user' or group'.
+	 * @return			true if a match is found.
+	 */
+	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
 
+
+		if (newPerm.startsWith("+")) //$NON-NLS-1$
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+		}
+		else if (newPerm.startsWith("-")) //$NON-NLS-1$
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+		}
+		else
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.FOUND))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+
+				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.
+				return (oldPerm.accessLevel.equalsIgnoreCase(newPerm));
+			}
+		}
+		return false;
 	}
 
 	/**

@@ -106,7 +106,7 @@ public class ManUAddP extends BaseCommand {
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkUserOnlyPermission(auxUser, auxString);
-			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "user")) //$NON-NLS-1$
+			if (checkPermissionExists(sender, auxString, permissionResult, "user")) //$NON-NLS-1$
 			{
 				continue;
 			}

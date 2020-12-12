@@ -98,7 +98,7 @@ public class ManGAddP extends BaseCommand {
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkGroupOnlyPermission(auxGroup, auxString);
-			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "group")) //$NON-NLS-1$
+			if (checkPermissionExists(sender, auxString, permissionResult, "group")) //$NON-NLS-1$
 			{
 				continue;
 			}
