@@ -220,16 +220,23 @@ public abstract class WorldsHolder extends ChildMirrors {
 		// Remove old backups.
 		dataSource.purgeBackups();
 
-		// Write Global Groups
+		/*
+		 * Save Global Groups
+		 */
 		if (GroupManager.getGlobalGroups().haveGroupsChanged()) {
-			GroupManager.getGlobalGroups().writeGroups(overwrite); // TODO
+			dataSource.backup(null, DataSource.TYPE.GLOBALGROUPS);
+			plugin.getWorldsHolder().getDataSource().saveGlobalGroups(overwrite);
+
 		} else {
-			if (GroupManager.getGlobalGroups().getTimeStampGroups() < GroupManager.getGlobalGroups().getGlobalGroupsFile().lastModified()) {
+			if (overwrite || (!overwrite && dataSource.hasNewGlobalGroupsData())) {
 				GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.WARN_NEWER_GG_FOUND_LOADING")); //$NON-NLS-1$
-				GroupManager.getGlobalGroups().load(); // TODO
+				GroupManager.getGlobalGroups().load();
 			}
 		}
 
+		/*
+		 * Save each world.
+		 */
 		for (OverloadedWorldHolder w : worldsData.values()) {
 			if (alreadyDone.contains(w)) {
 				continue;
@@ -238,11 +245,12 @@ public abstract class WorldsHolder extends ChildMirrors {
 				GroupManager.logger.severe(Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
 				continue;
 			}
-			if (!hasGroupsMirror(w.getName()))
+
+			if (!hasGroupsMirror(w.getName())) {
 				if (w.haveGroupsChanged()) {
 					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(w))) {
 						// Backup Groups file
-						dataSource.backup(w, true);
+						dataSource.backup(w, DataSource.TYPE.GROUPS);
 						dataSource.saveGroups(w);
 						changed = true;
 
@@ -256,17 +264,17 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (dataSource.hasNewGroupsData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
-						// Backup Groups file
-						dataSource.backup(w, true);
 						dataSource.reloadGroups(w);
 						changed = true;
 					}
 				}
-			if (!hasUsersMirror(w.getName()))
+			}
+
+			if (!hasUsersMirror(w.getName())) {
 				if (w.haveUsersChanged()) {
 					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(w))) {
 						// Backup Users file
-						dataSource.backup(w, false);
+						dataSource.backup(w, DataSource.TYPE.USERS);
 						dataSource.saveUsers(w);
 						changed = true;
 
@@ -280,12 +288,11 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (dataSource.hasNewUsersData(w)) {
 						System.out.print(Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
-						// Backup Users file
-						dataSource.backup(w, false);
 						dataSource.reloadUsers(w);
 						changed = true;
 					}
 				}
+			}
 			alreadyDone.add(w);
 		}
 		return changed;

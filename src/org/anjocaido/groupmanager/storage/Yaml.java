@@ -5,6 +5,7 @@ package org.anjocaido.groupmanager.storage;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +17,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.anjocaido.groupmanager.GlobalGroups;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
@@ -50,7 +53,7 @@ public class Yaml implements DataSource {
 	public Yaml(GroupManager plugin) {
 
 		this.plugin = plugin;
-		this.worldsFolder = new File(this.plugin.getDataFolder(), "worlds");
+		this.worldsFolder = new File(this.plugin.getDataFolder(), "worlds"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -119,10 +122,9 @@ public class Yaml implements DataSource {
 
 		if (holder.hasOwnData(worldNameLowered)) {
 			holder.getDataSource().reload(holder.getWorldData(worldNameLowered));
-			//worldsData.get(worldNameLowered).reload();
 			return;
 		}
-		GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.ATTEMPT_TO_LOAD"), worldName)); //$NON-NLS-1$ //$NON-NLS-2$
+		GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.ATTEMPT_TO_LOAD"), worldName)); //$NON-NLS-1$
 
 		File thisWorldFolder = new File(worldsFolder, worldNameLowered);
 		if ((isMirror) || (thisWorldFolder.exists() && thisWorldFolder.isDirectory())) {
@@ -143,6 +145,7 @@ public class Yaml implements DataSource {
 			// Map the group object for any mirror
 			if (holder.hasGroupsMirror(worldNameLowered)) {
 				tempHolder.setGroupsObject(holder.getWorldData(holder.getGroupsMirror(worldNameLowered)).getGroupsObject());
+
 			} else {
 				tempHolder.setGroupsFile(groupsFile);
 				try {
@@ -155,6 +158,7 @@ public class Yaml implements DataSource {
 			// Map the user object for any mirror
 			if (holder.hasUsersMirror(worldNameLowered)) {
 				tempHolder.setUsersObject(holder.getWorldData(holder.getUsersMirror(worldNameLowered)).getUsersObject());
+
 			} else {
 				tempHolder.setUsersFile(usersFile);
 				try {
@@ -166,11 +170,16 @@ public class Yaml implements DataSource {
 
 			OverloadedWorldHolder thisWorldData = new OverloadedWorldHolder(tempHolder);
 
-			// Set the file TimeStamps as it will be default from the initial load.
-			thisWorldData.setTimeStampUsers(usersFile != null ? usersFile.lastModified() : 0);
-			thisWorldData.setTimeStampGroups(groupsFile != null ? groupsFile.lastModified() : 0);
-
 			if (thisWorldData != null) {
+				// Set the file TimeStamps as it will be default from the initial creation.
+				if (usersFile != null) {
+					thisWorldData.setUsersFile(tempHolder.getUsersFile());
+					thisWorldData.setTimeStampUsers(tempHolder.getUsersFile().lastModified());
+				}
+				if (groupsFile != null) {
+					thisWorldData.setGroupsFile(tempHolder.getGroupsFile());
+					thisWorldData.setTimeStampGroups(tempHolder.getGroupsFile().lastModified());
+				}
 				GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.WORLD_LOAD_SUCCESS"), worldName)); //$NON-NLS-1$
 				holder.addWorldData(worldNameLowered, thisWorldData);
 			}
@@ -307,8 +316,9 @@ public class Yaml implements DataSource {
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_GROUP_DUPLICATE"), groupKey, groupsFile.getPath()));
 			}
 
-			// DEFAULT NODE
-
+			/*
+			 * DEFAULT NODE
+			 */
 			Object nodeData;
 			try {
 				nodeData = thisGroupNode.get("default");
@@ -331,8 +341,9 @@ public class Yaml implements DataSource {
 				dataHolder.setDefaultGroup(thisGrp);
 			}
 
-			// PERMISSIONS NODE
-
+			/*
+			 * PERMISSIONS NODE
+			 */
 			try {
 				nodeData = thisGroupNode.get("permissions");
 			} catch (Exception ex) {
@@ -344,7 +355,7 @@ public class Yaml implements DataSource {
 			 */
 			if (nodeData != null) {
 				/*
-				 * There is a permission list Which seems to hold some data
+				 * There is a permission list Which seems to hold data
 				 */
 				if (nodeData instanceof List) {
 					/*
@@ -375,10 +386,8 @@ public class Yaml implements DataSource {
 										thisGrp.addPermission(o.toString());
 									}
 
-							} catch (NullPointerException ex) {
-								// Ignore this entry as it's null. It can be
-								// safely dropped
-							}
+							} catch (NullPointerException ignored) {} // Safe to ignore.
+
 						}
 					} catch (Exception ex) {
 						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "permissions", thisGrp.getName(), groupsFile.getPath()), ex);
@@ -411,14 +420,11 @@ public class Yaml implements DataSource {
 				} else {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_TYPE"), "permissions", thisGrp.getName(), groupsFile.getPath()));
 				}
-				/*
-				 * Sort all permissions so they are in the correct order for
-				 * checking.
-				 */
 			}
 
-			// INFO NODE
-
+			/*
+			 * INFO NODE
+			 */
 			try {
 				nodeData = thisGroupNode.get("info");
 			} catch (Exception ex) {
@@ -443,8 +449,9 @@ public class Yaml implements DataSource {
 			} else
 				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "info", thisGrp.getName(), groupsFile.getPath()));
 
-			// INHERITANCE NODE
-
+			/*
+			 * INHERITANCE NODE
+			 */
 			try {
 				nodeData = thisGroupNode.get("inheritance");
 			} catch (Exception ex) {
@@ -494,6 +501,7 @@ public class Yaml implements DataSource {
 		}
 
 		dataHolder.removeGroupsChangedFlag();
+
 		// Update the LastModified time.
 		dataHolder.setGroupsFile(groupsFile);
 		dataHolder.setTimeStampGroups(groupsFile.lastModified());
@@ -568,8 +576,9 @@ public class Yaml implements DataSource {
 					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_DUPLICATE_USER"), usersKey, usersFile.getPath()));
 				}
 
-				// LASTNAME NODES
-
+				/*
+				 * LASTNAME NODES
+				 */
 				Object nodeData;
 				try {
 					nodeData = thisUserNode.get("lastname");
@@ -582,8 +591,9 @@ public class Yaml implements DataSource {
 					thisUser.setLastName((String) nodeData);
 				}
 
-				// USER PERMISSIONS NODES
-
+				/*
+				 * USER PERMISSIONS NODES
+				 */
 				try {
 					nodeData = thisUserNode.get("permissions");
 				} catch (Exception ex) {
@@ -633,15 +643,13 @@ public class Yaml implements DataSource {
 									thisUser.addPermission(nodeData.toString());
 								}
 							}
-
 						}
-					} catch (NullPointerException e) {
-						// Ignore this entry as it's null.
-					}
+					} catch (NullPointerException ignored) {} // Safe to ignore null.
 				}
 
-				// USER INFO NODE
-
+				/*
+				 * USER INFO NODE
+				 */
 				try {
 					nodeData = thisUserNode.get("info");
 				} catch (Exception ex) {
@@ -657,8 +665,9 @@ public class Yaml implements DataSource {
 				}
 				// END INFO NODE
 
-				// PRIMARY GROUP
-
+				/*
+				 * PRIMARY GROUP
+				 */
 				try {
 					nodeData = thisUserNode.get("group");
 				} catch (Exception ex) {
@@ -676,8 +685,9 @@ public class Yaml implements DataSource {
 					thisUser.setGroup(dataHolder.getDefaultGroup());
 				}
 
-				// SUBGROUPS NODES
-
+				/*
+				 * SUBGROUPS NODES
+				 */
 				try {
 					nodeData = thisUserNode.get("subgroups");
 				} catch (Exception ex) {
@@ -957,6 +967,12 @@ public class Yaml implements DataSource {
 	}
 
 	@Override
+	public boolean hasNewGlobalGroupsData() {
+
+		return GroupManager.getGlobalGroups().getTimeStampGroups() < GroupManager.getGlobalGroups().getGlobalGroupsFile().lastModified();
+	}
+
+	@Override
 	public boolean hasNewGroupsData(WorldDataHolder dataHolder) {
 
 		return dataHolder.getTimeStampGroups() < dataHolder.getGroupsFile().lastModified();
@@ -969,11 +985,42 @@ public class Yaml implements DataSource {
 	}
 
 	@Override
-	public void backup(OverloadedWorldHolder world, Boolean groupsOrUsers) {
+	public void backup(OverloadedWorldHolder world, TYPE type) {
 
-		File backupFile = new File(plugin.getBackupFolder(), "bkp_" + world.getName() + (groupsOrUsers ? "_g_" : "_u_") + Tasks.getDateString() + ".yml"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		String prefix = "bkp_"; //$NON-NLS-1$
+
+		switch (type) {
+		case GLOBALGROUPS:
+			prefix += "ggroups_"; //$NON-NLS-1$
+			break;
+
+		case GROUPS:
+			prefix += world.getName() + "_g_"; //$NON-NLS-1$
+			break;
+
+		case USERS:
+			prefix += world.getName() + "_u_"; //$NON-NLS-1$
+			break;
+		}
+
+		File backupFile = new File(plugin.getBackupFolder(), prefix + Tasks.getDateString() + ".yml"); //$NON-NLS-1$
+
 		try {
-			Tasks.copy((groupsOrUsers ? world.getGroupsFile() : world.getUsersFile()), backupFile);
+
+			switch (type) {
+			case GLOBALGROUPS:
+				Tasks.copy(GroupManager.getGlobalGroups().getGlobalGroupsFile(), backupFile);
+				break;
+
+			case GROUPS:
+				Tasks.copy(world.getGroupsFile(), backupFile);
+				break;
+
+			case USERS:
+				Tasks.copy(world.getUsersFile(), backupFile);
+				break;
+			}
+
 		} catch (IOException ex) {
 			GroupManager.logger.log(Level.SEVERE, null, ex);
 		}
@@ -983,5 +1030,179 @@ public class Yaml implements DataSource {
 	public void purgeBackups() {
 
 		Tasks.removeOldFiles(plugin.getBackupFolder());
+	}
+
+	@Override
+	public void loadGlobalGroups(GlobalGroups globalGroups) {
+
+		File globalGroupsFile = globalGroups.getGlobalGroupsFile();
+		org.yaml.snakeyaml.Yaml groupYAML = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+
+		Map<String, Object> groups;
+
+		GroupManager.setLoaded(false);
+
+		// Read globalGroups File.
+		if (globalGroupsFile == null)
+			globalGroupsFile = new File(plugin.getDataFolder(), "globalgroups.yml"); //$NON-NLS-1$
+
+		if (!globalGroupsFile.exists()) {
+			try {
+				// Create a new file if it doesn't exist.
+				Tasks.copy(plugin.getResource("globalgroups.yml"), globalGroupsFile); //$NON-NLS-1$
+			} catch (IOException ex) {
+				GroupManager.logger.log(Level.SEVERE, null, ex);
+			}
+		}
+
+		/*
+		 * Load the YAML file.
+		 */
+		try {
+			FileInputStream groupsInputStream = new FileInputStream(globalGroupsFile);
+			groups = groupYAML.load(new UnicodeReader(groupsInputStream));
+			groupsInputStream.close();
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), globalGroupsFile.getPath()), ex); //$NON-NLS-1$
+		}
+
+		/*
+		 * Clear out old groups
+		 */
+		globalGroups.resetGlobalGroups();
+
+		if (!groups.keySet().isEmpty()) {
+			// Read all global groups
+			Map<?, ?> allGroups;
+
+			try {
+				allGroups = (Map<?, ?>) groups.get("groups"); //$NON-NLS-1$
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(String.format(Messages.getString("GroupManager.FILE_CORRUPT"), globalGroupsFile.getPath()), ex); //$NON-NLS-1$
+			}
+
+			// Load each groups permissions list.
+			if (allGroups != null) {
+
+				Iterator<?> groupItr = ((Set<?>) allGroups.keySet()).iterator();
+				String groupName;
+				Integer groupCount = 0;
+
+				/*
+				 * loop each group entry
+				 * and read it's data.
+				 */
+				while (groupItr.hasNext()) {
+
+					try {
+						groupCount++;
+						// Attempt to fetch the next group name.
+						groupName = (String) groupItr.next();
+					} catch (Exception ex) {
+						throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.INVALID_GROUP_NAME"), groupCount, globalGroupsFile.getPath()), ex); //$NON-NLS-1$
+					}
+
+					/*
+					 * Create a new group with this name.
+					 */
+					Group newGroup = new Group(groupName.toLowerCase());
+					Object nodeData;
+
+					// Permission nodes
+					try {
+						nodeData = ((Map<?, ?>) allGroups.get(groupName)).get("permissions"); //$NON-NLS-1$
+					} catch ( Exception ex) {
+						throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.BAD_FORMATTED"), groupName), ex); //$NON-NLS-1$
+					}
+
+					if (nodeData != null)
+
+						if (nodeData instanceof List) {
+							try {
+								for (Object node : (List<?>) nodeData) {
+									if ((node != null) && !node.toString().isEmpty())
+										newGroup.addPermission((String) node);
+								}
+							} catch (ClassCastException ex) {
+								throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.INVALID_PERMISSION_NODE"), groupName), ex); //$NON-NLS-1$
+							}
+						} else if (nodeData instanceof String) {
+							if ((nodeData != null) && !((String) nodeData).isEmpty())
+								newGroup.addPermission((String) nodeData);
+						} else
+							throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.UNKNOWN_PERMISSION_TYPE"), groupName)); //$NON-NLS-1$
+
+					// Push a new group
+					globalGroups.addGroup(newGroup);
+				}
+			}
+			globalGroups.removeGroupsChangedFlag();
+		}
+
+		globalGroups.setGlobalGroupsFile(globalGroupsFile);
+		globalGroups.setTimeStampGroups(globalGroupsFile.lastModified());
+		GroupManager.setLoaded(true);
+	}
+
+	@Override
+	public void saveGlobalGroups(boolean overwrite) {
+
+		GlobalGroups gg = GroupManager.getGlobalGroups();
+
+		if (gg.haveGroupsChanged()) {
+			if (overwrite || (!overwrite && !hasNewGlobalGroupsData())) {
+
+				Map<String, Object> root = new HashMap<>();
+
+				Map<String, Object> groupsMap = new HashMap<>();
+				root.put("groups", groupsMap); //$NON-NLS-1$
+
+				for (Group group : gg.getGroupList()) {
+
+					// Group header
+					Map<String, Object> aGroupMap = new HashMap<>();
+					groupsMap.put(group.getName(), aGroupMap);
+
+					// Permission nodes
+					aGroupMap.put("permissions", group.getPermissionList()); //$NON-NLS-1$
+				}
+
+				if (!root.isEmpty()) {
+					DumperOptions opt = new DumperOptions();
+					opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+					final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+
+					try {
+						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(gg.getGlobalGroupsFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
+					} catch (FileNotFoundException ignored) {}
+				}
+
+				/*
+				 * Backup GlobalGroups file
+				 */
+				backup(null, DataSource.TYPE.GLOBALGROUPS);
+				gg.setTimeStampGroups(gg.getGlobalGroupsFile().lastModified());
+
+			} else {
+				/*
+				 * Newer file found?
+				 */
+				if (hasNewGlobalGroupsData()) {
+					GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.ERROR_NEWER_GG_FOUND")); //$NON-NLS-1$
+					throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
+				}
+			}
+			gg.removeGroupsChangedFlag();
+
+		} else {
+			/*
+			 * Check for newer file as no local changes.
+			 */
+			if (hasNewGlobalGroupsData()) {
+				GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.WARN_NEWER_GG_FOUND_LOADING")); //$NON-NLS-1$
+
+				loadGlobalGroups(gg);
+			}
+		}
 	}
 }

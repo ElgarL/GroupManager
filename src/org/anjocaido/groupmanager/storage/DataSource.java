@@ -5,6 +5,7 @@ package org.anjocaido.groupmanager.storage;
 
 import java.io.IOException;
 
+import org.anjocaido.groupmanager.GlobalGroups;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 
@@ -22,6 +23,16 @@ public interface DataSource {
 	 * @param worldName	the world we are to setup.
 	 */
 	void init(String worldName);
+
+	/**
+	 * Load data for our GlobalGroups.
+	 */
+	void loadGlobalGroups(GlobalGroups globalGroups);
+
+	/**
+	 * Save our GlobalGroups data.
+	 */
+	void saveGlobalGroups(boolean overwrite);
 
 	/**
 	 * Load data for this world.
@@ -92,6 +103,13 @@ public interface DataSource {
 	void saveUsers(WorldDataHolder dataHolder);
 
 	/**
+	 * Does the dataSource have newer Global Groups data?
+	 * 
+	 * @return				true if the saved data is newer.
+	 */
+	boolean hasNewGlobalGroupsData();
+
+	/**
 	 * Does the dataSource have newer Groups data?
 	 * 
 	 * @param dataHolder	the data object to test.
@@ -110,13 +128,18 @@ public interface DataSource {
 	/**
 	 * Backup old data.
 	 * 
-	 * @param world			the world name to backup.
-	 * @param groupsOrUsers	true for groups, false for users.
+	 * @param world	the world to backup (null if GlobalGroups Type).
+	 * @param type	Type GROUS, USERS, GLOBALGROUPS.
 	 */
-	void backup(OverloadedWorldHolder world, Boolean groupsOrUsers);
+	void backup(OverloadedWorldHolder world, TYPE type);
 
 	/**
 	 * Remove old backups as per the settings in the config.
 	 */
 	void purgeBackups();
+
+	/**
+	 * Type specifier for backups.
+	 */
+	enum TYPE { GROUPS, USERS, GLOBALGROUPS };
 }

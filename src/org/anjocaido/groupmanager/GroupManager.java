@@ -218,6 +218,7 @@ public class GroupManager extends JavaPlugin {
 			 * Load the global groups before we load our worlds
 			 */
 			globalGroups = new GlobalGroups(this);
+			globalGroups.load();
 			setLoaded(false); // Reset as GG flags us loaded too early.
 
 			/*
