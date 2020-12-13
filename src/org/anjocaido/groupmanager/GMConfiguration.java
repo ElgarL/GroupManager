@@ -125,10 +125,10 @@ public class GMConfiguration {
 		 * Read our config settings and store them for reading later.
 		 */
 		try {
-			Map<String, Object> config = getElement("config", getElement("settings", GMconfig)); //$NON-NLS-1$ //$NON-NLS-2$
+			Map<String, Object> section = getElement("config", getElement("settings", GMconfig)); //$NON-NLS-1$ //$NON-NLS-2$
 
 			try {
-				language = (String) config.get("language"); //$NON-NLS-1$
+				language = (String) section.get("language"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("language"), ex); //$NON-NLS-1$
 			}
@@ -136,28 +136,28 @@ public class GMConfiguration {
 			Messages.setLanguage();
 
 			try {
-				allowCommandBlocks = (boolean) config.get("allow_commandblocks"); //$NON-NLS-1$
+				allowCommandBlocks = (boolean) section.get("allow_commandblocks"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("allow_commandblocks"), ex); //$NON-NLS-1$
 				allowCommandBlocks = false;
 			}
 
 			try {
-				opOverride = (boolean) config.get("opOverrides"); //$NON-NLS-1$
+				opOverride = (boolean) section.get("opOverrides"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("opOverrides"), ex); //$NON-NLS-1$
 				opOverride = true;
 			}
 
 			try {
-				toggleValidate = (boolean) config.get("validate_toggle"); //$NON-NLS-1$
+				toggleValidate = (boolean) section.get("validate_toggle"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("validate_toggle"), ex); //$NON-NLS-1$
 				toggleValidate = true;
 			}
 
 			try {
-				tabValidate = (boolean) config.get("tab_validate"); //$NON-NLS-1$
+				tabValidate = (boolean) section.get("tab_validate"); //$NON-NLS-1$
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("tab_validate"), ex); //$NON-NLS-1$
 				tabValidate = true;
@@ -167,17 +167,17 @@ public class GMConfiguration {
 			 * data node for save/backup timers.
 			 */
 			try {
-				Map<String, Object> save = getElement("save", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				section = getElement("save", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 				try {
-					saveInterval = Integer.parseInt((String) save.get("minutes")); //$NON-NLS-1$
+					saveInterval = Integer.parseInt(section.get("minutes").toString()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("minutes"), ex); //$NON-NLS-1$
 					saveInterval = 10;
 				}
 
 				try {
-					backupDuration = Integer.parseInt((String) save.get("hours")); //$NON-NLS-1$
+					backupDuration = Integer.parseInt(section.get("hours").toString()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("hours"), ex); //$NON-NLS-1$
 					backupDuration = 24;
@@ -191,52 +191,57 @@ public class GMConfiguration {
 			 * data node for database.
 			 */
 			try {
-				Map<String, Object> save = getElement("database", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				section = getElement("database", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 				try {
-					dbType = DBTYPE.valueOf(save.get("type").toString().toUpperCase()); //$NON-NLS-1$
+					dbType = DBTYPE.valueOf(section.get("type").toString().toUpperCase()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("type"), ex); //$NON-NLS-1$
 					dbType = DBTYPE.YAML;
 				}
 
 				try {
-					dbName = (String) save.get("name"); //$NON-NLS-1$
+					dbName = (String) section.get("name"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("name"), ex); //$NON-NLS-1$
 					dbName = "minecraft";
 				}
 
 				try {
-					dbTable = (String) save.get("table"); //$NON-NLS-1$
+					dbTable = (String) section.get("table"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("table"), ex); //$NON-NLS-1$
 					dbTable = "GroupManager";
 				}
 
+				/*
+				 * MySQL nodes.
+				 */
+				section = getElement("mysql", getElement("database", getElement("data", getElement("settings", GMconfig)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
 				try {
-					dbUsername = (String) save.get("username"); //$NON-NLS-1$
+					dbUsername = (String) section.get("username"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("username"), ex); //$NON-NLS-1$
 					dbUsername = "root";
 				}
 
 				try {
-					dbPassword = (String) save.get("password"); //$NON-NLS-1$
+					dbPassword = (String) section.get("password"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("password"), ex); //$NON-NLS-1$
 					dbPassword = "pass";
 				}
 
 				try {
-					dbHostname = (String) save.get("hostname"); //$NON-NLS-1$
+					dbHostname = (String) section.get("hostname"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("hostname"), ex); //$NON-NLS-1$
 					dbHostname = "localhost";
 				}
 
 				try {
-					dbPort = Integer.parseInt((String) save.get("port")); //$NON-NLS-1$
+					dbPort = Integer.parseInt(section.get("port").toString()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("port"), ex); //$NON-NLS-1$
 					dbPort = 3306;
@@ -250,17 +255,17 @@ public class GMConfiguration {
 			 * data node for maintenance.
 			 */
 			try {
-				Map<String, Object> save = getElement("purge", getElement("maintenance", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				section = getElement("purge", getElement("maintenance", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 				try {
-					purgeEnabled = (boolean) save.get("enabled"); //$NON-NLS-1$
+					purgeEnabled = (boolean) section.get("enabled"); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("purge-enabled"), ex); //$NON-NLS-1$
 					purgeEnabled = true;
 				}
 
 				try {
-					userExpires = Tasks.parsePeriod((String) save.get("user_expires")); //$NON-NLS-1$
+					userExpires = Tasks.parsePeriod((String) section.get("user_expires")); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("user_expires"), ex); //$NON-NLS-1$
 					userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
@@ -351,12 +356,12 @@ public class GMConfiguration {
 		return userExpires;
 	}
 
-	public Integer getSaveInterval() {
+	public int getSaveInterval() {
 
 		return saveInterval;
 	}
 
-	public Integer getBackupDuration() {
+	public int getBackupDuration() {
 
 		return backupDuration;
 	}

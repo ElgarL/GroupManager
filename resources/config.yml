@@ -33,14 +33,13 @@
     database:
       # YAML, SQLITE, H2, MYSQL
       type: 'YAML'
-      settings:
-        name: 'minecraft'
-        table: 'GroupManager'
-        mysql:
-          username: 'root'
-          password: 'pass'
-          hostname: 'localhost'
-          port: 3306
+      name: 'minecraft'
+      table: 'GroupManager'
+      mysql:
+        username: 'root'
+        password: 'pass'
+        hostname: 'localhost'
+        port: 3306
 
   maintenance:
     # Runs at server start/reload to remove users who have not logged

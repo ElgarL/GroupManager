@@ -287,6 +287,7 @@ public class GroupManager extends JavaPlugin {
 			 * Flag that we are now loaded and should start processing events.
 			 */
 			setLoaded(true);
+			GroupManager.logger.info(String.format("DataSource - %s", GroupManager.getGMConfig().getDbType().name())); //$NON-NLS-1$
 			GroupManager.logger.info(String.format(Messages.getString("GroupManager.ENABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
 			/*
