@@ -62,8 +62,24 @@ public abstract class WorldsHolder extends ChildMirrors {
 	protected WorldsHolder(GroupManager plugin) {
 
 		this.plugin = plugin;
-		dataSource = new Yaml(plugin); // TODO create this from config setting.
 		this.logger = plugin.getLogger();
+
+		switch(GroupManager.getGMConfig().getDbType()) {
+
+		case H2: // TODO
+			//break;
+
+		case MYSQL: // TODO
+			//break;
+
+		case SQLITE: // TODO
+			//break;
+
+		case YAML:
+		default:
+			dataSource = new Yaml(plugin);
+			break;
+		}
 	}
 
 	/**
