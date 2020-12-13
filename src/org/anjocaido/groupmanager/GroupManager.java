@@ -503,7 +503,6 @@ public class GroupManager extends JavaPlugin {
 			 */
 			Runnable maintenance = () -> {
 
-				System.out.println("purge");
 				if (isLoaded()) {
 
 					try {
@@ -518,6 +517,7 @@ public class GroupManager extends JavaPlugin {
 
 									if ((lastPlayed != 0) && (lastPlayed != -1) && Tasks.isExpired(lastPlayed + getGMConfig().userExpires())) {
 										world.removeUser(user.getUUID());
+										count++;
 									}
 									Thread.sleep(1000);
 								}
@@ -529,8 +529,7 @@ public class GroupManager extends JavaPlugin {
 					} catch (Exception ex) {
 						GroupManager.logger.warning(ex.getMessage());
 					}
-				} else
-					System.out.println("purge not loaded");
+				}
 			};
 
 			scheduler = new ScheduledThreadPoolExecutor(3);
