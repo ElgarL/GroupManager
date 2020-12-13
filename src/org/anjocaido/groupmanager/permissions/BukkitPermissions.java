@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.events.GMUserEvent;
@@ -496,7 +497,13 @@ public class BukkitPermissions {
 			removeAttachment(player.getUniqueId().toString());
 
 			// force GM to create the player if they are not already listed.
-			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
+
+			/*
+			 * Set the 'lastplayed' variable which will be used for account pruning.
+			 */
+			if (user.getVariables().getVarDouble("lastplayed") != 0 && player.getLastPlayed() != 0)
+				user.getVariables().addVar("lastplayed", player.getLastPlayed());
 
 			updatePermissions(player);
 

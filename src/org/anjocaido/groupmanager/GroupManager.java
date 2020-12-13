@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -73,6 +74,7 @@ import org.anjocaido.groupmanager.commands.ManUListV;
 import org.anjocaido.groupmanager.commands.ManWhois;
 import org.anjocaido.groupmanager.commands.ManWorld;
 import org.anjocaido.groupmanager.data.User;
+import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.worlds.MirrorsMap;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
 import org.anjocaido.groupmanager.events.GMWorldListener;
@@ -206,7 +208,8 @@ public class GroupManager extends JavaPlugin {
 			 * Load our config.yml
 			 */
 			prepareBackupFolder();
-			config = new GMConfiguration(this).load();
+			config = new GMConfiguration(this);
+			config.load();
 
 			/*
 			 * Configure the worlds holder.
@@ -442,7 +445,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			Runnable commiter = () -> {
 
-				if (isLoaded())
+				if (isLoaded()) {
 
 					try {
 						// obtain a lock so we are the only thread saving (blocking).
@@ -460,13 +463,15 @@ public class GroupManager extends JavaPlugin {
 						 */
 						getSaveLock().unlock();
 					}
+				}
 			};
 			/*
 			 * Thread for purging expired permissions.
 			 */
 			Runnable cleanup = () -> {
 
-				if (isLoaded())
+				if (isLoaded()) {
+
 					try {
 						// obtain a lock so we are the only thread saving (blocking).
 						getSaveLock().lock();
@@ -490,14 +495,53 @@ public class GroupManager extends JavaPlugin {
 						 */
 						getSaveLock().unlock();
 					}
+				}
 			};
 
-			scheduler = new ScheduledThreadPoolExecutor(2);
+			/*
+			 * Thread to purge old users.
+			 */
+			Runnable maintenance = () -> {
+
+				System.out.println("purge");
+				if (isLoaded()) {
+
+					try {
+						int count = 0;
+						for (OverloadedWorldHolder world : getWorldsHolder().allWorldsDataList()) {
+
+							if (!getWorldsHolder().hasUsersMirror(world.getName())) {
+
+								for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
+									User user = iterator.next();
+									long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
+
+									if ((lastPlayed != 0) && (lastPlayed != -1) && Tasks.isExpired(lastPlayed + getGMConfig().userExpires())) {
+										world.removeUser(user.getUUID());
+									}
+									Thread.sleep(1000);
+								}
+							}
+						}
+
+						if (count > 0)
+							GroupManager.logger.info(String.format("Removed %s expired users.", count)); //$NON-NLS-1$
+					} catch (Exception ex) {
+						GroupManager.logger.warning(ex.getMessage());
+					}
+				} else
+					System.out.println("purge not loaded");
+			};
+
+			scheduler = new ScheduledThreadPoolExecutor(3);
 			long minutes = (long) getGMConfig().getSaveInterval();
 
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(commiter, minutes, minutes, TimeUnit.MINUTES);
 				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
+				if (getGMConfig().isPurgeEnabled())
+					scheduler.schedule(maintenance, 30, TimeUnit.SECONDS);
+
 				GroupManager.logger.info(String.format(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_SET"), minutes)); //$NON-NLS-1$
 			} else
 				GroupManager.logger.warning(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$

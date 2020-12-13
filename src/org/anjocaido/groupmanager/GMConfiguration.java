@@ -48,6 +48,8 @@ public class GMConfiguration {
 
 
 	private final GroupManager plugin;
+	private boolean purgeEnabled;
+	private long userExpires;
 
 	public GMConfiguration(GroupManager plugin) {
 
@@ -63,11 +65,13 @@ public class GMConfiguration {
 		tabValidate = true;
 		saveInterval = 10;
 		backupDuration = 24;
+		purgeEnabled = true;
+		userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
 		loggerLevel = "OFF"; //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("unchecked")
-	public GMConfiguration load() {
+	public void load() {
 
 		if (!plugin.getDataFolder().exists()) {
 			plugin.getDataFolder().mkdirs();
@@ -161,6 +165,29 @@ public class GMConfiguration {
 				GroupManager.logger.log(Level.SEVERE, nodeError("data"), ex); //$NON-NLS-1$
 			}
 
+			/*
+			 * data node for maintenance.
+			 */
+			try {
+				Map<String, Object> save = getElement("purge", getElement("maintenance", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+				try {
+					purgeEnabled = (boolean) save.get("enabled"); //$NON-NLS-1$
+				} catch (Exception ex) {
+					GroupManager.logger.log(Level.SEVERE, nodeError("purge-enabled"), ex); //$NON-NLS-1$
+					purgeEnabled = true;
+				}
+
+				try {
+					userExpires = Tasks.parsePeriod((String) save.get("user_expires")); //$NON-NLS-1$
+				} catch (Exception ex) {
+					GroupManager.logger.log(Level.SEVERE, nodeError("user_expires"), ex); //$NON-NLS-1$
+					userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
+				}
+
+			} catch (Exception ex) {
+				GroupManager.logger.log(Level.SEVERE, nodeError("purge"), ex); //$NON-NLS-1$
+			}
 
 
 			String level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -185,8 +212,6 @@ public class GMConfiguration {
 		}
 		// Setup defaults
 		adjustLoggerLevel();
-		
-		return this;
 	}
 
 	private String nodeError(String node) {
@@ -233,6 +258,16 @@ public class GMConfiguration {
 	public boolean isTabValidate() {
 
 		return tabValidate;
+	}
+	
+	public boolean isPurgeEnabled() {
+		
+		return purgeEnabled;
+	}
+	
+	public long userExpires() {
+		
+		return userExpires;
 	}
 
 	public Integer getSaveInterval() {

@@ -85,6 +85,7 @@ public class Yaml implements DataSource {
 				defaultWorldFolder.mkdirs();
 			}
 		}
+		
 		if (defaultWorldFolder.exists()) {
 			if (!holder.hasGroupsMirror(worldNameLowered)) {
 				File groupsFile = new File(defaultWorldFolder, "groups.yml"); //$NON-NLS-1$
