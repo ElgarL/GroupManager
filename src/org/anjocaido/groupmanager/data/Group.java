@@ -36,7 +36,7 @@ public class Group extends DataUnit implements Cloneable {
 	/**
 	 * The groups it inherits DIRECTLY!
 	 */
-	private List<String> inherits = Collections.synchronizedList(new LinkedList<>());
+	private List<String> inherits = new LinkedList<>();
 	
 	/**
 	 * This holds the fields in INFO node.
@@ -136,9 +136,7 @@ public class Group extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * an unmodifiable list of inherits list
-	 * You can't manage the list by here
-	 * Lol... version 0.6 had a problem because this.
+	 * An unmodifiable list of inherits list
 	 * 
 	 * @return the inherits
 	 */

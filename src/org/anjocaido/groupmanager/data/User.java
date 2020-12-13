@@ -18,7 +18,6 @@
 package org.anjocaido.groupmanager.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +38,8 @@ import org.bukkit.entity.Player;
 public class User extends DataUnit implements Cloneable {
 
 	private String group;
-	private Map<String, Long> subGroups = Collections.synchronizedMap(new LinkedHashMap<>());
-	
+	private Map<String, Long> subGroups = new LinkedHashMap<>();
+
 	/**
 	 * This holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
@@ -195,6 +194,7 @@ public class User extends DataUnit implements Cloneable {
 		String oldGroup = this.group;
 		this.group = group.getName();
 		flagAsChanged();
+		
 		if (GroupManager.isLoaded()) {
 			if (!GroupManager.getBukkitPermissions().isPlayer_join() && (updatePerms))
 				GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
@@ -243,27 +243,24 @@ public class User extends DataUnit implements Cloneable {
 			getDataSource().addGroup(subGroup);
 		}
 
-		synchronized (subGroups) {
+		Long duration = subGroups.get(subGroup.getName());
 
-			Long duration = subGroups.get(subGroup.getName());
+		// User already has this subgroup?
+		if (!containsSubGroup(subGroup) || (containsSubGroup(subGroup) && (duration < expires) && (duration != 0))) {
 
-			// User already has this subgroup?
-			if (!containsSubGroup(subGroup) || (containsSubGroup(subGroup) && (duration < expires) && (duration != 0))) {
+			subGroups.put(subGroup.getName(), expires);
 
-				subGroups.put(subGroup.getName(), expires);
+			GroupManager.logger.finest(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
 
-				GroupManager.logger.finest(String.format("Timed: %s - expires: %o", subGroup.getName(), expires));
-
-				flagAsChanged();
-				if (GroupManager.isLoaded()) {
-					if (!GroupManager.getBukkitPermissions().isPlayer_join())
-						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-					GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-				}
-				return true;
+			flagAsChanged();
+			if (GroupManager.isLoaded()) {
+				if (!GroupManager.getBukkitPermissions().isPlayer_join())
+					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
 			}
-
+			return true;
 		}
+
 		return false;
 	}
 
@@ -306,19 +303,16 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public boolean removeSubGroup(Group subGroup) {
 
-		synchronized (subGroups) {
+		if (subGroups.remove(subGroup.getName()) != null) {
+			flagAsChanged();
 
-			if (subGroups.remove(subGroup.getName()) != null) {
-				flagAsChanged();
-
-				if (GroupManager.isLoaded())
-					if (!GroupManager.getBukkitPermissions().isPlayer_join())
-						GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
-				return true;
-			}
-			return false;
+			if (GroupManager.isLoaded())
+				if (!GroupManager.getBukkitPermissions().isPlayer_join())
+					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
+			GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -330,18 +324,15 @@ public class User extends DataUnit implements Cloneable {
 
 		ArrayList<Group> groupList = new ArrayList<>();
 
-		synchronized (subGroups) {
+		subGroups.keySet().forEach(name -> {
+			Group g = getDataSource().getGroup(name);
 
-			subGroups.keySet().forEach(name -> {
-				Group g = getDataSource().getGroup(name);
-
-				if (g == null) {
-					removeSubGroup(g);
-				} else {
-					groupList.add(g);
-				}
-			});
-		}
+			if (g == null) {
+				removeSubGroup(g);
+			} else {
+				groupList.add(g);
+			}
+		});
 		return groupList;
 	}
 
@@ -352,13 +343,11 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public List<String> getSaveSubGroupsList() {
 
-		synchronized (subGroups) {
-			ArrayList<String> val = new ArrayList<>();
+		ArrayList<String> val = new ArrayList<>();
 
-			subGroups.forEach((group, timer) -> val.add(group + ((timer != 0) ? "|" + timer : "")));
+		subGroups.forEach((group, timer) -> val.add(group + ((timer != 0) ? "|" + timer : "")));
 
-			return val;
-		}
+		return val;
 	}
 
 	/**
@@ -368,13 +357,11 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public ArrayList<String> subGroupListStringCopy() {
 
-		synchronized (subGroups) {
-			ArrayList<String> val = new ArrayList<>();
+		ArrayList<String> val = new ArrayList<>();
 
-			subGroups.forEach((group, timer) -> val.add(group));
+		subGroups.forEach((group, timer) -> val.add(group));
 
-			return val;
-		}
+		return val;
 	}
 
 	/**
@@ -436,15 +423,12 @@ public class User extends DataUnit implements Cloneable {
 
 		boolean expired = false;
 
-		synchronized (subGroups) {
+		for (Entry<String, Long> entry : subGroups.entrySet()) {
+			if ((entry.getValue() != 0) && Tasks.isExpired(entry.getValue())) {
+				if (subGroups.remove(entry.getKey()) != null) {
 
-			for (Entry<String, Long> entry : subGroups.entrySet()) {
-				if ((entry.getValue() != 0) && Tasks.isExpired(entry.getValue())) {
-					if (subGroups.remove(entry.getKey()) != null) {
-
-						expired = true;
-						GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey()));
-					}
+					expired = true;
+					GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey()));
 				}
 			}
 		}
