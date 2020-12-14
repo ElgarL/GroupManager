@@ -140,7 +140,7 @@ public interface DataSource {
 
 	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS };
 	
-	enum DATABSE_TYPE { YAML, SQLITE, H2, MYSQL };
+	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL };
 	
 	enum ACCESS_LEVEL { READ, READ_WRITE };
 }
