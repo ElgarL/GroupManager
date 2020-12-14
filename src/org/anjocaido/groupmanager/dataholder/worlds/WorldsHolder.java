@@ -64,7 +64,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
 
-		switch(GroupManager.getGMConfig().getDbType()) {
+		switch(GroupManager.getGMConfig().getDatabaseType()) {
 
 		case H2: // TODO
 			//break;
@@ -248,7 +248,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		 * Save Global Groups
 		 */
 		if (GroupManager.getGlobalGroups().haveGroupsChanged()) {
-			dataSource.backup(null, DataSource.TYPE.GLOBALGROUPS);
+			dataSource.backup(null, DataSource.BACKUP_TYPE.GLOBALGROUPS);
 			plugin.getWorldsHolder().getDataSource().saveGlobalGroups(overwrite);
 
 		} else {
@@ -275,7 +275,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (w.haveGroupsChanged()) {
 						if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(w))) {
 							// Backup Groups file
-							dataSource.backup(w, DataSource.TYPE.GROUPS);
+							dataSource.backup(w, DataSource.BACKUP_TYPE.GROUPS);
 							dataSource.saveGroups(w);
 							changed = true;
 
@@ -299,7 +299,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 					if (w.haveUsersChanged()) {
 						if (overwrite || (!overwrite && !dataSource.hasNewUsersData(w))) {
 							// Backup Users file
-							dataSource.backup(w, DataSource.TYPE.USERS);
+							dataSource.backup(w, DataSource.BACKUP_TYPE.USERS);
 							dataSource.saveUsers(w);
 							changed = true;
 

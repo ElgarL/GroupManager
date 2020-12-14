@@ -131,15 +131,16 @@ public interface DataSource {
 	 * @param world	the world to backup (null if GlobalGroups Type).
 	 * @param type	Type GROUS, USERS, GLOBALGROUPS.
 	 */
-	void backup(OverloadedWorldHolder world, TYPE type);
+	void backup(OverloadedWorldHolder world, BACKUP_TYPE type);
 
 	/**
 	 * Remove old backups as per the settings in the config.
 	 */
 	void purgeBackups();
 
-	/**
-	 * Type specifier for backups.
-	 */
-	enum TYPE { GROUPS, USERS, GLOBALGROUPS };
+	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS };
+	
+	enum DATABSE_TYPE { YAML, SQLITE, H2, MYSQL };
+	
+	enum ACCESS_LEVEL { READ, READ_WRITE };
 }

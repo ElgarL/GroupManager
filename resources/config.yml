@@ -32,13 +32,15 @@
       
     database:
       # YAML, SQLITE, H2, MYSQL
-      type: 'YAML'
-      name: 'minecraft'
-      table: 'GroupManager'
-      mysql:
-        username: 'root'
-        password: 'pass'
-        hostname: 'localhost'
+      type: YAML
+      sql:
+        # Access level is READ or READ_WRITE.
+        access: READ_WRITE
+        name: minecraft
+        table: GroupManager
+        username: root
+        password: pass
+        hostname: localhost
         port: 3306
 
   maintenance:

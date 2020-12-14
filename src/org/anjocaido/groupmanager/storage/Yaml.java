@@ -998,7 +998,7 @@ public class Yaml implements DataSource {
 	}
 
 	@Override
-	public void backup(OverloadedWorldHolder world, TYPE type) {
+	public void backup(OverloadedWorldHolder world, BACKUP_TYPE type) {
 
 		String prefix = "bkp_"; //$NON-NLS-1$
 
@@ -1193,7 +1193,7 @@ public class Yaml implements DataSource {
 				/*
 				 * Backup GlobalGroups file
 				 */
-				backup(null, DataSource.TYPE.GLOBALGROUPS);
+				backup(null, DataSource.BACKUP_TYPE.GLOBALGROUPS);
 				gg.setTimeStampGroups(gg.getGlobalGroupsFile().lastModified());
 
 			} else {

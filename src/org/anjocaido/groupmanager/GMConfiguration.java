@@ -25,6 +25,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.localization.Messages;
+import org.anjocaido.groupmanager.storage.DataSource;
+import org.anjocaido.groupmanager.storage.DataSource.DATABSE_TYPE;
+import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -45,9 +48,10 @@ public class GMConfiguration {
 	private int saveInterval;
 	private int backupDuration;
 
-	private DBTYPE dbType;
+	private DATABSE_TYPE dbType;
 	private String dbName;
 	private String dbTable;
+	private ACCESS_LEVEL accessType;
 	private String dbUsername;
 	private String dbPassword;
 	private String dbHostname;
@@ -77,9 +81,10 @@ public class GMConfiguration {
 		saveInterval = 10;
 		backupDuration = 24;
 
-		dbType = DBTYPE.YAML;
+		dbType = DATABSE_TYPE.YAML;
 		dbName = "minecraft";
 		dbTable = "GroupManager";
+		accessType = ACCESS_LEVEL.READ_WRITE;
 		dbUsername = "root";
 		dbPassword = "pass";
 		dbHostname = "localhost";
@@ -89,8 +94,6 @@ public class GMConfiguration {
 		userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
 		loggerLevel = "OFF"; //$NON-NLS-1$
 	}
-
-	public static enum DBTYPE { YAML, SQLITE, H2, MYSQL };
 
 	@SuppressWarnings("unchecked")
 	public void load() {
@@ -194,12 +197,24 @@ public class GMConfiguration {
 				section = getElement("database", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 				try {
-					dbType = DBTYPE.valueOf(section.get("type").toString().toUpperCase()); //$NON-NLS-1$
+					dbType = DataSource.DATABSE_TYPE.valueOf(section.get("type").toString().toUpperCase()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("type"), ex); //$NON-NLS-1$
-					dbType = DBTYPE.YAML;
+					dbType = DataSource.DATABSE_TYPE.YAML;
 				}
 
+				/*
+				 * SQL nodes.
+				 */
+				section = getElement("sql", getElement("database", getElement("data", getElement("settings", GMconfig)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+
+				try {
+					accessType = ACCESS_LEVEL.valueOf(section.get("access").toString().toUpperCase()); //$NON-NLS-1$
+				} catch (Exception ex) {
+					GroupManager.logger.log(Level.SEVERE, nodeError("access"), ex); //$NON-NLS-1$
+					accessType = ACCESS_LEVEL.READ_WRITE;
+				}
+				
 				try {
 					dbName = (String) section.get("name"); //$NON-NLS-1$
 				} catch (Exception ex) {
@@ -213,12 +228,7 @@ public class GMConfiguration {
 					GroupManager.logger.log(Level.SEVERE, nodeError("table"), ex); //$NON-NLS-1$
 					dbTable = "GroupManager";
 				}
-
-				/*
-				 * MySQL nodes.
-				 */
-				section = getElement("mysql", getElement("database", getElement("data", getElement("settings", GMconfig)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-
+				
 				try {
 					dbUsername = (String) section.get("username"); //$NON-NLS-1$
 				} catch (Exception ex) {
@@ -369,7 +379,7 @@ public class GMConfiguration {
 	/**
 	 * @return the dbType
 	 */
-	public DBTYPE getDbType() {
+	public DataSource.DATABSE_TYPE getDatabaseType() {
 
 		return dbType;
 	}
@@ -378,7 +388,7 @@ public class GMConfiguration {
 	/**
 	 * @return the dbName
 	 */
-	public String getDbName() {
+	public String getDatabaseName() {
 
 		return dbName;
 	}
@@ -387,16 +397,25 @@ public class GMConfiguration {
 	/**
 	 * @return the dbTable
 	 */
-	public String getDbTable() {
+	public String getDatabaseTableName() {
 
 		return dbTable;
 	}
 
 
+	
+	/**
+	 * @return the accessType
+	 */
+	public ACCESS_LEVEL getAccessType() {
+	
+		return accessType;
+	}
+
 	/**
 	 * @return the username
 	 */
-	public String getUsername() {
+	public String getDatabaseUsername() {
 
 		return dbUsername;
 	}
@@ -405,7 +424,7 @@ public class GMConfiguration {
 	/**
 	 * @return the password
 	 */
-	public String getPassword() {
+	public String getDatabasePassword() {
 
 		return dbPassword;
 	}
