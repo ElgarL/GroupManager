@@ -244,521 +244,517 @@ public class Yaml implements DataSource {
 	@Override
 	public void loadGroups(WorldDataHolder dataHolder) throws IOException {
 
-		synchronized (dataHolder) {
-			// READ GROUPS FILE
-			File groupsFile = dataHolder.getGroupsFile();
+		// READ GROUPS FILE
+		File groupsFile = dataHolder.getGroupsFile();
 
-			org.yaml.snakeyaml.Yaml yamlGroups = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
-			Map<String, Object> groupsRootDataNode;
+		org.yaml.snakeyaml.Yaml yamlGroups = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+		Map<String, Object> groupsRootDataNode;
 
-			if (!groupsFile.exists()) {
-				throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS_FILE") + System.lineSeparator() + groupsFile.getPath());
+		if (!groupsFile.exists()) {
+			throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS_FILE") + System.lineSeparator() + groupsFile.getPath());
+		}
+		try (FileInputStream groupsInputStream = new FileInputStream(groupsFile)) {
+			groupsRootDataNode = yamlGroups.load(new UnicodeReader(groupsInputStream));
+			if (groupsRootDataNode == null) {
+				throw new NullPointerException();
 			}
-			try (FileInputStream groupsInputStream = new FileInputStream(groupsFile)) {
-				groupsRootDataNode = yamlGroups.load(new UnicodeReader(groupsInputStream));
-				if (groupsRootDataNode == null) {
-					throw new NullPointerException();
-				}
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath(), ex));
+		}
+
+		// PROCESS GROUPS FILE
+
+		Map<String, List<String>> inheritance = new HashMap<>();
+		Map<?, ?> allGroupsNode;
+
+		/*
+		 * Fetch all groups under the 'groups' entry.
+		 */
+		try {
+			allGroupsNode = (Map<?, ?>) groupsRootDataNode.get("groups");
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath()), ex);
+		}
+
+		if (allGroupsNode == null) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS"), groupsFile.getPath()));
+		}
+
+		Iterator<?> groupItr = allGroupsNode.keySet().iterator();
+		String groupKey;
+		Integer groupCount = 0;
+
+		/*
+		 * loop each group entry and process it's data.
+		 */
+		while (groupItr.hasNext()) {
+
+			try {
+				groupCount++;
+				// Attempt to fetch the next group name.
+				groupKey = (String) groupItr.next();
 			} catch (Exception ex) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath(), ex));
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_GROUP_NAME"), groupCount, groupsFile.getPath()), ex);
 			}
-
-			// PROCESS GROUPS FILE
-
-			Map<String, List<String>> inheritance = new HashMap<>();
-			Map<?, ?> allGroupsNode;
 
 			/*
-			 * Fetch all groups under the 'groups' entry.
+			 * Fetch this groups child nodes
+			 */
+			Map<?, ?> thisGroupNode;
+
+			try {
+				thisGroupNode = (Map<?, ?>) allGroupsNode.get(groupKey);
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_CHILD_NODE"), groupKey, groupsFile.getPath()), ex);
+			}
+
+			/*
+			 * Create a new group with this name in the assigned data source.
+			 */
+			Group thisGrp = dataHolder.createGroup(groupKey);
+
+			if (thisGrp == null) {
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_GROUP_DUPLICATE"), groupKey, groupsFile.getPath()));
+			}
+
+			/*
+			 * DEFAULT NODE
+			 */
+			Object nodeData;
+			try {
+				nodeData = thisGroupNode.get("default");
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "default", groupKey, groupsFile.getPath()));
+			}
+
+			/*
+			 * If no 'default' node is found do nothing.
+			 */
+			if ((nodeData != null && Boolean.parseBoolean(nodeData.toString()))) {
+				/*
+				 * Set this as the default group. Warn if some other group has
+				 * already claimed that position.
+				 */
+				if (dataHolder.getDefaultGroup() != null) {
+					GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.ERROR_DEFAULT_DUPLICATE"), thisGrp.getName(), dataHolder.getDefaultGroup().getName()));
+					GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_OVERIDE_DEFAULT"), groupsFile.getPath()));
+				}
+				dataHolder.setDefaultGroup(thisGrp);
+			}
+
+			/*
+			 * PERMISSIONS NODE
 			 */
 			try {
-				allGroupsNode = (Map<?, ?>) groupsRootDataNode.get("groups");
+				nodeData = thisGroupNode.get("permissions");
 			} catch (Exception ex) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), groupsFile.getPath()), ex);
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "permissions", groupKey, groupsFile.getPath()));
 			}
-
-			if (allGroupsNode == null) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_NO_GROUPS"), groupsFile.getPath()));
-			}
-
-			Iterator<?> groupItr = allGroupsNode.keySet().iterator();
-			String groupKey;
-			Integer groupCount = 0;
 
 			/*
-			 * loop each group entry and process it's data.
+			 * If no permissions node is found, or it's empty do nothing.
 			 */
-			while (groupItr.hasNext()) {
-
-				try {
-					groupCount++;
-					// Attempt to fetch the next group name.
-					groupKey = (String) groupItr.next();
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_GROUP_NAME"), groupCount, groupsFile.getPath()), ex);
-				}
-
+			if (nodeData != null) {
 				/*
-				 * Fetch this groups child nodes
-				 */
-				Map<?, ?> thisGroupNode;
-
-				try {
-					thisGroupNode = (Map<?, ?>) allGroupsNode.get(groupKey);
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_CHILD_NODE"), groupKey, groupsFile.getPath()), ex);
-				}
-
-				/*
-				 * Create a new group with this name in the assigned data source.
-				 */
-				Group thisGrp = dataHolder.createGroup(groupKey);
-
-				if (thisGrp == null) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_GROUP_DUPLICATE"), groupKey, groupsFile.getPath()));
-				}
-
-				/*
-				 * DEFAULT NODE
-				 */
-				Object nodeData;
-				try {
-					nodeData = thisGroupNode.get("default");
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "default", groupKey, groupsFile.getPath()));
-				}
-
-				/*
-				 * If no 'default' node is found do nothing.
-				 */
-				if ((nodeData != null && Boolean.parseBoolean(nodeData.toString()))) {
-					/*
-					 * Set this as the default group. Warn if some other group has
-					 * already claimed that position.
-					 */
-					if (dataHolder.getDefaultGroup() != null) {
-						GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.ERROR_DEFAULT_DUPLICATE"), thisGrp.getName(), dataHolder.getDefaultGroup().getName()));
-						GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_OVERIDE_DEFAULT"), groupsFile.getPath()));
-					}
-					dataHolder.setDefaultGroup(thisGrp);
-				}
-
-				/*
-				 * PERMISSIONS NODE
-				 */
-				try {
-					nodeData = thisGroupNode.get("permissions");
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "permissions", groupKey, groupsFile.getPath()));
-				}
-
-				/*
-				 * If no permissions node is found, or it's empty do nothing.
-				 */
-				if (nodeData != null) {
-					/*
-					 * There is a permission list Which seems to hold data
-					 */
-					if (nodeData instanceof List) {
-						/*
-						 * Check each entry and add it as a new permission.
-						 */
-						try {
-							for (Object o : ((List<?>) nodeData)) {
-								try {
-									/*
-									 * Only add this permission if it's not empty.
-									 */
-									if (!o.toString().isEmpty())
-										/*
-										 * check for a timed permission
-										 */
-										if (o.toString().contains("|")) {
-											String[] split = o.toString().split("\\|");
-											try {
-
-												thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
-											} catch (Exception e) {
-												GroupManager.logger.warning("Timed Permission error: " + o.toString());
-											}
-										} else {
-											/*
-											 * add a standard permission
-											 */
-											thisGrp.addPermission(o.toString());
-										}
-
-								} catch (NullPointerException ignored) {} // Safe to ignore.
-
-							}
-						} catch (Exception ex) {
-							throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "permissions", thisGrp.getName(), groupsFile.getPath()), ex);
-						}
-
-					} else if (nodeData instanceof String) {
-						/*
-						 * Only add this permission if it's not empty.
-						 */
-						if (!nodeData.toString().isEmpty()) {
-							/*
-							 * check for a timed permission
-							 */
-							if (nodeData.toString().contains("|")) {
-								String[] split = nodeData.toString().split("\\|");
-								try {
-
-									thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
-								} catch (Exception e) {
-									GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
-								}
-							} else {
-								/*
-								 * add a standard permission
-								 */
-								thisGrp.addPermission((String) nodeData);
-							}
-						}
-
-					} else {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_TYPE"), "permissions", thisGrp.getName(), groupsFile.getPath()));
-					}
-				}
-
-				/*
-				 * INFO NODE
-				 */
-				try {
-					nodeData = thisGroupNode.get("info");
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", groupKey, groupsFile.getPath()));
-				}
-
-				if (nodeData == null) {
-					/*
-					 * No info section was found, so leave all variables as
-					 * defaults.
-					 */
-					GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_GROUP_NO_INFO"), thisGrp.getName()));
-					GroupManager.logger.warning(Messages.getString("WorldDatHolder.WARN_USING_DEFAULT") + groupsFile.getPath());
-
-				} else if (nodeData != null && nodeData instanceof Map) {
-					try {
-						thisGrp.setVariables((Map<?, ?>) nodeData);
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", thisGrp.getName(), groupsFile.getPath()), ex);
-					}
-
-				} else
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "info", thisGrp.getName(), groupsFile.getPath()));
-
-				/*
-				 * INHERITANCE NODE
-				 */
-				try {
-					nodeData = thisGroupNode.get("inheritance");
-				} catch (Exception ex) {
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", groupKey, groupsFile.getPath()));
-				}
-				/*
-				 * If no inheritance node is found, or it's empty do
-				 * nothing.
+				 * There is a permission list Which seems to hold data
 				 */
 				if (nodeData instanceof List) {
+					/*
+					 * Check each entry and add it as a new permission.
+					 */
 					try {
-						for (Object grp : (List<?>) nodeData) {
-							inheritance.computeIfAbsent(groupKey, k -> new ArrayList<>());
-							inheritance.get(groupKey).add((String) grp);
+						for (Object o : ((List<?>) nodeData)) {
+							try {
+								/*
+								 * Only add this permission if it's not empty.
+								 */
+								if (!o.toString().isEmpty())
+									/*
+									 * check for a timed permission
+									 */
+									if (o.toString().contains("|")) {
+										String[] split = o.toString().split("\\|");
+										try {
+
+											thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
+										} catch (Exception e) {
+											GroupManager.logger.warning("Timed Permission error: " + o.toString());
+										}
+									} else {
+										/*
+										 * add a standard permission
+										 */
+										thisGrp.addPermission(o.toString());
+									}
+
+							} catch (NullPointerException ignored) {} // Safe to ignore.
+
 						}
-
 					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
+						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "permissions", thisGrp.getName(), groupsFile.getPath()), ex);
 					}
-				} else
-					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "inheritance", thisGrp.getName(), groupsFile.getPath()));
 
-				// END GROUP
+				} else if (nodeData instanceof String) {
+					/*
+					 * Only add this permission if it's not empty.
+					 */
+					if (!nodeData.toString().isEmpty()) {
+						/*
+						 * check for a timed permission
+						 */
+						if (nodeData.toString().contains("|")) {
+							String[] split = nodeData.toString().split("\\|");
+							try {
 
-			}
+								thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
+							} catch (Exception e) {
+								GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+							}
+						} else {
+							/*
+							 * add a standard permission
+							 */
+							thisGrp.addPermission((String) nodeData);
+						}
+					}
 
-			if (dataHolder.getDefaultGroup() == null) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_NO_DEFAULT"), groupsFile.getPath()));
+				} else {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_TYPE"), "permissions", thisGrp.getName(), groupsFile.getPath()));
+				}
 			}
 
 			/*
-			 * Build the inheritance map and record any errors
+			 * INFO NODE
 			 */
-			for (String group : inheritance.keySet()) {
-				List<String> inheritedList = inheritance.get(group);
-				Group thisGroup = dataHolder.getGroup(group);
-				if (thisGroup != null)
-					for (String inheritedKey : inheritedList) {
-						if (inheritedKey != null) {
-							Group inheritedGroup = dataHolder.getGroup(inheritedKey);
-							if (inheritedGroup != null) {
-								thisGroup.addInherits(inheritedGroup);
-							} else
-								GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_INHERITED_NOT_FOUND"), inheritedKey, thisGroup.getName(), groupsFile.getPath()));
-						}
-					}
+			try {
+				nodeData = thisGroupNode.get("info");
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", groupKey, groupsFile.getPath()));
 			}
 
-			dataHolder.removeGroupsChangedFlag();
+			if (nodeData == null) {
+				/*
+				 * No info section was found, so leave all variables as
+				 * defaults.
+				 */
+				GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_GROUP_NO_INFO"), thisGrp.getName()));
+				GroupManager.logger.warning(Messages.getString("WorldDatHolder.WARN_USING_DEFAULT") + groupsFile.getPath());
 
-			// Update the LastModified time.
-			dataHolder.setGroupsFile(groupsFile);
-			dataHolder.setTimeStampGroups(groupsFile.lastModified());
+			} else if (nodeData != null && nodeData instanceof Map) {
+				try {
+					thisGrp.setVariables((Map<?, ?>) nodeData);
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "info", thisGrp.getName(), groupsFile.getPath()), ex);
+				}
+
+			} else
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "info", thisGrp.getName(), groupsFile.getPath()));
+
+			/*
+			 * INHERITANCE NODE
+			 */
+			try {
+				nodeData = thisGroupNode.get("inheritance");
+			} catch (Exception ex) {
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", groupKey, groupsFile.getPath()));
+			}
+			/*
+			 * If no inheritance node is found, or it's empty do
+			 * nothing.
+			 */
+			if (nodeData instanceof List) {
+				try {
+					for (Object grp : (List<?>) nodeData) {
+						inheritance.computeIfAbsent(groupKey, k -> new ArrayList<>());
+						inheritance.get(groupKey).add((String) grp);
+					}
+
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT"), "inheritance", thisGrp.getName(), groupsFile.getPath()), ex);
+				}
+			} else
+				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY"), "inheritance", thisGrp.getName(), groupsFile.getPath()));
+
+			// END GROUP
+
 		}
+
+		if (dataHolder.getDefaultGroup() == null) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_NO_DEFAULT"), groupsFile.getPath()));
+		}
+
+		/*
+		 * Build the inheritance map and record any errors
+		 */
+		for (String group : inheritance.keySet()) {
+			List<String> inheritedList = inheritance.get(group);
+			Group thisGroup = dataHolder.getGroup(group);
+			if (thisGroup != null)
+				for (String inheritedKey : inheritedList) {
+					if (inheritedKey != null) {
+						Group inheritedGroup = dataHolder.getGroup(inheritedKey);
+						if (inheritedGroup != null) {
+							thisGroup.addInherits(inheritedGroup);
+						} else
+							GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_INHERITED_NOT_FOUND"), inheritedKey, thisGroup.getName(), groupsFile.getPath()));
+					}
+				}
+		}
+
+		dataHolder.removeGroupsChangedFlag();
+
+		// Update the LastModified time.
+		dataHolder.setGroupsFile(groupsFile);
+		dataHolder.setTimeStampGroups(groupsFile.lastModified());
 	}
 
 	@Override
 	public void loadUsers(WorldDataHolder dataHolder) throws IOException {
 
-		synchronized (dataHolder) {
-			// READ USERS FILE
-			File usersFile = dataHolder.getUsersFile();
+		// READ USERS FILE
+		File usersFile = dataHolder.getUsersFile();
 
-			org.yaml.snakeyaml.Yaml yamlUsers = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
-			Map<String, Object> usersRootDataNode;
+		org.yaml.snakeyaml.Yaml yamlUsers = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+		Map<String, Object> usersRootDataNode;
 
-			if (!dataHolder.getUsersFile().exists()) {
-				throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_USERS_FILE") + System.lineSeparator() + usersFile.getPath());
+		if (!dataHolder.getUsersFile().exists()) {
+			throw new IllegalArgumentException(Messages.getString("WorldDatHolder.ERROR_NO_USERS_FILE") + System.lineSeparator() + usersFile.getPath());
+		}
+		try (FileInputStream usersInputStream = new FileInputStream(usersFile)) {
+			usersRootDataNode = yamlUsers.load(new UnicodeReader(usersInputStream));
+			if (usersRootDataNode == null) {
+				throw new NullPointerException();
 			}
-			try (FileInputStream usersInputStream = new FileInputStream(usersFile)) {
-				usersRootDataNode = yamlUsers.load(new UnicodeReader(usersInputStream));
-				if (usersRootDataNode == null) {
-					throw new NullPointerException();
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
+		}
+
+		// PROCESS USERS FILE
+
+		Map<?, ?> allUsersNode;
+
+		/*
+		 * Fetch all child nodes under the 'users' entry.
+		 */
+		try {
+			allUsersNode = (Map<?, ?>) usersRootDataNode.get("users");
+		} catch (Exception ex) {
+			throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
+		}
+
+		// Load users if the file is NOT empty
+
+		if (allUsersNode != null) {
+
+			Iterator<?> usersItr = allUsersNode.keySet().iterator();
+			String usersKey;
+			Object node;
+			Integer userCount = 0;
+
+			while (usersItr.hasNext()) {
+				try {
+					userCount++;
+					// Attempt to fetch the next user name.
+					node = usersItr.next();
+					if (node instanceof Integer)
+						usersKey = Integer.toString((Integer) node);
+					else
+						usersKey = node.toString();
+
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_NODE_USER"), userCount, usersFile.getPath()), ex);
 				}
-			} catch (Exception ex) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
-			}
 
-			// PROCESS USERS FILE
+				Map<?, ?> thisUserNode;
+				try {
+					thisUserNode = (Map<?, ?>) allUsersNode.get(node);
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), usersKey, usersFile.getPath()));
+				}
 
-			Map<?, ?> allUsersNode;
+				User thisUser = dataHolder.createUser(usersKey);
+				if (thisUser == null) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_DUPLICATE_USER"), usersKey, usersFile.getPath()));
+				}
 
-			/*
-			 * Fetch all child nodes under the 'users' entry.
-			 */
-			try {
-				allUsersNode = (Map<?, ?>) usersRootDataNode.get("users");
-			} catch (Exception ex) {
-				throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FILE"), usersFile.getPath()), ex);
-			}
+				/*
+				 * LASTNAME NODES
+				 */
+				Object nodeData;
+				try {
+					nodeData = thisUserNode.get("lastname");
 
-			// Load users if the file is NOT empty
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "lastname", usersKey, usersFile.getPath()));
+				}
 
-			if (allUsersNode != null) {
+				if ((nodeData instanceof String)) {
+					thisUser.setLastName((String) nodeData);
+				}
 
-				Iterator<?> usersItr = allUsersNode.keySet().iterator();
-				String usersKey;
-				Object node;
-				Integer userCount = 0;
+				/*
+				 * USER PERMISSIONS NODES
+				 */
+				try {
+					nodeData = thisUserNode.get("permissions");
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), "permissions", usersKey, usersFile.getPath()));
+				}
 
-				while (usersItr.hasNext()) {
+				if (nodeData != null) {
 					try {
-						userCount++;
-						// Attempt to fetch the next user name.
-						node = usersItr.next();
-						if (node instanceof Integer)
-							usersKey = Integer.toString((Integer) node);
-						else
-							usersKey = node.toString();
-
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_NODE_USER"), userCount, usersFile.getPath()), ex);
-					}
-
-					Map<?, ?> thisUserNode;
-					try {
-						thisUserNode = (Map<?, ?>) allUsersNode.get(node);
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), usersKey, usersFile.getPath()));
-					}
-
-					User thisUser = dataHolder.createUser(usersKey);
-					if (thisUser == null) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_DUPLICATE_USER"), usersKey, usersFile.getPath()));
-					}
-
-					/*
-					 * LASTNAME NODES
-					 */
-					Object nodeData;
-					try {
-						nodeData = thisUserNode.get("lastname");
-
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "lastname", usersKey, usersFile.getPath()));
-					}
-
-					if ((nodeData instanceof String)) {
-						thisUser.setLastName((String) nodeData);
-					}
-
-					/*
-					 * USER PERMISSIONS NODES
-					 */
-					try {
-						nodeData = thisUserNode.get("permissions");
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_FOR_USER"), "permissions", usersKey, usersFile.getPath()));
-					}
-
-					if (nodeData != null) {
-						try {
-							if (nodeData instanceof List) {
-								for (Object o : ((List<?>) nodeData)) {
-									/*
-									 * Only add this permission if it's not empty
-									 */
-									if (!o.toString().isEmpty()) {
-										/*
-										 * check for a timed permission
-										 */
-										if (o.toString().contains("|")) {
-											String[] split = o.toString().split("\\|");
-											try {
-												thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
-											} catch (Exception e) {
-												GroupManager.logger.warning("TimedPermission error: " + o.toString());
-											}
-										} else {
-											thisUser.addPermission(o.toString());
-										}
-									}
-								}
-							} else if (nodeData instanceof String) {
-
-								/*
-								 * Only add this permission if it's not empty
-								 */
-								if (!nodeData.toString().isEmpty()) {
-									/*
-									 * check for a timed permission
-									 */
-									if (nodeData.toString().contains("|")) {
-										String[] split = nodeData.toString().split("\\|");
-										try {
-											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
-										} catch (Exception e) {
-											GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
-										}
-									} else {
-										thisUser.addPermission(nodeData.toString());
-									}
-								}
-							}
-						} catch (NullPointerException ignored) {} // Safe to ignore null.
-					}
-
-					/*
-					 * USER INFO NODE
-					 */
-					try {
-						nodeData = thisUserNode.get("info");
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "info", usersKey, usersFile.getPath()));
-					}
-
-					if (nodeData != null) {
-						if (nodeData instanceof Map) {
-							thisUser.setVariables((Map<?, ?>) nodeData);
-
-						} else
-							throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY_USER"), "info", thisUser.getLastName(), usersFile.getPath()));
-					}
-					// END INFO NODE
-
-					/*
-					 * PRIMARY GROUP
-					 */
-					try {
-						nodeData = thisUserNode.get("group");
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "group", usersKey, usersFile.getPath()));
-					}
-
-					if (nodeData != null) {
-						Group hisGroup = dataHolder.getGroup(nodeData.toString());
-						if (hisGroup == null) {
-							GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_NO_GROUP_STATED"), thisUserNode.get("group").toString(), thisUser.getLastName(), dataHolder.getDefaultGroup().getName(), usersFile.getPath()));
-							hisGroup = dataHolder.getDefaultGroup();
-						}
-						thisUser.setGroup(hisGroup);
-					} else {
-						thisUser.setGroup(dataHolder.getDefaultGroup());
-					}
-
-					/*
-					 * SUBGROUPS NODES
-					 */
-					try {
-						nodeData = thisUserNode.get("subgroups");
-					} catch (Exception ex) {
-						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "subgroups", usersKey, usersFile.getPath()));
-					}
-
-					/*
-					 * If no subgroups node is found, or it's empty do nothing.
-					 */
-					if (nodeData != null) {
-
 						if (nodeData instanceof List) {
 							for (Object o : ((List<?>) nodeData)) {
 								/*
-								 * Only add this subgroup if it's not empty
+								 * Only add this permission if it's not empty
 								 */
 								if (!o.toString().isEmpty()) {
 									/*
-									 * check for a timed subgroup
+									 * check for a timed permission
 									 */
 									if (o.toString().contains("|")) {
 										String[] split = o.toString().split("\\|");
 										try {
-											Group subGrp = dataHolder.getGroup(split[0]);
-											thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
+											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 										} catch (Exception e) {
-											GroupManager.logger.warning("TimedSubGroup error: " + o.toString());
+											GroupManager.logger.warning("TimedPermission error: " + o.toString());
 										}
 									} else {
-										Group subGrp = dataHolder.getGroup(o.toString());
-										if (subGrp != null)
-											thisUser.addSubGroup(subGrp);
+										thisUser.addPermission(o.toString());
 									}
 								}
 							}
 						} else if (nodeData instanceof String) {
 
 							/*
-							 * Only add this subgroup if it's not empty
+							 * Only add this permission if it's not empty
 							 */
 							if (!nodeData.toString().isEmpty()) {
 								/*
-								 * check for a timed subgroup
+								 * check for a timed permission
 								 */
 								if (nodeData.toString().contains("|")) {
 									String[] split = nodeData.toString().split("\\|");
-									Group subGrp = dataHolder.getGroup(split[0]);
 									try {
-										thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
+										thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 									} catch (Exception e) {
-										GroupManager.logger.warning("TimedSubGroup error: " + nodeData.toString());
+										GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
 									}
 								} else {
-									Group subGrp = dataHolder.getGroup(nodeData.toString());
+									thisUser.addPermission(nodeData.toString());
+								}
+							}
+						}
+					} catch (NullPointerException ignored) {} // Safe to ignore null.
+				}
+
+				/*
+				 * USER INFO NODE
+				 */
+				try {
+					nodeData = thisUserNode.get("info");
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "info", usersKey, usersFile.getPath()));
+				}
+
+				if (nodeData != null) {
+					if (nodeData instanceof Map) {
+						thisUser.setVariables((Map<?, ?>) nodeData);
+
+					} else
+						throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_UNKNOWN_ENTRY_USER"), "info", thisUser.getLastName(), usersFile.getPath()));
+				}
+				// END INFO NODE
+
+				/*
+				 * PRIMARY GROUP
+				 */
+				try {
+					nodeData = thisUserNode.get("group");
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "group", usersKey, usersFile.getPath()));
+				}
+
+				if (nodeData != null) {
+					Group hisGroup = dataHolder.getGroup(nodeData.toString());
+					if (hisGroup == null) {
+						GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_NO_GROUP_STATED"), thisUserNode.get("group").toString(), thisUser.getLastName(), dataHolder.getDefaultGroup().getName(), usersFile.getPath()));
+						hisGroup = dataHolder.getDefaultGroup();
+					}
+					thisUser.setGroup(hisGroup);
+				} else {
+					thisUser.setGroup(dataHolder.getDefaultGroup());
+				}
+
+				/*
+				 * SUBGROUPS NODES
+				 */
+				try {
+					nodeData = thisUserNode.get("subgroups");
+				} catch (Exception ex) {
+					throw new IllegalArgumentException(String.format(Messages.getString("WorldDatHolder.ERROR_INVALID_FORMAT_IN_USER"), "subgroups", usersKey, usersFile.getPath()));
+				}
+
+				/*
+				 * If no subgroups node is found, or it's empty do nothing.
+				 */
+				if (nodeData != null) {
+
+					if (nodeData instanceof List) {
+						for (Object o : ((List<?>) nodeData)) {
+							/*
+							 * Only add this subgroup if it's not empty
+							 */
+							if (!o.toString().isEmpty()) {
+								/*
+								 * check for a timed subgroup
+								 */
+								if (o.toString().contains("|")) {
+									String[] split = o.toString().split("\\|");
+									try {
+										Group subGrp = dataHolder.getGroup(split[0]);
+										thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
+									} catch (Exception e) {
+										GroupManager.logger.warning("TimedSubGroup error: " + o.toString());
+									}
+								} else {
+									Group subGrp = dataHolder.getGroup(o.toString());
 									if (subGrp != null)
 										thisUser.addSubGroup(subGrp);
 								}
 							}
 						}
+					} else if (nodeData instanceof String) {
+
+						/*
+						 * Only add this subgroup if it's not empty
+						 */
+						if (!nodeData.toString().isEmpty()) {
+							/*
+							 * check for a timed subgroup
+							 */
+							if (nodeData.toString().contains("|")) {
+								String[] split = nodeData.toString().split("\\|");
+								Group subGrp = dataHolder.getGroup(split[0]);
+								try {
+									thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
+								} catch (Exception e) {
+									GroupManager.logger.warning("TimedSubGroup error: " + nodeData.toString());
+								}
+							} else {
+								Group subGrp = dataHolder.getGroup(nodeData.toString());
+								if (subGrp != null)
+									thisUser.addSubGroup(subGrp);
+							}
+						}
 					}
 				}
 			}
-			dataHolder.removeUsersChangedFlag();
-			// Update the LastModified time.
-			dataHolder.setUsersFile(usersFile);
-			dataHolder.setTimeStampUsers(usersFile.lastModified());
 		}
+		dataHolder.removeUsersChangedFlag();
+		// Update the LastModified time.
+		dataHolder.setUsersFile(usersFile);
+		dataHolder.setTimeStampUsers(usersFile.lastModified());
 	}
 
 	@Override
@@ -777,30 +773,28 @@ public class Yaml implements DataSource {
 
 		GroupManager.setLoaded(false);
 
-		synchronized (dataHolder) {
-			try {
-				// temporary holder in case the load fails.
-				WorldDataHolder ph = new WorldDataHolder(dataHolder.getName());
+		try {
+			// temporary holder in case the load fails.
+			WorldDataHolder ph = new WorldDataHolder(dataHolder.getName());
 
-				ph.setGroupsFile(dataHolder.getGroupsFile());
-				loadGroups(ph);
+			ph.setGroupsFile(dataHolder.getGroupsFile());
+			loadGroups(ph);
 
-				// transfer new data
-				dataHolder.resetGroups();
-				for (Group tempGroup : ph.getGroupList()) {
-					tempGroup.clone(dataHolder);
-				}
-
-				dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
-				dataHolder.removeGroupsChangedFlag();
-				dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
-
-			} catch (Exception ex) {
-				Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
+			// transfer new data
+			dataHolder.resetGroups();
+			for (Group tempGroup : ph.getGroupList()) {
+				tempGroup.clone(dataHolder);
 			}
-			GroupManager.setLoaded(true);
-			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
+
+			dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
+			dataHolder.removeGroupsChangedFlag();
+			dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
+
+		} catch (Exception ex) {
+			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
+		GroupManager.setLoaded(true);
+		GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
 	}
 
 	@Override
@@ -808,36 +802,34 @@ public class Yaml implements DataSource {
 
 		GroupManager.setLoaded(false);
 
-		synchronized (dataHolder) {
-			try {
-				// temporary holder in case the load fails.
-				WorldDataHolder ph = new WorldDataHolder(dataHolder.getName());
+		try {
+			// temporary holder in case the load fails.
+			WorldDataHolder ph = new WorldDataHolder(dataHolder.getName());
 
-				// copy groups for reference
-				for (Group tempGroup : dataHolder.getGroupList()) {
-					tempGroup.clone(ph);
-				}
-
-				// setup the default group before loading user data.
-				ph.setDefaultGroup(ph.getGroup(dataHolder.getDefaultGroup().getName()));
-
-				ph.setUsersFile(dataHolder.getUsersFile());
-				loadUsers(ph);
-
-				// transfer new data
-				dataHolder.resetUsers();
-				for (User tempUser : ph.getUserList()) {
-					tempUser.clone(dataHolder);
-				}
-				dataHolder.removeUsersChangedFlag();
-				dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
-
-			} catch (Exception ex) {
-				Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
+			// copy groups for reference
+			for (Group tempGroup : dataHolder.getGroupList()) {
+				tempGroup.clone(ph);
 			}
-			GroupManager.setLoaded(true);
-			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
+
+			// setup the default group before loading user data.
+			ph.setDefaultGroup(ph.getGroup(dataHolder.getDefaultGroup().getName()));
+
+			ph.setUsersFile(dataHolder.getUsersFile());
+			loadUsers(ph);
+
+			// transfer new data
+			dataHolder.resetUsers();
+			for (User tempUser : ph.getUserList()) {
+				tempUser.clone(dataHolder);
+			}
+			dataHolder.removeUsersChangedFlag();
+			dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
+
+		} catch (Exception ex) {
+			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
+		GroupManager.setLoaded(true);
+		GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
 	}
 
 	@Override
@@ -849,64 +841,61 @@ public class Yaml implements DataSource {
 
 		root.put("groups", groupsMap);
 
-		synchronized (dataHolder) {
+		for (String groupKey : dataHolder.getGroups().keySet()) {
+			Group group = dataHolder.getGroups().get(groupKey);
 
-			for (String groupKey : dataHolder.getGroups().keySet()) {
-				Group group = dataHolder.getGroups().get(groupKey);
+			Map<String, Object> aGroupMap = new HashMap<>();
+			groupsMap.put(group.getName(), aGroupMap);
 
-				Map<String, Object> aGroupMap = new HashMap<>();
-				groupsMap.put(group.getName(), aGroupMap);
+			if (dataHolder.getDefaultGroup() == null) {
+				GroupManager.logger.severe(Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
+			}
+			aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
 
-				if (dataHolder.getDefaultGroup() == null) {
-					GroupManager.logger.severe(Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
-				}
-				aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
+			Map<String, Object> infoMap = new HashMap<>();
+			aGroupMap.put("info", infoMap);
 
-				Map<String, Object> infoMap = new HashMap<>();
-				aGroupMap.put("info", infoMap);
-
-				for (String infoKey : group.getVariables().getVarKeyList()) {
-					infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
-				}
-
-				aGroupMap.put("inheritance", group.getInherits());
-
-				aGroupMap.put("permissions", group.getSavePermissionList());
+			for (String infoKey : group.getVariables().getVarKeyList()) {
+				infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
 			}
 
-			if (!root.isEmpty()) {
-				DumperOptions opt = new DumperOptions();
-				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-				try {
-					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
+			aGroupMap.put("inheritance", group.getInherits());
 
-					String newLine = System.getProperty("line.separator");
-
-					out.write("# Group inheritance" + newLine);
-					out.write("#" + newLine);
-					out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
-					out.write("# and are inherited from the GlobalGroups.yml." + newLine);
-					out.write("#" + newLine);
-					out.write("# Groups without the g: prefix are groups local to this world" + newLine);
-					out.write("# and are defined in the this groups.yml file." + newLine);
-					out.write("#" + newLine);
-					out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
-					out.write(newLine);
-
-					yaml.dump(root, out);
-					out.close();
-				} catch (Exception ignored) {}
-			}
-
-			// Update the LastModified time.
-			dataHolder.setGroupsFile(dataHolder.getGroupsFile());
-			dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
-			dataHolder.removeGroupsChangedFlag();
-
-			if (GroupManager.isLoaded())
-				GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
+			aGroupMap.put("permissions", group.getSavePermissionList());
 		}
+
+		if (!root.isEmpty()) {
+			DumperOptions opt = new DumperOptions();
+			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+			try {
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
+
+				String newLine = System.getProperty("line.separator");
+
+				out.write("# Group inheritance" + newLine);
+				out.write("#" + newLine);
+				out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
+				out.write("# and are inherited from the GlobalGroups.yml." + newLine);
+				out.write("#" + newLine);
+				out.write("# Groups without the g: prefix are groups local to this world" + newLine);
+				out.write("# and are defined in the this groups.yml file." + newLine);
+				out.write("#" + newLine);
+				out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
+				out.write(newLine);
+
+				yaml.dump(root, out);
+				out.close();
+			} catch (Exception ignored) {}
+		}
+
+		// Update the LastModified time.
+		dataHolder.setGroupsFile(dataHolder.getGroupsFile());
+		dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
+		dataHolder.removeGroupsChangedFlag();
+
+		if (GroupManager.isLoaded())
+			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 	}
 
 	@Override
@@ -917,66 +906,63 @@ public class Yaml implements DataSource {
 
 		root.put("users", usersMap);
 
-		synchronized (dataHolder) {
-
-			// A sorted list of users.
-			for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
-				User user = dataHolder.getUsers().get(userKey);
-				if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
-					continue;
-				}
-
-				LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
-				usersMap.put(user.getUUID(), aUserMap);
-
-				if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
-					aUserMap.put("lastname", user.getLastName());
-				}
-
-				// GROUP NODE
-				if (user.getGroup() == null) {
-					aUserMap.put("group", dataHolder.getDefaultGroup().getName());
-				} else {
-					aUserMap.put("group", user.getGroup().getName());
-				}
-
-				// SUBGROUPS NODE
-				aUserMap.put("subgroups", user.getSaveSubGroupsList());
-
-				// PERMISSIONS NODE
-				aUserMap.put("permissions", user.getSavePermissionList());
-
-				// USER INFO NODE - BETA
-				if (user.getVariables().getSize() > 0) {
-					Map<String, Object> infoMap = new HashMap<>();
-					aUserMap.put("info", infoMap);
-					for (String infoKey : user.getVariables().getVarKeyList()) {
-						infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
-					}
-				}
-				// END USER INFO NODE - BETA
+		// A sorted list of users.
+		for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
+			User user = dataHolder.getUsers().get(userKey);
+			if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
+				continue;
 			}
 
-			if (!root.isEmpty()) {
-				DumperOptions opt = new DumperOptions();
-				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-				try {
-					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
-					yaml.dump(root, out);
-					out.close();
-				} catch (Exception ignored) {
-				}
+			LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
+			usersMap.put(user.getUUID(), aUserMap);
+
+			if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
+				aUserMap.put("lastname", user.getLastName());
 			}
 
-			// Update the LastModified time.
-			dataHolder.setUsersFile(dataHolder.getUsersFile());
-			dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
-			dataHolder.removeUsersChangedFlag();
+			// GROUP NODE
+			if (user.getGroup() == null) {
+				aUserMap.put("group", dataHolder.getDefaultGroup().getName());
+			} else {
+				aUserMap.put("group", user.getGroup().getName());
+			}
 
-			if (GroupManager.isLoaded())
-				GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
+			// SUBGROUPS NODE
+			aUserMap.put("subgroups", user.getSaveSubGroupsList());
+
+			// PERMISSIONS NODE
+			aUserMap.put("permissions", user.getSavePermissionList());
+
+			// USER INFO NODE - BETA
+			if (user.getVariables().getSize() > 0) {
+				Map<String, Object> infoMap = new HashMap<>();
+				aUserMap.put("info", infoMap);
+				for (String infoKey : user.getVariables().getVarKeyList()) {
+					infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
+				}
+			}
+			// END USER INFO NODE - BETA
 		}
+
+		if (!root.isEmpty()) {
+			DumperOptions opt = new DumperOptions();
+			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+			try {
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
+				yaml.dump(root, out);
+				out.close();
+			} catch (Exception ignored) {
+			}
+		}
+
+		// Update the LastModified time.
+		dataHolder.setUsersFile(dataHolder.getUsersFile());
+		dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
+		dataHolder.removeUsersChangedFlag();
+
+		if (GroupManager.isLoaded())
+			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 	}
 
 	@Override
