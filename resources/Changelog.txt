@@ -296,9 +296,6 @@ v3.0:
     - Performance improvements.
     - Version update checking now works correctly.
     - Add a purge for old users (runs at server start).
-        New users will gain a 'lastplayed' variable upon joining.
-        This value will be updated each time they join.
-        If they do not log in for (default 90 days) their data will be deleted.
+        If players do not log in for (default 90 days) their data will be deleted.
         Manually created users who have never joined will not be deleted.
-        Users created with older versions of GroupManager who never log in will not be deleted.
-        To protect specific accounts from deletion set the lastplayed variable to '0'.
+        To protect specific accounts from deletion set a lastplayed variable to '0'.

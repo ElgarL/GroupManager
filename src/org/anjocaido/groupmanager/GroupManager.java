@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,6 +84,7 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.metrics.Metrics;
 import org.anjocaido.groupmanager.permissions.BukkitPermissions;
 import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
+import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.anjocaido.groupmanager.utils.GMLoggerHandler;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.Bukkit;
@@ -508,6 +510,7 @@ public class GroupManager extends JavaPlugin {
 
 					try {
 						int count = 0;
+
 						for (OverloadedWorldHolder world : getWorldsHolder().allWorldsDataList()) {
 
 							if (!getWorldsHolder().hasUsersMirror(world.getName())) {
@@ -516,9 +519,17 @@ public class GroupManager extends JavaPlugin {
 									User user = iterator.next();
 									long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
 
-									if ((lastPlayed != 0) && (lastPlayed != -1) && Tasks.isExpired(lastPlayed + getGMConfig().userExpires())) {
-										world.removeUser(user.getUUID());
-										count++;
+									/*
+									 * Users with a lastplayed variable set to 0 are protected from deletion.
+									 */
+									if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
+										long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
+
+										if (serverLastPlayed > 0 && ( Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
+
+											world.removeUser(user.getUUID());
+											count++;
+										}
 									}
 									Thread.sleep(1000);
 								}

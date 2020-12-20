@@ -142,6 +142,16 @@ public class BukkitWrapper {
 
 		return plugin.getServer().getOfflinePlayer(uid);
 	}
+	
+	/**
+	 * Fetch all Offline Players known to the server.
+	 * 
+	 * @return an Array of {@OfflinePlayer} objects.
+	 */
+	public OfflinePlayer[] getOfflinePlayers() {
+		
+		return plugin.getServer().getOfflinePlayers();
+	}
 
 	/**
 	 * Attempts to match any players with the given name, and returns a list of all possible matches.
@@ -181,7 +191,7 @@ public class BukkitWrapper {
 			return cache.getLastPlayed();
 
 		// A player with this UUID has never been seen on this server.
-		return null;
+		return 0L;
 	}
 
 	public Long getFirstPlayed(UUID uid) {
@@ -198,7 +208,7 @@ public class BukkitWrapper {
 			return cache.getFirstPlayed();
 
 		// A player with this UUID has never been seen on this server.
-		return null;
+		return 0L;
 	}
 
 }

@@ -497,13 +497,7 @@ public class BukkitPermissions {
 			removeAttachment(player.getUniqueId().toString());
 
 			// force GM to create the player if they are not already listed.
-			User user = plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
-
-			/*
-			 * Set the 'lastplayed' variable which will be used for account pruning.
-			 */
-			if (user.getVariables().getVarDouble("lastplayed") != 0 && player.getLastPlayed() != 0)
-				user.getVariables().addVar("lastplayed", player.getLastPlayed());
+			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(player.getUniqueId().toString(), player.getName());
 
 			updatePermissions(player);
 
