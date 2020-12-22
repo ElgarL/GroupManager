@@ -169,7 +169,7 @@ public abstract class DataUnit {
 
 		return changed;
 	}
-	
+
 	/**
 	 * @return the time stamp.
 	 */
@@ -177,7 +177,7 @@ public abstract class DataUnit {
 
 		return timeStamp;
 	}
-	
+
 	/**
 	 * @param timeStamp the time stamp to set
 	 */

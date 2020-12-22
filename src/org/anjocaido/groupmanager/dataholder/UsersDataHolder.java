@@ -34,7 +34,7 @@ public class UsersDataHolder {
 
 	private WorldDataHolder dataSource;
 	private File usersFile;
-	private boolean haveUsersChanged = false;
+	private boolean changed = false;
 	private long timeStamp = 0;
 
 	/**
@@ -98,19 +98,19 @@ public class UsersDataHolder {
 	}
 
 	/**
-	 * @return the haveUsersChanged
+	 * @return true if Users have changed.
 	 */
-	public boolean HaveUsersChanged() {
+	public boolean isUsersChanged() {
 
-		return haveUsersChanged;
+		return changed;
 	}
 
 	/**
-	 * @param haveUsersChanged the haveUsersChanged to set
+	 * @param changed the state to set for changed.
 	 */
-	public void setUsersChanged(boolean haveUsersChanged) {
+	public void setUsersChanged(boolean changed) {
 
-		this.haveUsersChanged = haveUsersChanged;
+		this.changed = changed;
 	}
 
 	/**

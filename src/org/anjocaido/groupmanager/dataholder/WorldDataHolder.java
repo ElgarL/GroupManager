@@ -451,7 +451,7 @@ public class WorldDataHolder {
 	 */
 	public boolean haveUsersChanged() {
 
-		if (users.HaveUsersChanged()) {
+		if (users.isUsersChanged()) {
 			return true;
 		}
 		synchronized (users) {
@@ -478,7 +478,7 @@ public class WorldDataHolder {
 	 */
 	public boolean haveGroupsChanged() {
 
-		if (groups.HaveGroupsChanged()) {
+		if (groups.isGroupsChanged()) {
 			return true;
 		}
 		synchronized (groups) {

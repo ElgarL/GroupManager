@@ -35,7 +35,7 @@ public class GroupsDataHolder {
 	private WorldDataHolder dataSource;
 	private Group defaultGroup = null;
 	private File groupsFile;
-	private boolean haveGroupsChanged = false;
+	private boolean changed = false;
 	private long timeStamp = 0;
 
 	/**
@@ -115,19 +115,19 @@ public class GroupsDataHolder {
 	}
 
 	/**
-	 * @return the haveGroupsChanged
+	 * @return true if Groups have changed.
 	 */
-	public boolean HaveGroupsChanged() {
+	public boolean isGroupsChanged() {
 
-		return haveGroupsChanged;
+		return changed;
 	}
 
 	/**
-	 * @param haveGroupsChanged the state to set for haveGroupsChanged.
+	 * @param changed the state to set for changed.
 	 */
-	public void setGroupsChanged(boolean haveGroupsChanged) {
+	public void setGroupsChanged(boolean changed) {
 
-		this.haveGroupsChanged = haveGroupsChanged;
+		this.changed = changed;
 	}
 
 	/**
