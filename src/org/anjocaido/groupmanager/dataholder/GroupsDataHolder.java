@@ -36,7 +36,7 @@ public class GroupsDataHolder {
 	private Group defaultGroup = null;
 	private File groupsFile;
 	private boolean haveGroupsChanged = false;
-	private long timeStampGroups = 0;
+	private long timeStamp = 0;
 
 	/**
 	 * The actual groups holder
@@ -123,7 +123,7 @@ public class GroupsDataHolder {
 	}
 
 	/**
-	 * @param haveGroupsChanged the haveGroupsChanged to set
+	 * @param haveGroupsChanged the state to set for haveGroupsChanged.
 	 */
 	public void setGroupsChanged(boolean haveGroupsChanged) {
 
@@ -131,19 +131,19 @@ public class GroupsDataHolder {
 	}
 
 	/**
-	 * @return the timeStampGroups
+	 * @return the time stamp.
 	 */
-	public long getTimeStampGroups() {
+	public long getTimeStamp() {
 
-		return timeStampGroups;
+		return timeStamp;
 	}
 
 	/**
-	 * @param timeStampGroups the timeStampGroups to set
+	 * @param timeStamp the time stamp to set.
 	 */
-	public void setTimeStampGroups(long timeStampGroups) {
+	public void setTimeStamp(long timeStamp) {
 
-		this.timeStampGroups = timeStampGroups;
+		this.timeStamp = timeStamp;
 	}
 
 }

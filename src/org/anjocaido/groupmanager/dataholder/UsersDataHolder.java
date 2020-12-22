@@ -35,7 +35,7 @@ public class UsersDataHolder {
 	private WorldDataHolder dataSource;
 	private File usersFile;
 	private boolean haveUsersChanged = false;
-	private long timeStampUsers = 0;
+	private long timeStamp = 0;
 
 	/**
 	 * The actual groups holder
@@ -114,19 +114,19 @@ public class UsersDataHolder {
 	}
 
 	/**
-	 * @return the timeStampUsers
+	 * @return the timeStamp
 	 */
-	public long getTimeStampUsers() {
+	public long getTimeStamp() {
 
-		return timeStampUsers;
+		return timeStamp;
 	}
 
 	/**
-	 * @param timeStampUsers the timeStampUsers to set
+	 * @param timeStamp the time stamp to set.
 	 */
-	public void setTimeStampUsers(long timeStampUsers) {
+	public void setTimeStamp(long timeStamp) {
 
-		this.timeStampUsers = timeStampUsers;
+		this.timeStamp = timeStamp;
 	}
 
 }

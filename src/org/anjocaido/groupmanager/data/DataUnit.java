@@ -41,6 +41,7 @@ public abstract class DataUnit {
 	private final String uUID;
 	private String lastName = "";
 	private boolean changed;
+	private long timeStamp = 0;
 
 	private Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
 
@@ -167,6 +168,22 @@ public abstract class DataUnit {
 	public boolean isChanged() {
 
 		return changed;
+	}
+	
+	/**
+	 * @return the time stamp.
+	 */
+	public long getTimeStamp() {
+
+		return timeStamp;
+	}
+	
+	/**
+	 * @param timeStamp the time stamp to set
+	 */
+	public void setTimeStampGroups(long timeStamp) {
+
+		this.timeStamp = timeStamp;
 	}
 
 	public void flagAsSaved() {

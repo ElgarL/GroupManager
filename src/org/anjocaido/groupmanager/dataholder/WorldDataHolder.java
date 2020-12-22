@@ -658,35 +658,35 @@ public class WorldDataHolder {
 	}
 
 	/**
-	 * @return the timeStampGroups
+	 * @return the time stamp for Groups.
 	 */
 	public long getTimeStampGroups() {
 
-		return groups.getTimeStampGroups();
+		return groups.getTimeStamp();
 	}
 
 	/**
-	 * @return the timeStampUsers
+	 * @return the time stamp for Users.
 	 */
 	public long getTimeStampUsers() {
 
-		return users.getTimeStampUsers();
+		return users.getTimeStamp();
 	}
 
 	/**
-	 * @param timeStampGroups the timeStampGroups to set
+	 * @param timeStamp the time stamp to set for Groups.
 	 */
-	public void setTimeStampGroups(long timeStampGroups) {
+	public void setTimeStampGroups(long timeStamp) {
 
-		groups.setTimeStampGroups(timeStampGroups);
+		groups.setTimeStamp(timeStamp);
 	}
 
 	/**
-	 * @param timeStampUsers the timeStampUsers to set
+	 * @param timeStamp the time stamp to set for Users.
 	 */
-	public void setTimeStampUsers(long timeStampUsers) {
+	public void setTimeStampUsers(long timeStamp) {
 
-		users.setTimeStampUsers(timeStampUsers);
+		users.setTimeStamp(timeStamp);
 	}
 
 	/* Name to UUID lookups **/
