@@ -106,7 +106,7 @@ groups:
     - bukkit.command.version
 
 # Permission nodes for EssentialsX
-# by md678685 
+# by mdcfe
 # https://www.spigotmc.org/resources/essentialsx.9089/
 
   g:essentials_default:
