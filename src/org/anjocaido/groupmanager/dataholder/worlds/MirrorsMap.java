@@ -95,10 +95,17 @@ public class MirrorsMap extends WorldsHolder {
 
 		// Create a data-set for any worlds not already loaded.
 		for (String world : mirroredWorlds) {
-			if (!hasOwnData(world.toLowerCase())) {
+			if (!isParentWorld(world)) {
 				GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.NO_DATA"), world)); //$NON-NLS-1$
-				getDataSource().loadWorld(world, true);
 			}
+			if (!hasGroupsMirror(world) || !hasUsersMirror(world)){
+				/*
+				 * Partial mirrors need data.
+				 */
+				addWorldData(world, null);
+				getDataSource().init(world);
+			}
+			getDataSource().loadWorld(world, true);
 		}
 	}
 
@@ -134,8 +141,8 @@ public class MirrorsMap extends WorldsHolder {
 				continue;
 			}
 
-			if (subSection.get(world) instanceof ArrayList) {
-				ArrayList<?> mirrorList = (ArrayList<?>) subSection.get(world);
+			if (subSection.get(element) instanceof ArrayList) {
+				ArrayList<?> mirrorList = (ArrayList<?>) subSection.get(element);
 
 				/*
 				 * These worlds have defined mirroring

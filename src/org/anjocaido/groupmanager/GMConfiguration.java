@@ -453,9 +453,8 @@ public class GMConfiguration {
 			GroupManager.logger.setLevel(Level.parse(loggerLevel));
 			return;
 		} catch (Exception ignored) {
+			GroupManager.logger.setLevel(Level.INFO);
 		}
-
-		GroupManager.logger.setLevel(Level.INFO);
 	}
 
 	public Map<String, Object> getMirrorsMap() {

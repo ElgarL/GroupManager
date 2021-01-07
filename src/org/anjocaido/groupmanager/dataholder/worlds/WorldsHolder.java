@@ -21,10 +21,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +47,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	/**
 	 * Map with instances of loaded worlds.
 	 */
-	private SortedMap<String, OverloadedWorldHolder> worldsData = Collections.synchronizedSortedMap(new TreeMap<>());
+	private Map<String, OverloadedWorldHolder> worldsData = Collections.synchronizedMap(new HashMap<>());
 
 	protected String serverDefaultWorldName;
 
@@ -98,7 +98,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public void resetWorldsHolder() {
 
 		synchronized(worldsData) {
-			worldsData = Collections.synchronizedSortedMap(new TreeMap<>());
+			worldsData = Collections.synchronizedMap(new HashMap<>());
 		}
 		clearGroupsMirror();
 		clearUsersMirror();
