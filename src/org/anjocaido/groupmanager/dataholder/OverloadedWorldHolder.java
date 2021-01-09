@@ -19,9 +19,9 @@ package org.anjocaido.groupmanager.dataholder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.data.User;
 
@@ -34,7 +34,7 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	/**
 	 *
 	 */
-	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new TreeMap<>());
+	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * 

@@ -21,7 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -47,7 +47,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	/**
 	 * Map with instances of loaded worlds.
 	 */
-	private Map<String, OverloadedWorldHolder> worldsData = Collections.synchronizedMap(new HashMap<>());
+	private Map<String, OverloadedWorldHolder> worldsData = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	protected String serverDefaultWorldName;
 
@@ -98,7 +98,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public void resetWorldsHolder() {
 
 		synchronized(worldsData) {
-			worldsData = Collections.synchronizedMap(new HashMap<>());
+			worldsData = Collections.synchronizedMap(new LinkedHashMap<>());
 		}
 		clearGroupsMirror();
 		clearUsersMirror();
