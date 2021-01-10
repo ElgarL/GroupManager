@@ -204,26 +204,41 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 		List<Player> players;
 		UUID match;
+		
+		if (playerName.length() < 36) {
+			/*
+			 * Name lookup.
+			 */
+			players = BukkitWrapper.getInstance().matchPlayer(playerName);
 
-		players = BukkitWrapper.getInstance().matchPlayer(playerName);
+			if (players.isEmpty()) {
+				// Check for an offline player (exact match, ignoring case).
+				match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
 
-		if (players.isEmpty()) {
-			// Check for an offline player (exact match, ignoring case).
-			match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
+				if (match == null) {
+					sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
+					return null;
+				}
 
-			if (match == null) {
-				sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
+				return match;
+
+			} else if (players.size() > 1) {
+				sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
 				return null;
 			}
 
-			return match;
-
-		} else if (players.size() > 1) {
-			sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
-			return null;
+			return players.get(0).getUniqueId();
+			
+		} else {
+			
+			/*
+			 * UUID lookup
+			 */
+			UUID uid = UUID.fromString(playerName);
+			if (BukkitWrapper.getInstance().getOfflinePlayer(uid).getName() != null)
+				return uid;
 		}
-
-		return players.get(0).getUniqueId();
+		return null;
 	}
 	
 	/**

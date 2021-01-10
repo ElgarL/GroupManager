@@ -299,3 +299,4 @@ v3.0:
         If players do not log in for (default 90 days) their data will be deleted.
         Manually created users who have never joined will not be deleted.
         To protect specific accounts from deletion set a lastplayed variable to '0'.
+    - Allow UniqueIds to be used in commands as well as player names.
