@@ -203,8 +203,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	protected UUID validatePlayer(String playerName, CommandSender sender) {
 
 		List<Player> players;
-		UUID match;
-		
+		UUID match = null;
+
 		if (playerName.length() < 36) {
 			/*
 			 * Name lookup.
@@ -212,35 +212,33 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 			players = BukkitWrapper.getInstance().matchPlayer(playerName);
 
 			if (players.isEmpty()) {
-				// Check for an offline player (exact match, ignoring case).
+				/*
+				 * Check for an offline player (exact match, ignoring case).
+				 */
 				match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
-
-				if (match == null) {
-					sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
-					return null;
-				}
-
-				return match;
 
 			} else if (players.size() > 1) {
 				sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
-				return null;
+
+			} else {
+				match = players.get(0).getUniqueId();
 			}
 
-			return players.get(0).getUniqueId();
-			
 		} else {
-			
 			/*
 			 * UUID lookup
 			 */
 			UUID uid = UUID.fromString(playerName);
 			if (BukkitWrapper.getInstance().getOfflinePlayer(uid).getName() != null)
-				return uid;
+				match = uid;
 		}
-		return null;
+
+		if (match == null)
+			sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
+
+		return match;
 	}
-	
+
 	/**
 	 * Checks if a permission exists and has lower/same priority
 	 * 
