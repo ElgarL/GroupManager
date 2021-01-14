@@ -230,9 +230,13 @@ public class BukkitPermissions {
 
 				// Tab complete and command visibility
 				// Method only available post 1.14
-				if (hasUpdateCommand())
-					player.updateCommands();
-
+				if (hasUpdateCommand()) {
+					if (Bukkit.isPrimaryThread()) {
+						player.updateCommands();
+					} else {
+						Bukkit.getScheduler().runTask(plugin, () -> { player.updateCommands(); });
+					}
+				}
 			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
