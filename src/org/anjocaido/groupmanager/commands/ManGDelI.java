@@ -74,7 +74,7 @@ public class ManGDelI extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_NOT_INHERIT"), auxGroup.getName(), auxGroup2.getName())); //$NON-NLS-1$
 			return true;
 		}
-		if (!auxGroup.getInherits().contains(auxGroup2.getName())) {
+		if (!auxGroup.getInherits().contains(auxGroup2.getName().toLowerCase())) {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_NOT_INHERIT_DIRECT"), auxGroup.getName(), auxGroup2.getName())); //$NON-NLS-1$
 			return true;
 		}
