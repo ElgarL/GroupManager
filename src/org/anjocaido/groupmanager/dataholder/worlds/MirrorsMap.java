@@ -85,7 +85,7 @@ public class MirrorsMap extends WorldsHolder {
 				
 				/*
 				 * Un-mirrored world.
-				 * Do nothing here as this world is not mirrored to any other.
+				 * Do nothing here as this world has no mirroring.
 				 */
 				
 			} else {
