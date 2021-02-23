@@ -2,7 +2,7 @@
   config:
     # Languages must have a corresponding properties file.
     # Acceptable entries are:
-    #   chinese-simplified, chinese-traditional, czech, english, french, portuguese, russian.
+    #   chinese-simplified, chinese-traditional, czech, english, french, portuguese_brazil, russian.
     language: english
 
     # With this enabled, every operator will have full permissions when managing GroupManager
