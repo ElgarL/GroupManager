@@ -81,6 +81,13 @@ public class MirrorsMap extends WorldsHolder {
 				 */
 				parseSubSection(((Map<?, ?>) child), rootWorld);
 
+			} else if (child == null) {
+				
+				/*
+				 * Un-mirrored world.
+				 * Do nothing here as this world is not mirrored to any other.
+				 */
+				
 			} else {
 
 				logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.UNKNOWN_MIRRORING_FORMAT"), child.getClass().getName())); //$NON-NLS-1$
