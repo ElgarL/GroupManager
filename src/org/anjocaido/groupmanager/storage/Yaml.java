@@ -197,20 +197,16 @@ public class Yaml implements DataSource {
 		 */
 		for (World world : plugin.getServer().getWorlds()) {
 			GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.CHECKING_DATA"), world.getName())); //$NON-NLS-1$
-			if ((!holder.hasOwnData(world.getName().toLowerCase())) && ((!holder.hasGroupsMirror(world.getName().toLowerCase())) || (!holder.hasUsersMirror(world.getName().toLowerCase())))) {
+			if (!holder.hasOwnData(world.getName().toLowerCase())) {
 
-				if (holder.hasOwnData("all_unnamed_worlds")) { //$NON-NLS-1$
+				String usersMirror = holder.getUsersMirror("all_unnamed_worlds"); //$NON-NLS-1$
+				String groupsMirror = holder.getGroupsMirror("all_unnamed_worlds"); //$NON-NLS-1$
 
-					String usersMirror = holder.getUsersMirror("all_unnamed_worlds"); //$NON-NLS-1$
-					String groupsMirror = holder.getGroupsMirror("all_unnamed_worlds"); //$NON-NLS-1$
+				if (usersMirror != null)
+					holder.putUsersMirror(world.getName().toLowerCase(), usersMirror);
 
-					if (usersMirror != null)
-						holder.putUsersMirror(world.getName().toLowerCase(), usersMirror);
-
-					if (groupsMirror != null)
-						holder.putGroupsMirror(world.getName().toLowerCase(), groupsMirror);
-
-				}
+				if (groupsMirror != null)
+					holder.putGroupsMirror(world.getName().toLowerCase(), groupsMirror);
 
 				GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.CREATING_FOLDERS"), world.getName())); //$NON-NLS-1$
 				init(world.getName());
@@ -228,7 +224,7 @@ public class Yaml implements DataSource {
 				 * don't load any worlds which are already loaded,
 				 * or fully mirrored worlds that don't need data.
 				 */
-				if (!holder.hasOwnData(folder.getName().toLowerCase()) && ((!holder.hasGroupsMirror(folder.getName().toLowerCase())) || (!holder.hasUsersMirror(folder.getName().toLowerCase())))) {
+				if (!holder.hasOwnData(folder.getName().toLowerCase()) && (!holder.hasUsersMirror("all_unnamed_worlds") || !holder.hasGroupsMirror("all_unnamed_worlds"))) {
 					/*
 					 * Call init() to check case sensitivity and
 					 * convert to lower case, before we attempt to load this
