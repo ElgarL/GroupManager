@@ -214,7 +214,7 @@ public class GMConfiguration {
 					GroupManager.logger.log(Level.SEVERE, nodeError("access"), ex); //$NON-NLS-1$
 					accessType = ACCESS_LEVEL.READ_WRITE;
 				}
-				
+
 				try {
 					dbName = (String) section.get("name"); //$NON-NLS-1$
 				} catch (Exception ex) {
@@ -228,7 +228,7 @@ public class GMConfiguration {
 					GroupManager.logger.log(Level.SEVERE, nodeError("table"), ex); //$NON-NLS-1$
 					dbTable = "GroupManager";
 				}
-				
+
 				try {
 					dbUsername = (String) section.get("username"); //$NON-NLS-1$
 				} catch (Exception ex) {
@@ -286,9 +286,9 @@ public class GMConfiguration {
 			}
 
 
-			String level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			if (level != null)
-				loggerLevel = level;
+			Object level = ((Map<String, String>) getElement("settings", GMconfig).get("logging")).get("level"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if (level != null && !(level instanceof Boolean))
+				loggerLevel = level.toString();
 
 			/*
 			 * Store our mirrors map for parsing later.
@@ -403,12 +403,12 @@ public class GMConfiguration {
 	}
 
 
-	
+
 	/**
 	 * @return the accessType
 	 */
 	public ACCESS_LEVEL getAccessType() {
-	
+
 		return accessType;
 	}
 
