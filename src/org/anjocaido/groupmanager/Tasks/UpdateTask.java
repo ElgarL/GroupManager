@@ -78,6 +78,12 @@ public class UpdateTask implements Runnable {
 			conn.addRequestProperty("User-Agent", "GroupManager Update Check"); //$NON-NLS-1$ //$NON-NLS-2$
 			conn.setDoOutput(false);
 
+			// Handle redirects.
+			String redirect = conn.getHeaderField("Location");
+			if (redirect != null){
+				conn = new URL(redirect).openConnection();
+			}
+
 			final JsonReader reader = new JsonReader(new InputStreamReader(conn.getInputStream()));
 
 			reader.setLenient(true);
