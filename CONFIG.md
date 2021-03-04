@@ -9,8 +9,8 @@ Contents
 ---|
 1. [config.yml](#config-1)
 2. [Mirroring](#mirroring)
-3. [group.yml](#group)
-4. [user.yml](#user)
+3. [groups.yml](#group)
+4. [users.yml](#user)
 5. [globalgroups.yml](#globalgroups)
 
 
@@ -119,7 +119,7 @@ Here is an example of how to use mirroring in GM
 In this example you would be expected to maintain several sets of config files. Skylands and Skylands2 will share the Skylands folder. Mainworld, and the MainWorld_nether will share a folder. Hardcore will use the groups files from MainWorld but will have its own user file, and all other worlds will use the Hardcore user file and Mainworld groups file.
 
 ## Group
-Located at: plugins/GroupManager/worlds/<worldname>/group.yml
+Located at: plugins/GroupManager/worlds/\<worldname\>/groups.yml
 
 This is the main and most important config file. This is where you declare the groups for which you are going to be using. The example config file is a little too big to post here, but it will be automatically generated the first time you start GM.
 
@@ -174,7 +174,7 @@ The default configuration has many more such groups with an array of permissions
 
 ## User
 
-Located at: plugins/GroupManager/worlds/<worldname>/user.yml
+Located at: plugins/GroupManager/worlds/\<worldname\>/users.yml
 
 This is where you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the in-game commands (and safer).
 
