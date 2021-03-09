@@ -68,6 +68,12 @@ public class ManUListP extends BaseCommand {
 		// Seems OK
 		auxString = ""; //$NON-NLS-1$
 		for (String perm : auxUser.getPermissionList()) {
+			// Prevent over sized strings crashing the parser in BungeeCord
+			if (auxString.length() > 1024) {
+				auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_HAS_PERMISSIONS"), auxGroup.getName(), ChatColor.WHITE + auxString)); //$NON-NLS-1$
+				auxString = ""; //$NON-NLS-1$
+			}
 			auxString += perm + ", "; //$NON-NLS-1$
 		}
 		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
