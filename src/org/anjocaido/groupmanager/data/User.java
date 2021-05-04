@@ -397,7 +397,7 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public Player getBukkitPlayer() {
 
-		return BukkitWrapper.getInstance(..getPlayer(getLastName());
+		return BukkitWrapper.getInstance().getPlayer(getLastName());
 	}
 
 	/**

@@ -116,6 +116,10 @@ public class Group extends DataUnit implements Cloneable {
 	 */
 	public Group clone(WorldDataHolder dataSource) {
 
+		if (dataSource.groupExists(this.getName())) {
+			return null;
+		}
+
 		Group clone = dataSource.createGroup(this.getName());
 
 		// Don't add inheritance for GlobalGroups
@@ -128,7 +132,7 @@ public class Group extends DataUnit implements Cloneable {
 		}
 		clone.variables = variables.clone(clone);
 		clone.flagAsChanged(); //use this to make the new dataSource save the new group
-		return dataSource.groupExists(this.getName()) ? null : clone;
+		return clone;
 	}
 
 	/**
