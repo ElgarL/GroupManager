@@ -22,12 +22,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
-
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.localization.Messages;
+import java.util.logging.Level;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.localization.Messages;
 
 /*
  * 
@@ -58,12 +58,12 @@ public class UpdateTask implements Runnable {
 			 */
 			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) { //$NON-NLS-1$
 
-				GroupManager.logger.warning(String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle)); //$NON-NLS-1$
-				GroupManager.logger.warning("Update at: https://www.spigotmc.org/resources/groupmanager.38875/"); //$NON-NLS-1$
+				GroupManager.logger.log(Level.WARNING, (String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle))); //$NON-NLS-1$
+				GroupManager.logger.log(Level.WARNING, "Update at: https://www.spigotmc.org/resources/groupmanager.38875/"); //$NON-NLS-1$
 
 			} else {
 
-				GroupManager.logger.info(Messages.getString("UpdateTask.WE_ARE_UP_TO_DATE")); //$NON-NLS-1$
+				GroupManager.logger.log(Level.INFO, (Messages.getString("UpdateTask.WE_ARE_UP_TO_DATE"))); //$NON-NLS-1$
 			}
 		} catch (Exception ignored) {}
 
@@ -115,7 +115,7 @@ public class UpdateTask implements Runnable {
 			 * Fail quietly.
 			 * No need to spam a stack trace.
 			 */
-			GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
 		}
 		/*
 		 * No version found so report our current version.
@@ -139,7 +139,7 @@ public class UpdateTask implements Runnable {
 
 			return Double.valueOf(version);
 		} catch (Exception e) {
-			GroupManager.logger.info(Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
 		}
 
 		return 0.0;

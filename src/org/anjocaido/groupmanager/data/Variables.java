@@ -33,8 +33,8 @@ import java.util.Map;
  */
 public abstract class Variables implements Cloneable {
 
-	private DataUnit owner;
-	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<String, Object>());
+	private final DataUnit owner;
+	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
 
 	public Variables(DataUnit owner) {
 
@@ -52,9 +52,7 @@ public abstract class Variables implements Cloneable {
 	 */
 	public void addVar(String name, Object o) {
 
-		if (o == null) {
-			return;
-		}
+		if (o == null) return;
 		variables.remove(name);
 		variables.put(name, o);
 		owner.flagAsChanged();
@@ -105,7 +103,7 @@ public abstract class Variables implements Cloneable {
 	/**
 	 * 
 	 * @param name
-	 * @return -1 if null. or a parseInt of the string
+	 * @return -1 if null or if the string cannot be parsed. or a parseInt of the string
 	 */
 	public Integer getVarInteger(String name) {
 
@@ -120,7 +118,7 @@ public abstract class Variables implements Cloneable {
 	/**
 	 * 
 	 * @param name
-	 * @return -1 if null. or a parseDouble of the string
+	 * @return -1 if null or if the string cannot be parsed. or a parseDouble of the string
 	 */
 	public Double getVarDouble(String name) {
 

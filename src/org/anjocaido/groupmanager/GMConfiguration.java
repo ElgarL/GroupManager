@@ -92,7 +92,7 @@ public class GMConfiguration {
 
 		purgeEnabled = true;
 		userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
-		loggerLevel = "OFF"; //$NON-NLS-1$
+		loggerLevel = "INFO"; //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("unchecked")
@@ -451,7 +451,6 @@ public class GMConfiguration {
 
 		try {
 			GroupManager.logger.setLevel(Level.parse(loggerLevel));
-			return;
 		} catch (Exception ignored) {
 			GroupManager.logger.setLevel(Level.INFO);
 		}

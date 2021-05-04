@@ -96,6 +96,4 @@ public class GroupManagerEventHandler {
 
 		return server;
 	}
-
-
 }

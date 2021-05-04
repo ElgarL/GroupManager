@@ -28,6 +28,7 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 
@@ -57,7 +58,7 @@ public class Messages {
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		} catch (Exception ex) {
 			// Invalid name, use default.
-			GroupManager.logger.warning("Missing or corrupt 'language' node. Using default settings");
+			GroupManager.logger.log(Level.WARNING, "Missing or corrupt 'language' node. Using default settings");
 			BUNDLE_NAME = "languages.english";
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		}

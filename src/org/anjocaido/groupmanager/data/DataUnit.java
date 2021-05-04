@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -43,7 +44,7 @@ public abstract class DataUnit {
 	private boolean changed;
 	private long timeStamp = 0;
 
-	private Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
+	private final Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
 
 	public DataUnit(WorldDataHolder dataSource, String name) {
 
@@ -201,10 +202,7 @@ public abstract class DataUnit {
 	}
 
 	public boolean hasSamePermissionNode(String permission) {
-
-		synchronized (permissions) {
-			return permissions.containsKey(permission);
-		}
+		return permissions.containsKey(permission);
 	}
 
 	/**
@@ -298,7 +296,7 @@ public abstract class DataUnit {
 			for (Entry<String, Long> entry : permissions.entrySet()) {
 				perms.add(entry.getKey() + ((entry.getValue() != 0) ? "|" + entry.getValue() : ""));
 			}
-			return new ArrayList<String>(perms);
+			return new ArrayList<>(perms);
 		}
 	}
 
@@ -318,7 +316,7 @@ public abstract class DataUnit {
 					if (permissions.remove(perm.getKey()) != null) {
 
 						expired = true;
-						GroupManager.logger.info(String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey()));
+						GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
 					}
 				}
 			}

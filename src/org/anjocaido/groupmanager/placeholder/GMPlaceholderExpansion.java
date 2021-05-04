@@ -112,8 +112,8 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
 		}
 
 		Player online = player.getPlayer();
-		/**
-		 * Only return data for online players as offline have no world.
+		/*
+		  Only return data for online players as offline have no world.
 		 */
 		if (online == null) {
 			return "";
@@ -154,11 +154,9 @@ public class GMPlaceholderExpansion extends PlaceholderExpansion {
 
 		default:
 
-			String split[] = identifier.split("_");
+			String[] split = identifier.split("_");
 
-			switch (split[0]) {
-
-			case "perm":	// Perm check via PAPI.
+			if ("perm".equals(split[0])) {    // Perm check via PAPI.
 
 				if (split.length == 2) {
 

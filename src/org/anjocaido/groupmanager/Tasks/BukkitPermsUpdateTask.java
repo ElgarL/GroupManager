@@ -17,6 +17,8 @@
  */
 package org.anjocaido.groupmanager.Tasks;
 
+import java.util.logging.Level;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 
@@ -40,7 +42,7 @@ public class BukkitPermsUpdateTask implements Runnable {
 		GroupManager.getBukkitPermissions().collectPermissions();
 		GroupManager.getBukkitPermissions().updateAllPlayers();
 
-		GroupManager.logger.info(Messages.getString("BukkitPermsUpdateTask.BUKKIT_PERMISSIONS_UPDATED")); //$NON-NLS-1$
+		GroupManager.logger.log(Level.INFO, Messages.getString("BukkitPermsUpdateTask.BUKKIT_PERMISSIONS_UPDATED")); //$NON-NLS-1$
 
 	}
 

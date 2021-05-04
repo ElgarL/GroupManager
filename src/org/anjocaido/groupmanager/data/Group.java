@@ -112,13 +112,9 @@ public class Group extends DataUnit implements Cloneable {
 	 * Use this to deliver a group from a different dataSource to another
 	 * 
 	 * @param dataSource
-	 * @return Null or Clone
+	 * @return null or Clone
 	 */
 	public Group clone(WorldDataHolder dataSource) {
-
-		if (dataSource.groupExists(this.getName())) {
-			return null;
-		}
 
 		Group clone = dataSource.createGroup(this.getName());
 
@@ -132,7 +128,7 @@ public class Group extends DataUnit implements Cloneable {
 		}
 		clone.variables = variables.clone(clone);
 		clone.flagAsChanged(); //use this to make the new dataSource save the new group
-		return clone;
+		return dataSource.groupExists(this.getName()) ? null : clone;
 	}
 
 	/**

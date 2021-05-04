@@ -19,8 +19,8 @@ public class ChildMirrors {
 	 * 
 	 * Mirror shows the same data as parent.
 	 */
-	private Map<String, String> groupsMirror = new TreeMap<>();
-	private Map<String, String> usersMirror = new TreeMap<>();
+	private final Map<String, String> groupsMirror = new TreeMap<>();
+	private final Map<String, String> usersMirror = new TreeMap<>();
 	
 	/**
 	 * Find the top level parent world or the

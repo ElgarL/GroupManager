@@ -17,9 +17,6 @@
  */
 package org.anjocaido.groupmanager.utils;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +34,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.Group;
 
 /**
  * 
@@ -63,20 +64,18 @@ public abstract class Tasks {
 
 	public static void copy(InputStream src, File dst) throws IOException {
 
-		InputStream in = src;
 		OutputStream out = new FileOutputStream(dst);
 
 		// Transfer bytes from in to out
 		byte[] buf = new byte[1024];
 		int len;
-		while ((len = in.read(buf)) > 0) {
+		while ((len = src.read(buf)) > 0) {
 			out.write(buf, 0, len);
 		}
 		out.close();
 		try {
-			in.close();
-		} catch (Exception e) {
-		}
+			src.close();
+		} catch (Exception ignored) {}
 	}
 
 	public static void copy(File src, File dst) throws IOException {
@@ -183,14 +182,14 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			result += list.get(i);
+			result.append(list.get(i));
 			if (i < list.size() - 1) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String getStringArrayInString(String[] list) {
@@ -198,14 +197,14 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.length; i++) {
-			result += list[i];
+			result.append(list[i]);
 			if (i < ((list.length) - 1)) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String getGroupListInString(List<Group> list) {
@@ -213,24 +212,24 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			result += list.get(i).getName();
+			result.append(list.get(i).getName());
 			if (i < list.size() - 1) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String join(String[] arr, String separator) {
 
 		if (arr.length == 0)
 			return "";
-		String out = arr[0];
+		StringBuilder out = Optional.ofNullable(arr[0]).map(StringBuilder::new).orElse(null);
 		for (int i = 1; i < arr.length; i++)
-			out += separator + arr[i];
-		return out;
+			out = (out == null ? new StringBuilder("null") : out).append(separator).append(arr[i]);
+		return out == null ? null : out.toString();
 	}
 
 }

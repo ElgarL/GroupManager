@@ -43,8 +43,8 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  */
 public class Yaml implements DataSource {
 
-	private GroupManager plugin;
-	private File worldsFolder;
+	private final GroupManager plugin;
+	private final File worldsFolder;
 
 	/**
 	 * 
@@ -218,7 +218,7 @@ public class Yaml implements DataSource {
 		 */
 		for (File folder : worldsFolder.listFiles()) {
 			if (folder.isDirectory() && !folder.getName().startsWith(".")) { //$NON-NLS-1$
-				GroupManager.logger.info(String.format(Messages.getString("WorldsHolder.WORLD_FOUND"), folder.getName())); //$NON-NLS-1$
+				GroupManager.logger.log(Level.INFO, String.format(Messages.getString("WorldsHolder.WORLD_FOUND"), folder.getName())); //$NON-NLS-1$
 
 				/*
 				 * don't load any worlds which are already loaded,
@@ -374,7 +374,7 @@ public class Yaml implements DataSource {
 
 											thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
 										} catch (Exception e) {
-											GroupManager.logger.warning("Timed Permission error: " + o.toString());
+											GroupManager.logger.warning("Timed Permission error: " + o);
 										}
 									} else {
 										/*
@@ -404,7 +404,7 @@ public class Yaml implements DataSource {
 
 								thisGrp.addTimedPermission(split[0], Long.parseLong(split[1]));
 							} catch (Exception e) {
-								GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+								GroupManager.logger.log(Level.WARNING, "TimedPermission error: " + nodeData);
 							}
 						} else {
 							/*
@@ -433,8 +433,8 @@ public class Yaml implements DataSource {
 				 * No info section was found, so leave all variables as
 				 * defaults.
 				 */
-				GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_GROUP_NO_INFO"), thisGrp.getName()));
-				GroupManager.logger.warning(Messages.getString("WorldDatHolder.WARN_USING_DEFAULT") + groupsFile.getPath());
+				GroupManager.logger.log(Level.WARNING, (String.format(Messages.getString("WorldDatHolder.WARN_GROUP_NO_INFO"), thisGrp.getName())));
+				GroupManager.logger.log(Level.WARNING, Messages.getString("WorldDatHolder.WARN_USING_DEFAULT") + groupsFile.getPath());
 
 			} else if (nodeData != null && nodeData instanceof Map) {
 				try {
@@ -613,7 +613,7 @@ public class Yaml implements DataSource {
 										try {
 											thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 										} catch (Exception e) {
-											GroupManager.logger.warning("TimedPermission error: " + o.toString());
+											GroupManager.logger.log(Level.WARNING, "TimedPermission error: " + o);
 										}
 									} else {
 										thisUser.addPermission(o.toString());
@@ -634,7 +634,7 @@ public class Yaml implements DataSource {
 									try {
 										thisUser.addTimedPermission(split[0], Long.parseLong(split[1]));
 									} catch (Exception e) {
-										GroupManager.logger.warning("TimedPermission error: " + nodeData.toString());
+										GroupManager.logger.log(Level.WARNING, "TimedPermission error: " + nodeData);
 									}
 								} else {
 									thisUser.addPermission(nodeData.toString());
@@ -674,7 +674,7 @@ public class Yaml implements DataSource {
 				if (nodeData != null) {
 					Group hisGroup = dataHolder.getGroup(nodeData.toString());
 					if (hisGroup == null) {
-						GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_NO_GROUP_STATED"), thisUserNode.get("group").toString(), thisUser.getLastName(), dataHolder.getDefaultGroup().getName(), usersFile.getPath()));
+						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldDatHolder.WARN_NO_GROUP_STATED"), thisUserNode.get("group").toString(), thisUser.getLastName(), dataHolder.getDefaultGroup().getName(), usersFile.getPath()));
 						hisGroup = dataHolder.getDefaultGroup();
 					}
 					thisUser.setGroup(hisGroup);
@@ -711,7 +711,7 @@ public class Yaml implements DataSource {
 										Group subGrp = dataHolder.getGroup(split[0]);
 										thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
 									} catch (Exception e) {
-										GroupManager.logger.warning("TimedSubGroup error: " + o.toString());
+										GroupManager.logger.warning("TimedSubGroup error: " + o);
 									}
 								} else {
 									Group subGrp = dataHolder.getGroup(o.toString());
@@ -735,7 +735,7 @@ public class Yaml implements DataSource {
 								try {
 									thisUser.addTimedSubGroup(subGrp, Long.parseLong(split[1]));
 								} catch (Exception e) {
-									GroupManager.logger.warning("TimedSubGroup error: " + nodeData.toString());
+									GroupManager.logger.log(Level.WARNING, "TimedSubGroup error: " + nodeData);
 								}
 							} else {
 								Group subGrp = dataHolder.getGroup(nodeData.toString());
@@ -844,7 +844,7 @@ public class Yaml implements DataSource {
 			groupsMap.put(group.getName(), aGroupMap);
 
 			if (dataHolder.getDefaultGroup() == null) {
-				GroupManager.logger.severe(Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
+				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
 			}
 			aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
 
@@ -1017,7 +1017,7 @@ public class Yaml implements DataSource {
 			}
 
 		} catch (IOException ex) {
-			GroupManager.logger.log(Level.SEVERE, null, ex);
+			GroupManager.logger.log(Level.SEVERE, "Failed to create a backup!", ex);
 		}
 	}
 
@@ -1046,7 +1046,7 @@ public class Yaml implements DataSource {
 				// Create a new file if it doesn't exist.
 				Tasks.copy(plugin.getResource("globalgroups.yml"), globalGroupsFile); //$NON-NLS-1$
 			} catch (IOException ex) {
-				GroupManager.logger.log(Level.SEVERE, null, ex);
+				GroupManager.logger.log(Level.SEVERE, "Failed to create new globalgroups.yml!", ex);
 			}
 		}
 

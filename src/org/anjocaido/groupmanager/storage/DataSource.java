@@ -138,9 +138,9 @@ public interface DataSource {
 	 */
 	void purgeBackups();
 
-	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS };
-	
-	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL };
-	
-	enum ACCESS_LEVEL { READ, READ_WRITE };
+	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS }
+
+	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL }
+
+	enum ACCESS_LEVEL { READ, READ_WRITE }
 }

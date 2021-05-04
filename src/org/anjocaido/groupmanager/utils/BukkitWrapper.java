@@ -33,7 +33,7 @@ import org.bukkit.plugin.Plugin;
 public class BukkitWrapper {
 
 	private final Plugin plugin;
-	private OfflinePlayer cache = null;
+	private OfflinePlayer cache;
 	private static BukkitWrapper instance;
 
 	private BukkitWrapper() {
@@ -41,9 +41,9 @@ public class BukkitWrapper {
 	}
 
 	public static BukkitWrapper getInstance(){
-		if(instance == null){
+		if (instance == null) {
 			synchronized (BukkitWrapper.class) {
-				if(instance == null){
+				if (instance == null) {
 					instance = new BukkitWrapper();
 				}
 			}
@@ -61,14 +61,14 @@ public class BukkitWrapper {
 	public UUID getPlayerUUID (String name) {
 
 		// Check our cache first
-		if ((cache != null) && (cache.getName().equalsIgnoreCase(name)))
+		if (cache != null && cache.getName().equalsIgnoreCase(name))
 			return cache.getUniqueId();
 
 		// Clear our cache as this is a different player
 		cache = null;
 
 		// Search all known players (to this server) for a matching name.
-		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
+		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
 
 		for (OfflinePlayer player : offlinePlayer)
 			if (player.getName() != null && player.getName().equalsIgnoreCase(name)) {
@@ -90,14 +90,14 @@ public class BukkitWrapper {
 	public String getPlayerName(UUID uid) {
 
 		// Check our cache first
-		if ((cache != null) && (cache.getUniqueId().compareTo(uid) == 0))
+		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
 			return cache.getName();
 
 		// Clear our cache as this is a different player
 		cache = null;
 
 		// Search all known players (to this server) for a matching UUID.
-		OfflinePlayer offlinePlayer[] = plugin.getServer().getOfflinePlayers();
+		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
 
 		for (OfflinePlayer player : offlinePlayer)
 			if (player.getName() != null && player.getUniqueId().compareTo(uid) == 0) {
@@ -157,7 +157,7 @@ public class BukkitWrapper {
 	 * Attempts to match any players with the given name, and returns a list of all possible matches.
 	 * This list is not sorted in any particular order. If an exact match is found, the returned list will only contain a single result.
 	 * 
-	 * @param the (partial) name to match
+	 * @param name to match
 	 * @return
 	 */
 	public List<Player> matchPlayer(String name) {
@@ -180,7 +180,7 @@ public class BukkitWrapper {
 	public Long getLastOnline(UUID uid) {
 
 		// Check our cache first
-		if ((cache != null) && (cache.getUniqueId().compareTo(uid) == 0))
+		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
 			return cache.getLastPlayed();
 
 		// Clear our cache as this is a different player
@@ -197,7 +197,7 @@ public class BukkitWrapper {
 	public Long getFirstPlayed(UUID uid) {
 
 		// Check our cache first
-		if ((cache != null) && (cache.getUniqueId().compareTo(uid) == 0))
+		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
 			return cache.getFirstPlayed();
 
 		// Clear our cache as this is a different player

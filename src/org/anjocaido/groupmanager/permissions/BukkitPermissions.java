@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
@@ -211,9 +212,9 @@ public class BukkitPermissions {
 		}
 
 
-		/**
-		 * This is put in place until such a time as Bukkit pull 466 is
-		 * implemented https://github.com/Bukkit/Bukkit/pull/466
+		/*
+		  This is put in place until such a time as Bukkit pull 466 is
+		  implemented https://github.com/Bukkit/Bukkit/pull/466
 		 */
 		try { // Codename_B source
 			synchronized (attachment.getPermissible()) {
@@ -234,7 +235,7 @@ public class BukkitPermissions {
 					if (Bukkit.isPrimaryThread()) {
 						player.updateCommands();
 					} else {
-						Bukkit.getScheduler().runTask(plugin, () -> { player.updateCommands(); });
+						Bukkit.getScheduler().runTask(plugin, player::updateCommands);
 					}
 				}
 			}
@@ -242,7 +243,7 @@ public class BukkitPermissions {
 			e.printStackTrace();
 		}
 
-		GroupManager.logger.finest("Attachment updated for: " + player.getName());
+		GroupManager.logger.log(Level.FINEST, "Attachment updated for: " + player.getName());
 
 		// Trigger a GMUserEvent for this update.
 		if (GroupManager.isLoaded())
@@ -350,10 +351,8 @@ public class BukkitPermissions {
 			}
 		}
 		alreadyVisited.remove(node);
-		if (!alreadyVisited.isEmpty())
-			return alreadyVisited;
 
-		return null;
+		return !alreadyVisited.isEmpty() ? alreadyVisited : null;
 	}
 
 	/**
@@ -367,10 +366,8 @@ public class BukkitPermissions {
 	public Map<String, Boolean> getChildren(String node) {
 
 		Permission perm = registeredPermissions.get(node.toLowerCase());
-		if (perm == null)
-			return null;
 
-		return perm.getChildren();
+		return perm == null ? null : perm.getChildren();
 
 	}
 
@@ -384,15 +381,6 @@ public class BukkitPermissions {
 
 		List<String> perms = new ArrayList<>();
 
-		/*
-		 * // All permissions registered with Bukkit for this player
-		 * PermissionAttachment attachment = this.attachments.get(player);
-		 *
-		 * // List perms for this player perms.add("Attachment Permissions:");
-		 * for(Map.Entry<String, Boolean> entry :
-		 * attachment.getPermissions().entrySet()){ perms.add(" " +
-		 * entry.getKey() + " = " + entry.getValue()); }
-		 */
 
 		perms.add("Effective Permissions:");
 		for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
@@ -476,9 +464,9 @@ public class BukkitPermissions {
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerJoin(PlayerJoinEvent event) {
 
-			/**
-			 * The player actually joined the server.
-			 * So we can set permissions relative to their world.
+			/*
+			  The player actually joined the server.
+			  So we can set permissions relative to their world.
 			 */
 			playerJoin(event);
 		}
@@ -493,7 +481,7 @@ public class BukkitPermissions {
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 
-			GroupManager.logger.finest("Player Join event: " + player.getName());
+			GroupManager.logger.log(Level.FINEST, "Player Join event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends
@@ -557,7 +545,6 @@ public class BukkitPermissions {
 		public void onPluginDisable(PluginDisableEvent event) {
 
 			collectPermissions();
-			// updateAllPlayers();
 		}
 	}
 

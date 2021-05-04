@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class UserVariables extends Variables {
 
-	private User owner;
+	private final User owner;
 
 	public UserVariables(User owner) {
 
@@ -33,7 +33,7 @@ public class UserVariables extends Variables {
 		this.owner = owner;
 	}
 
-	public UserVariables(User owner, Map<? extends String, ? extends Object> varList) {
+	public UserVariables(User owner, Map<? extends String, ?> varList) {
 
 		super(owner);
 		this.variables.clear();
