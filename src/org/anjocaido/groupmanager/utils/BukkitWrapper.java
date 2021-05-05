@@ -157,8 +157,8 @@ public class BukkitWrapper {
 	 * Attempts to match any players with the given name, and returns a list of all possible matches.
 	 * This list is not sorted in any particular order. If an exact match is found, the returned list will only contain a single result.
 	 * 
-	 * @param name to match
-	 * @return
+	 * @param name (partial) to match
+	 * @return List of matched Players
 	 */
 	public List<Player> matchPlayer(String name) {
 

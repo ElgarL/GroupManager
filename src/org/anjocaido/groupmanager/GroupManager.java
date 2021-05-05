@@ -21,13 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
@@ -158,7 +158,7 @@ public class GroupManager extends JavaPlugin {
 			try {
 				worldsHolder.saveChanges(false);
 			} catch (IllegalStateException ex) {
-				GroupManager.logger.log(Level.WARNING, ex.getMessage());
+				GroupManager.logger.log(java.util.logging.Level.WARNING, ex.getMessage());
 			}
 		}
 
@@ -170,7 +170,7 @@ public class GroupManager extends JavaPlugin {
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
-		GroupManager.logger.log(Level.INFO, String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.INFO, String.format(Messages.getString("GroupManager.DISABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 	}
 
 	public void onEnable(boolean restarting) {
@@ -184,6 +184,13 @@ public class GroupManager extends JavaPlugin {
 			overloadedUsers = new HashMap<>();
 			selectedWorlds = new HashMap<>();
 			lastError = ""; //$NON-NLS-1$
+
+			/*
+			 * Load our config.yml
+			 */
+			prepareBackupFolder();
+			config = new GMConfiguration(this);
+			config.load();
 
 			if (!restarting) {
 				// Setup logger
@@ -203,18 +210,11 @@ public class GroupManager extends JavaPlugin {
 					Metrics metrics = new Metrics(this, 7982);
 					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
 				} catch (Exception e) {
-					GroupManager.logger.log(Level.WARNING, "Failed to setup Metrics"); //$NON-NLS-1$
+					GroupManager.logger.log(java.util.logging.Level.WARNING, "Failed to setup Metrics"); //$NON-NLS-1$
 				}
 			} else {
 				BukkitPermissions.reset();
 			}
-
-			/*
-			 * Load our config.yml
-			 */
-			prepareBackupFolder();
-			config = new GMConfiguration(this);
-			config.load();
 
 			/*
 			 * Load the global groups before we load our worlds
@@ -238,14 +238,14 @@ public class GroupManager extends JavaPlugin {
 			 * All plugins will be loaded by then
 			 */
 			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1)
-				GroupManager.logger.log(Level.SEVERE, Messages.getString("GroupManager.ERROR_SCHEDULING_SUPERPERMS")); //$NON-NLS-1$
+				GroupManager.logger.log(java.util.logging.Level.SEVERE, Messages.getString("GroupManager.ERROR_SCHEDULING_SUPERPERMS")); //$NON-NLS-1$
 
 			/*
 			 * Flag that we are now loaded and should start processing events.
 			 */
 			setLoaded(true);
-			GroupManager.logger.log(Level.INFO, String.format("DataSource - %s", GroupManager.getGMConfig().getDatabaseType().name())); //$NON-NLS-1$
-			GroupManager.logger.log(Level.INFO, String.format(Messages.getString("GroupManager.ENABLED"), pdfFile.getVersion())); //$NON-NLS-1$
+			GroupManager.logger.log(java.util.logging.Level.INFO, String.format("DataSource - %s", GroupManager.getGMConfig().getDatabaseType().name())); //$NON-NLS-1$
+			GroupManager.logger.log(java.util.logging.Level.INFO, String.format(Messages.getString("GroupManager.ENABLED"), pdfFile.getVersion())); //$NON-NLS-1$
 
 			/*
 			 * Version check.
@@ -316,14 +316,14 @@ public class GroupManager extends JavaPlugin {
 	private void checkPlugins() {
 
 		List<String> addons = new ArrayList<>();
-		Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
-		if (papi != null) {
+		Plugin addon = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		if (addon != null) {
 			new GMPlaceholderExpansion(this).register();
-			addons.add(String.format("%s v%s", "PlaceholderAPI", papi.getDescription().getVersion()));
+			addons.add(String.format("%s v%s", "PlaceholderAPI", addon.getDescription().getVersion()));
 		}
 
 		if (!addons.isEmpty())
-			GroupManager.logger.log(Level.INFO, "Add-ons: " + String.join(", ", addons));
+			GroupManager.logger.log(java.util.logging.Level.INFO, "Add-ons: " + String.join(", ", addons));
 	}
 
 	/**
@@ -339,16 +339,16 @@ public class GroupManager extends JavaPlugin {
 
 		lastError = ex.getMessage();
 
-		GroupManager.logger.log(Level.SEVERE, "===================================================="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, String.format("= ERROR REPORT START - %s =", this.getDescription().getVersion())); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "===================================================="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ==="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER ="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "===================================================="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, lastError);
-		GroupManager.logger.log(Level.SEVERE, "===================================================="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "= ERROR REPORT ENDED ="); //$NON-NLS-1$
-		GroupManager.logger.log(Level.SEVERE, "===================================================="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "===================================================="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, String.format("= ERROR REPORT START - %s =", this.getDescription().getVersion())); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "===================================================="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "=== PLEASE COPY AND PASTE THE ERROR.LOG FROM THE ==="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "= GROUPMANAGER FOLDER TO A GROUPMANAGER  DEVELOPER ="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "===================================================="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, lastError);
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "===================================================="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "= ERROR REPORT ENDED ="); //$NON-NLS-1$
+		GroupManager.logger.log(java.util.logging.Level.SEVERE, "===================================================="); //$NON-NLS-1$
 
 		// Append this error to the error log.
 		try {
@@ -409,10 +409,10 @@ public class GroupManager extends JavaPlugin {
 
 						if (worldsHolder.saveChanges(false)) {
 
-							GroupManager.logger.log(Level.INFO, (Messages.getString("GroupManager.REFRESHED"))); //$NON-NLS-1$
+							GroupManager.logger.log(java.util.logging.Level.INFO, (Messages.getString("GroupManager.REFRESHED"))); //$NON-NLS-1$
 						}
 					} catch (IllegalStateException ex) {
-						GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
+						GroupManager.logger.log(java.util.logging.Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
 					} finally {
 						/*
 						 * Release the lock.
@@ -440,11 +440,11 @@ public class GroupManager extends JavaPlugin {
 						if (worldsHolder.purgeExpiredPerms()) {
 
 							if (worldsHolder.saveChanges(false))
-								GroupManager.logger.log(Level.INFO, Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+								GroupManager.logger.log(java.util.logging.Level.INFO, Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 
 						}
 					} catch (Exception ex) {
-						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions: " + ex.getMessage());
+						GroupManager.logger.log(java.util.logging.Level.SEVERE, "Failed to purge expired permissions: " + ex.getMessage());
 					} finally {
 						/*
 						 * Release the lock.
@@ -468,7 +468,8 @@ public class GroupManager extends JavaPlugin {
 
 							if (!getWorldsHolder().hasUsersMirror(world.getName())) {
 
-								for (User user : world.getUserList()) {
+								for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
+									User user = iterator.next();
 									long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
 
 									/*
@@ -489,9 +490,9 @@ public class GroupManager extends JavaPlugin {
 						}
 
 						if (count > 0)
-							GroupManager.logger.log(Level.INFO, String.format("Removed %s expired users.", count)); //$NON-NLS-1$
+							GroupManager.logger.log(java.util.logging.Level.INFO, String.format("Removed %s expired users.", count)); //$NON-NLS-1$
 					} catch (Exception ex) {
-						GroupManager.logger.log(Level.WARNING, "Failed to purge old users: " + ex.getMessage());
+						GroupManager.logger.log(java.util.logging.Level.WARNING, "Failed to purge old users: " + ex.getMessage());
 					}
 				}
 			};
@@ -505,11 +506,11 @@ public class GroupManager extends JavaPlugin {
 				if (getGMConfig().isPurgeEnabled())
 					scheduler.schedule(maintenance, 30, TimeUnit.SECONDS);
 
-				GroupManager.logger.log(Level.INFO, (String.format(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_SET"), minutes))); //$NON-NLS-1$
+				GroupManager.logger.log(java.util.logging.Level.INFO, (String.format(Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_SET"), minutes))); //$NON-NLS-1$
 			} else
-				GroupManager.logger.log(Level.WARNING, Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
+				GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
 
-			GroupManager.logger.log(Level.INFO, String.format(Messages.getString("GroupManager.BACKUPS_RETAINED_MSG"), getGMConfig().getBackupDuration())); //$NON-NLS-1$
+			GroupManager.logger.log(java.util.logging.Level.INFO, String.format(Messages.getString("GroupManager.BACKUPS_RETAINED_MSG"), getGMConfig().getBackupDuration())); //$NON-NLS-1$
 		}
 	}
 
@@ -522,7 +523,7 @@ public class GroupManager extends JavaPlugin {
 				scheduler.shutdown();
 			} catch (Exception ignored) {}
 			scheduler = null;
-			GroupManager.logger.log(Level.WARNING, Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
+			GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
 		}
 	}
 

@@ -34,7 +34,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -226,10 +225,10 @@ public abstract class Tasks {
 
 		if (arr.length == 0)
 			return "";
-		StringBuilder out = Optional.ofNullable(arr[0]).map(StringBuilder::new).orElse(null);
+		StringBuilder out = new StringBuilder(arr[0]);
 		for (int i = 1; i < arr.length; i++)
-			out = (out == null ? new StringBuilder("null") : out).append(separator).append(arr[i]);
-		return out == null ? null : out.toString();
+			out.append(separator).append(arr[i]);
+		return out.toString();
 	}
 
 }

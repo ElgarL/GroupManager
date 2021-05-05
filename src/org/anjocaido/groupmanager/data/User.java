@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -327,7 +326,7 @@ public class User extends DataUnit implements Cloneable {
 
 		subGroups.keySet().forEach(name -> {
 			Group g = getDataSource().getGroup(name);
-			groupList.add(g);
+			if (g != null) groupList.add(g);
 		});
 		return groupList;
 	}
@@ -424,7 +423,7 @@ public class User extends DataUnit implements Cloneable {
 				if (subGroups.remove(entry.getKey()) != null) {
 
 					expired = true;
-					GroupManager.logger.log(Level.INFO, (String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey())));
+					GroupManager.logger.log(java.util.logging.Level.INFO, (String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey())));
 				}
 			}
 		}

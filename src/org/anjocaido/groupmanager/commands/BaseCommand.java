@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -127,8 +126,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		// PREVENT GM COMMANDS BEING USED ON COMMANDBLOCKS
 		if (sender instanceof BlockCommandSender && !isAllowCommandBlocks) {
 			Block block = ((BlockCommandSender)sender).getBlock();
-			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
-			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			GroupManager.logger.log(java.util.logging.Level.WARNING, ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
+			GroupManager.logger.log(java.util.logging.Level.WARNING, ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return false;
 		}
 

@@ -17,8 +17,6 @@
  */
 package org.anjocaido.groupmanager.events;
 
-import java.util.logging.Level;
-
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -70,7 +68,7 @@ public class GMSystemEvent extends Event {
 
 		synchronized (GroupManager.getGMEventHandler().getServer()) {
 			if (GroupManager.getGMEventHandler().getServer().getScheduler().scheduleSyncDelayedTask(GroupManager.getGMEventHandler().getPlugin(), () -> GroupManager.getGMEventHandler().getServer().getPluginManager().callEvent(event), 1) == -1)
-				GroupManager.logger.log(Level.WARNING, "Could not schedule GM Event.");
+				GroupManager.logger.log(java.util.logging.Level.WARNING, "Could not schedule GM Event.");
 		}
 	}
 }

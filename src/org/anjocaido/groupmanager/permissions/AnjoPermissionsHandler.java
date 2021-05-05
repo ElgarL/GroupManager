@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -211,7 +210,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		for (String part : parts) {
 			builder.append('*');
 			if (playerPermArray.contains("-" + builder)) {
-				GroupManager.logger.log(Level.FINE, "Wildcard Negation found for " + node);
+				GroupManager.logger.log(java.util.logging.Level.FINE, "Wildcard Negation found for " + node);
 				return true;
 			}
 
@@ -222,7 +221,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		/*
 		 * No negated parent found so return false.
 		 */
-		GroupManager.logger.log(Level.FINE, "No Negation found for " + node);
+		GroupManager.logger.log(java.util.logging.Level.FINE, "No Negation found for " + node);
 		return false;
 
 	}
