@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
@@ -242,7 +243,7 @@ public class BukkitPermissions {
 			e.printStackTrace();
 		}
 
-		GroupManager.logger.log(java.util.logging.Level.FINEST, "Attachment updated for: " + player.getName());
+		GroupManager.logger.log(Level.FINEST, "Attachment updated for: " + player.getName());
 
 		// Trigger a GMUserEvent for this update.
 		if (GroupManager.isLoaded())
@@ -480,7 +481,7 @@ public class BukkitPermissions {
 			setPlayer_join(true);
 			Player player = event.getPlayer();
 
-			GroupManager.logger.log(java.util.logging.Level.FINEST, "Player Join event: " + player.getName());
+			GroupManager.logger.log(Level.FINEST, "Player Join event: " + player.getName());
 
 			/*
 			 * Tidy up any lose ends

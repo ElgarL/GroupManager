@@ -15,7 +15,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.anjocaido.groupmanager.Tasks;
+package org.anjocaido.groupmanager.tasks;
+
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -40,7 +42,7 @@ public class BukkitPermsUpdateTask implements Runnable {
 		GroupManager.getBukkitPermissions().collectPermissions();
 		GroupManager.getBukkitPermissions().updateAllPlayers();
 
-		GroupManager.logger.log(java.util.logging.Level.INFO, Messages.getString("BukkitPermsUpdateTask.BUKKIT_PERMISSIONS_UPDATED")); //$NON-NLS-1$
+		GroupManager.logger.log(Level.INFO, Messages.getString("BukkitPermsUpdateTask.BUKKIT_PERMISSIONS_UPDATED")); //$NON-NLS-1$
 
 	}
 

@@ -17,6 +17,8 @@
  */
 package org.anjocaido.groupmanager.events;
 
+import java.util.logging.Level;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.event.EventHandler;
@@ -72,9 +74,9 @@ public class GMWorldListener implements Listener {
 
 
 			if (plugin.getWorldsHolder().isWorldKnown(worldName)) {
-				GroupManager.logger.log(java.util.logging.Level.INFO, Messages.getString("GMWorldListener.CONFIGURE_NEW_WORLD")); //$NON-NLS-1$
+				GroupManager.logger.log(Level.INFO, Messages.getString("GMWorldListener.CONFIGURE_NEW_WORLD")); //$NON-NLS-1$
 			} else
-				GroupManager.logger.log(java.util.logging.Level.SEVERE, (Messages.getString("GMWorldListener.ERROR_UNRECOGNISED_WORLD"))); //$NON-NLS-1$
+				GroupManager.logger.log(Level.SEVERE, (Messages.getString("GMWorldListener.ERROR_UNRECOGNISED_WORLD"))); //$NON-NLS-1$
 		}
 	}
 }

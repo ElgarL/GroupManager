@@ -15,13 +15,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.anjocaido.groupmanager.Tasks;
+package org.anjocaido.groupmanager.tasks;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.logging.Level;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -57,12 +58,12 @@ public class UpdateTask implements Runnable {
 			 */
 			if ((newVersion > currentVersion) || ((newVersion == currentVersion) && (currentVersionTitle.contains("SNAPSHOT")))) { //$NON-NLS-1$
 
-				GroupManager.logger.log(java.util.logging.Level.WARNING, (String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle))); //$NON-NLS-1$
-				GroupManager.logger.log(java.util.logging.Level.WARNING, "Update at: https://www.spigotmc.org/resources/groupmanager.38875/"); //$NON-NLS-1$
+				GroupManager.logger.log(Level.WARNING, (String.format(Messages.getString("UpdateTask.UPDATE_AVAILABLE"), newVersionTitle, currentVersionTitle))); //$NON-NLS-1$
+				GroupManager.logger.log(Level.WARNING, "Update at: https://www.spigotmc.org/resources/groupmanager.38875/"); //$NON-NLS-1$
 
 			} else {
 
-				GroupManager.logger.log(java.util.logging.Level.INFO, (Messages.getString("UpdateTask.WE_ARE_UP_TO_DATE"))); //$NON-NLS-1$
+				GroupManager.logger.log(Level.INFO, (Messages.getString("UpdateTask.WE_ARE_UP_TO_DATE"))); //$NON-NLS-1$
 			}
 		} catch (Exception ignored) {}
 
@@ -114,7 +115,7 @@ public class UpdateTask implements Runnable {
 			 * Fail quietly.
 			 * No need to spam a stack trace.
 			 */
-			GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, Messages.getString("UpdateTask.ERROR_VERSION_CHECKING")); //$NON-NLS-1$
 		}
 		/*
 		 * No version found so report our current version.
@@ -138,7 +139,7 @@ public class UpdateTask implements Runnable {
 
 			return Double.valueOf(version);
 		} catch (Exception e) {
-			GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, Messages.getString("UpdateTask.ERROR_PARSING_VERSION")); //$NON-NLS-1$
 		}
 
 		return 0.0;

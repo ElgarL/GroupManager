@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
@@ -132,7 +133,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 				server.load(new FileInputStream("server.properties")); //$NON-NLS-1$
 				serverDefaultWorldName = server.getProperty("level-name").toLowerCase(); //$NON-NLS-1$
 			} catch (IOException ex) {
-				GroupManager.logger.log(java.util.logging.Level.SEVERE, "Failed to load server.properties", ex);
+				GroupManager.logger.log(Level.SEVERE, "Failed to load server.properties", ex);
 			}
 		}
 	}
@@ -245,7 +246,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		} else {
 			if (overwrite || (!overwrite && dataSource.hasNewGlobalGroupsData())) {
-				GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("GlobalGroups.WARN_NEWER_GG_FOUND_LOADING")); //$NON-NLS-1$
+				GroupManager.logger.log(Level.WARNING, Messages.getString("GlobalGroups.WARN_NEWER_GG_FOUND_LOADING")); //$NON-NLS-1$
 				GroupManager.getGlobalGroups().load();
 			}
 		}
@@ -258,7 +259,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 				continue;
 			}
 			if (w == null) {
-				GroupManager.logger.log(java.util.logging.Level.SEVERE, Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
+				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
 				continue;
 			}
 
@@ -272,13 +273,13 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 					} else {
 						// Newer file found.
-						GroupManager.logger.log(java.util.logging.Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
+						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
 					//Check for newer file as no local changes.
 					if (dataSource.hasNewGroupsData(w)) {
-						GroupManager.logger.log(java.util.logging.Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
+						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
 						dataSource.reloadGroups(w);
 						changed = true;
@@ -296,13 +297,13 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 					} else {
 						// Newer file found.
-						GroupManager.logger.log(java.util.logging.Level.WARNING, Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE") + w.getName()); //$NON-NLS-1$
+						GroupManager.logger.log(Level.WARNING, Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE") + w.getName()); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 						}
 					} else {
 					// Check for newer file as no local changes.
 					if (dataSource.hasNewUsersData(w)) {
-						GroupManager.logger.log(java.util.logging.Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
+						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
 						dataSource.reloadUsers(w);
 						changed = true;
@@ -335,12 +336,12 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		// Oddly no data source was found for this world so attempt to return the global mirror.
 		if (worldsData.containsKey("all_unnamed_worlds")) { //$NON-NLS-1$
-			GroupManager.logger.log(java.util.logging.Level.FINEST, (String.format(Messages.getString("WorldsHolder.WORLD_NOT_FOUND_UNNAMED"), worldName))); //$NON-NLS-1$
+			GroupManager.logger.log(Level.FINEST, (String.format(Messages.getString("WorldsHolder.WORLD_NOT_FOUND_UNNAMED"), worldName))); //$NON-NLS-1$
 			return getUpdatedWorldData("all_unnamed_worlds"); //$NON-NLS-1$
 		}
 
 		// Oddly no data source or global mirror was found for this world so return the default.
-		GroupManager.logger.log(java.util.logging.Level.FINEST, (String.format(Messages.getString("WorldsHolder.WORLD_NOT_FOUND_DEFAULT"), worldName))); //$NON-NLS-1$
+		GroupManager.logger.log(Level.FINEST, (String.format(Messages.getString("WorldsHolder.WORLD_NOT_FOUND_DEFAULT"), worldName))); //$NON-NLS-1$
 		return getDefaultWorld();
 	}
 

@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -315,7 +316,7 @@ public abstract class DataUnit {
 					if (permissions.remove(perm.getKey()) != null) {
 
 						expired = true;
-						GroupManager.logger.log(java.util.logging.Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
+						GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
 					}
 				}
 			}
