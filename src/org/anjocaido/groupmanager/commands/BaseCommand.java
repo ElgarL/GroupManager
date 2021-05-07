@@ -98,7 +98,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 
 		// If parsSender fails return empty.
-		if (!parseSender(sender, alias) || isConsole) return new ArrayList<>();
+		if (!parseSender(sender, alias)) return new ArrayList<>();
 
 		return tabComplete(sender, command, alias, args);
 	}
@@ -154,6 +154,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 		if (senderPlayer != null) {
 			dataHolder = plugin.getWorldsHolder().getWorldData(senderPlayer);
+		} else {
+			dataHolder = plugin.getWorldsHolder().getDefaultWorld();
 		}
 
 		String selectedWorld = GroupManager.getSelectedWorlds().get(sender.getName());
