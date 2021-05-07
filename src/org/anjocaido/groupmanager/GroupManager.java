@@ -31,8 +31,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
-import org.anjocaido.groupmanager.Tasks.BukkitPermsUpdateTask;
-import org.anjocaido.groupmanager.Tasks.UpdateTask;
 import org.anjocaido.groupmanager.commands.ManCheckW;
 import org.anjocaido.groupmanager.commands.ManClear;
 import org.anjocaido.groupmanager.commands.ManDemote;
@@ -85,6 +83,8 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.metrics.Metrics;
 import org.anjocaido.groupmanager.permissions.BukkitPermissions;
 import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
+import org.anjocaido.groupmanager.tasks.BukkitPermsUpdateTask;
+import org.anjocaido.groupmanager.tasks.UpdateTask;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.anjocaido.groupmanager.utils.GMLoggerHandler;
 import org.anjocaido.groupmanager.utils.Tasks;
