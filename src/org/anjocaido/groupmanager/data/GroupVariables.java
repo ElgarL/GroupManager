@@ -36,7 +36,7 @@ public class GroupVariables extends Variables implements Cloneable {
 		addVar("build", false);
 	}
 
-	public GroupVariables(Group owner, Map<? extends String, ? extends Object> varList) {
+	public GroupVariables(Group owner, Map<? extends String, ?> varList) {
 
 		super(owner);
 		variables.clear();
@@ -45,13 +45,11 @@ public class GroupVariables extends Variables implements Cloneable {
 			variables.put("prefix", "");
 			owner.flagAsChanged();
 		}
-		//thisGrp.prefix = infoNode.get("prefix").toString();
 
 		if (variables.get("suffix") == null) {
 			variables.put("suffix", "");
 			owner.flagAsChanged();
 		}
-		//thisGrp.suffix = infoNode.get("suffix").toString();
 
 		if (variables.get("build") == null) {
 			variables.put("build", false);
@@ -87,8 +85,7 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		try {
 			this.variables.remove(name);
-		} catch (Exception ignored) {
-		}
+		} catch (Exception ignored) {}
 		switch (name) {
 		case "prefix":
 			addVar("prefix", "");

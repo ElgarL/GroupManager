@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -38,7 +39,7 @@ import org.bukkit.entity.Player;
 public class User extends DataUnit implements Cloneable {
 
 	private String group;
-	private Map<String, Long> subGroups = new LinkedHashMap<>();
+	private final Map<String, Long> subGroups = new LinkedHashMap<>();
 
 	/**
 	 * This holds the fields in INFO node,
@@ -326,12 +327,7 @@ public class User extends DataUnit implements Cloneable {
 
 		subGroups.keySet().forEach(name -> {
 			Group g = getDataSource().getGroup(name);
-
-			if (g == null) {
-				removeSubGroup(g);
-			} else {
-				groupList.add(g);
-			}
+			if (g != null) groupList.add(g);
 		});
 		return groupList;
 	}
@@ -407,7 +403,7 @@ public class User extends DataUnit implements Cloneable {
 	/**
 	 * Is this player currently Online.
 	 *
-	 * @return
+	 * @return true if the player is online, false if not.
 	 */
 	public boolean isOnline() {
 
@@ -428,7 +424,7 @@ public class User extends DataUnit implements Cloneable {
 				if (subGroups.remove(entry.getKey()) != null) {
 
 					expired = true;
-					GroupManager.logger.info(String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey()));
+					GroupManager.logger.log(Level.INFO, (String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey())));
 				}
 			}
 		}

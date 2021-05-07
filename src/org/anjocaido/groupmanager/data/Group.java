@@ -112,7 +112,7 @@ public class Group extends DataUnit implements Cloneable {
 	 * Use this to deliver a group from a different dataSource to another
 	 * 
 	 * @param dataSource
-	 * @return Null or Clone
+	 * @return null or Clone
 	 */
 	public Group clone(WorldDataHolder dataSource) {
 

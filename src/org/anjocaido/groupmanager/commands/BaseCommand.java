@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -53,17 +54,17 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	protected boolean isOpOverride = false;
 	protected boolean isAllowCommandBlocks = false;
 
-	protected Player senderPlayer = null, targetPlayer = null;
-	protected CommandSender sender = null;
-	protected Group senderGroup = null;
-	protected User senderUser = null;
+	protected Player senderPlayer, targetPlayer;
+	protected CommandSender sender;
+	protected Group senderGroup;
+	protected User senderUser;
 
-	protected UUID match = null;
-	protected User auxUser = null;
-	protected Group auxGroup = null;
-	protected Group auxGroup2 = null;
-	protected String auxString = null;
-	protected PermissionCheckResult permissionResult = null;
+	protected UUID match;
+	protected User auxUser;
+	protected Group auxGroup;
+	protected Group auxGroup2;
+	protected String auxString;
+	protected PermissionCheckResult permissionResult;
 
 	// PERMISSIONS FOR COMMAND BEING LOADED
 	protected OverloadedWorldHolder dataHolder = null;
@@ -81,7 +82,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-		// If parsSender fails exit.
+		// If parseSender fails exit.
 		if (!parseSender(sender, label)) return true;
 
 		try {
@@ -126,8 +127,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		// PREVENT GM COMMANDS BEING USED ON COMMANDBLOCKS
 		if (sender instanceof BlockCommandSender && !isAllowCommandBlocks) {
 			Block block = ((BlockCommandSender)sender).getBlock();
-			GroupManager.logger.warning(ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
-			GroupManager.logger.warning(ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			return false;
 		}
 

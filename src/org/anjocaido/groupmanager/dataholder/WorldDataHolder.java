@@ -162,8 +162,7 @@ public class WorldDataHolder {
 			 * event (to grab a UUID). This would
 			 * force create a user .
 			 */
-			if (getUsers().containsKey(currentName.toLowerCase()))
-				getUsers().remove(currentName.toLowerCase());
+			getUsers().remove(currentName.toLowerCase());
 
 			return user;
 		}
@@ -454,13 +453,11 @@ public class WorldDataHolder {
 		if (users.isUsersChanged()) {
 			return true;
 		}
-		synchronized (users) {
-			for (User u : users.getUsers().values()) {
-				if (u.isChanged()) {
-					return true;
+		for (User u : users.getUsers().values()) {
+			if (u.isChanged()) {
+				return true;
 				}
 			}
-		}
 		return false;
 	}
 
@@ -481,11 +478,9 @@ public class WorldDataHolder {
 		if (groups.isGroupsChanged()) {
 			return true;
 		}
-		synchronized (groups) {
-			for (Group g : groups.getGroups().values()) {
-				if (g.isChanged()) {
-					return true;
-				}
+		for (Group g : groups.getGroups().values()) {
+			if (g.isChanged()) {
+				return true;
 			}
 		}
 		return false;
@@ -497,10 +492,8 @@ public class WorldDataHolder {
 	public void removeUsersChangedFlag() {
 
 		setUsersChanged(false);
-		synchronized (users) {
-			for (User u : getUsers().values()) {
-				u.flagAsSaved();
-			}
+		for (User u : getUsers().values()) {
+			u.flagAsSaved();
 		}
 	}
 
@@ -510,10 +503,8 @@ public class WorldDataHolder {
 	public void removeGroupsChangedFlag() {
 
 		setGroupsChanged(false);
-		synchronized (groups) {
-			for (Group g : getGroups().values()) {
-				g.flagAsSaved();
-			}
+		for (Group g : getGroups().values()) {
+			g.flagAsSaved();
 		}
 	}
 
@@ -525,23 +516,17 @@ public class WorldDataHolder {
 
 		boolean expired = false;
 
-		synchronized (groups) {
-
-			for (Group group : getGroups().values()) {
-				if (group.removeExpired()) {
-					setGroupsChanged(true);
-					expired = true;
-				}
+		for (Group group : getGroups().values()) {
+			if (group.removeExpired()) {
+				setGroupsChanged(true);
+				expired = true;
 			}
 		}
 
-		synchronized (users) {
-
-			for (User user : getUsers().values()) {
-				if (user.removeExpired()) {
-					setUsersChanged(true);
-					expired = true;
-				}
+		for (User user : getUsers().values()) {
+			if (user.removeExpired()) {
+				setUsersChanged(true);
+				expired = true;
 			}
 		}
 

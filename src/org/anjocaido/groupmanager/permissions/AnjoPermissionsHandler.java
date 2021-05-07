@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
@@ -208,8 +210,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		final StringBuilder builder = new StringBuilder(node.length());
 		for (String part : parts) {
 			builder.append('*');
-			if (playerPermArray.contains("-" + builder.toString())) {
-				GroupManager.logger.fine("Wildcard Negation found for " + node);
+			if (playerPermArray.contains("-" + builder)) {
+				GroupManager.logger.log(Level.FINE, "Wildcard Negation found for " + node);
 				return true;
 			}
 
@@ -220,7 +222,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		/*
 		 * No negated parent found so return false.
 		 */
-		GroupManager.logger.fine("No Negation found for " + node);
+		GroupManager.logger.log(Level.FINE, "No Negation found for " + node);
 		return false;
 
 	}
@@ -242,10 +244,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		}
 
 		for (String perm : perms) {
-			/**
-			 * all permission sets are passed here pre-sorted, alphabetically.
-			 * This means negated nodes will be processed before all permissions
-			 * other than *.
+			/*
+			  all permission sets are passed here pre-sorted, alphabetically.
+			  This means negated nodes will be processed before all permissions
+			  other than *.
 			 */
 			boolean negated = perm.startsWith("-");
 
@@ -255,11 +257,11 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 				if ((negated))
 					permArray.remove(perm.substring(1));
 
-				/**
-				 * Process child nodes if required,
-				 * or this is a negated node AND we used * to include all
-				 * permissions,
-				 * in which case we need to remove all children of that node.
+				/*
+				  Process child nodes if required,
+				  or this is a negated node AND we used * to include all
+				  permissions,
+				  in which case we need to remove all children of that node.
 				 */
 				if ((includeChildren) || (negated && allPerms)) {
 
@@ -353,14 +355,14 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	}
 
 	/**
-	 * Gets the appropriate prefix for the user. This method is a utility method
-	 * for chat plugins to get the user's prefix without having to look at every
+	 * Gets the appropriate suffix for the user. This method is a utility method
+	 * for chat plugins to get the user's suffix without having to look at every
 	 * one of the user's ancestors. Returns an empty string if user has no
 	 * parent groups.
 	 * 
 	 * @param user
 	 *            Player's name
-	 * @return Player's prefix
+	 * @return Player's suffix
 	 */
 	@Override
 	public String getUserSuffix(String user) {
@@ -407,10 +409,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 *            Player's name
 	 * @return true if the user can build
 	 */
+	@SuppressWarnings("unused")
 	public boolean canUserBuild(String userName) {
 
 		return getPermissionBoolean(userName, "build");
-
 	}
 
 	/**
@@ -423,10 +425,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public String getGroupPrefix(String groupName) {
 
 		Group g = ph.getGroup(groupName);
-		if (g == null) {
-			return "";
-		}
-		return g.getVariables().getVarString("prefix");
+		return g == null ? "" :  g.getVariables().getVarString("prefix");
 	}
 
 	/**
@@ -456,10 +455,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public boolean canGroupBuild(String groupName) {
 
 		Group g = ph.getGroup(groupName);
-		if (g == null) {
-			return false;
-		}
-		return g.getVariables().getVarBoolean("build");
+		return g != null && g.getVariables().getVarBoolean("build");
 	}
 
 	/**
@@ -478,10 +474,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return null;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return null;
-		}
-		return result.getVariables().getVarString(variable);
+		return result == null ? null : result.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -500,10 +493,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return -1;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return -1;
-		}
-		return result.getVariables().getVarInteger(variable);
+		return result == null ? -1 : result.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -522,10 +512,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return false;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return false;
-		}
-		return result.getVariables().getVarBoolean(variable);
+		return result != null && result.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -544,10 +531,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return -1;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return -1;
-		}
-		return result.getVariables().getVarDouble(variable);
+		return result == null ? -1 : result.getVariables().getVarDouble(variable);
 	}
 
 	/**
@@ -561,10 +545,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public String getUserPermissionString(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return "";
-		}
-		return auser.getVariables().getVarString(variable);
+		return auser == null ? "" : auser.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -578,10 +559,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public int getUserPermissionInteger(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return -1;
-		}
-		return auser.getVariables().getVarInteger(variable);
+		return auser == null ? -1 : auser.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -595,10 +573,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public boolean getUserPermissionBoolean(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return false;
-		}
-		return auser.getVariables().getVarBoolean(variable);
+		return auser != null && auser.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -612,10 +587,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public double getUserPermissionDouble(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return -1;
-		}
-		return auser.getVariables().getVarDouble(variable);
+		return auser == null ? -1 : auser.getVariables().getVarDouble(variable);
 	}
 
 	/**
@@ -649,11 +621,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return "";
 		}
-		return result.getVariables().getVarString(variable);
-		// return getUserPermissionString(user, variable);
+		return result == null ? "" : result.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -687,11 +656,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return -1;
 		}
-		return result.getVariables().getVarInteger(variable);
-		// return getUserPermissionInteger(string, string1);
+		return result == null ? -1 : result.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -725,11 +691,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return false;
 		}
-		return result.getVariables().getVarBoolean(variable);
-		// return getUserPermissionBoolean(user, string1);
+		return result != null && result.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -763,11 +726,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return -1.0D;
 		}
-		return result.getVariables().getVarDouble(variable);
-		// return getUserPermissionDouble(string, string1);
+		return result == null ? -1.0D : result.getVariables().getVarDouble(variable);
 	}
 
 	/**

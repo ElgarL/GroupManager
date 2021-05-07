@@ -27,9 +27,9 @@ import java.util.logging.LogRecord;
  */
 public class GMLoggerHandler extends ConsoleHandler {
 
+	@Deprecated // Use GroupManager.logger.log(Level level, String msg)
 	@Override
 	public void publish(LogRecord record) {
-
 		String message = "[GroupManager] " + record.getMessage();
 		if (record.getLevel().equals(Level.SEVERE) || record.getLevel().equals(Level.WARNING)) {
 			System.err.println(message);

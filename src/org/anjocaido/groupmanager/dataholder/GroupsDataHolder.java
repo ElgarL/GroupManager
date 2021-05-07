@@ -33,7 +33,7 @@ import org.anjocaido.groupmanager.data.Group;
 public class GroupsDataHolder {
 
 	private WorldDataHolder dataSource;
-	private Group defaultGroup = null;
+	private Group defaultGroup;
 	private File groupsFile;
 	private boolean changed = false;
 	private long timeStamp = 0;
@@ -46,9 +46,7 @@ public class GroupsDataHolder {
 	/**
 	 * Constructor
 	 */
-	protected GroupsDataHolder() {
-
-	}
+	protected GroupsDataHolder() {}
 
 	public void setDataSource(WorldDataHolder dataSource) {
 

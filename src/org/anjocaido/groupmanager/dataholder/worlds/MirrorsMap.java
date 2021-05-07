@@ -80,16 +80,11 @@ public class MirrorsMap extends WorldsHolder {
 				 * fully or partially mirror the parent
 				 */
 				parseSubSection(((Map<?, ?>) child), rootWorld);
+			} else if (child != null) {
 
-			} else if (child == null) {
-				
 				/*
-				 * Un-mirrored world.
-				 * Do nothing here as this world has no mirroring.
+				 * If the child is null, then the world is un-mirrored and nothing needs to be done
 				 */
-				
-			} else {
-
 				logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.UNKNOWN_MIRRORING_FORMAT"), child.getClass().getName())); //$NON-NLS-1$
 			}
 		}

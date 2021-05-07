@@ -37,9 +37,9 @@ public class GlobalGroups {
 
 	private long timeStampGroups = 0;
 	private boolean haveGroupsChanged = false;
-	private File GlobalGroupsFile = null;
+	private File GlobalGroupsFile;
 
-	private GroupManager plugin;
+	private final GroupManager plugin;
 
 	public GlobalGroups(GroupManager plugin) {
 
@@ -99,6 +99,7 @@ public class GlobalGroups {
 	 * Creates a new group if it doesn't already exist.
 	 * 
 	 * @param newGroup
+	 * @return group created, or null if a group already exists
 	 */
 	public Group newGroup(Group newGroup) {
 
@@ -148,11 +149,7 @@ public class GlobalGroups {
 	 * @return true if node exists
 	 */
 	public boolean hasPermission(String groupName, String permissionNode) {
-
-		if (!hasGroup(groupName))
-			return false;
-
-		return groups.get(groupName.toLowerCase()).hasSamePermissionNode(permissionNode);
+		return hasGroup(groupName) && groups.get(groupName.toLowerCase()).hasSamePermissionNode(permissionNode);
 
 	}
 
@@ -236,11 +233,7 @@ public class GlobalGroups {
 	 * @return Group object
 	 */
 	public Group getGroup(String groupName) {
-
-		if (!hasGroup(groupName))
-			return null;
-
-		return groups.get(groupName.toLowerCase());
+		return hasGroup(groupName) ? groups.get(groupName.toLowerCase()) : null;
 
 	}
 

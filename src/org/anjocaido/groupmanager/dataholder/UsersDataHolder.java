@@ -45,14 +45,12 @@ public class UsersDataHolder {
 	/**
 	 * Constructor
 	 */
-	protected UsersDataHolder() {
-
-	}
+	protected UsersDataHolder() {}
 
 	public void setDataSource(WorldDataHolder dataSource) {
 
 		this.dataSource = dataSource;
-		//push this data source to the users, so they pull the correct groups data.
+		// Push this data source to the users, so they pull the correct groups data.
 		synchronized(users) {
 			for (User user : users.values())
 				user.setDataSource(this.dataSource);
@@ -60,7 +58,7 @@ public class UsersDataHolder {
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronised!
+	 * Note: Iteration over this object has to be synchronized!
 	 * 
 	 * @return the users
 	 */
@@ -78,6 +76,7 @@ public class UsersDataHolder {
 	 * Resets the Users
 	 */
 	public void resetUsers() {
+
 		this.users.clear();
 	}
 
