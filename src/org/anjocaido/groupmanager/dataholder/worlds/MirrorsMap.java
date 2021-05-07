@@ -12,7 +12,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 
 /**
- * @author Level
+ * @author ElgarL
  *
  */
 public class MirrorsMap extends WorldsHolder {

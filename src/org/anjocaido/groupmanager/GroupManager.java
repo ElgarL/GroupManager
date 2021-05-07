@@ -186,39 +186,27 @@ public class GroupManager extends JavaPlugin {
 			selectedWorlds = new HashMap<>();
 			lastError = ""; //$NON-NLS-1$
 
+			/*
+			 * Setup our logger if we are not restarting.
+			 */
 			if (!restarting) {
-				// Setup logger
 				GroupManager.logger.setUseParentHandlers(false);
 				ch = new GMLoggerHandler();
 				GroupManager.logger.addHandler(ch);
 			}
-			
+
 			/*
 			 * Load our config.yml
 			 */
 			prepareBackupFolder();
 			config = new GMConfiguration(this);
 			config.load();
-			
-			if (!restarting) {
-				// Configure the worlds holder
+
+			/*
+			 * Configure the worlds holder.
+			 */
+			if (!restarting)
 				worldsHolder = new MirrorsMap(this);
-				// Initialize the world listener and Bukkit permissions to handle events and initialize our command handlers
-				WorldEvents = new GMWorldListener(this);
-				BukkitPermissions = new BukkitPermissions(this);
-				checkPlugins();
-				initCommands();
-				// Register Metrics
-				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
-				try {
-					Metrics metrics = new Metrics(this, 7982);
-					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
-				} catch (Exception e) {
-					GroupManager.logger.log(Level.WARNING, "Failed to setup Metrics"); //$NON-NLS-1$
-				}
-			} else {
-				BukkitPermissions.reset();
-			}
 
 			/*
 			 * Load the global groups before we load our worlds
@@ -233,6 +221,21 @@ public class GroupManager extends JavaPlugin {
 			worldsHolder.resetWorldsHolder();
 
 			/*
+			 *  Initialize the world listener and Bukkit permissions
+			 *  to handle events and initialize our command handlers
+			 */
+			if (!restarting) {
+				WorldEvents = new GMWorldListener(this);
+				BukkitPermissions = new BukkitPermissions(this);
+
+				checkPlugins();
+				initCommands();
+
+			} else {
+				BukkitPermissions.reset();
+			}
+
+			/*
 			 * Start the scheduler for data saving.
 			 */
 			enableScheduler();
@@ -243,6 +246,24 @@ public class GroupManager extends JavaPlugin {
 			 */
 			if (getServer().getScheduler().scheduleSyncDelayedTask(this, new BukkitPermsUpdateTask(), 1) == -1)
 				GroupManager.logger.log(Level.SEVERE, Messages.getString("GroupManager.ERROR_SCHEDULING_SUPERPERMS")); //$NON-NLS-1$
+
+			/*
+			 * Register as a service and Metrics.
+			 */
+			if (!restarting) {
+				this.getServer().getServicesManager().register(GroupManager.class, this, this, ServicePriority.Lowest);
+
+				/*
+				 * Register Metrics
+				 */
+				try {
+					Metrics metrics = new Metrics(this, 7982);
+
+					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
+				} catch (Exception e) {
+					GroupManager.logger.log(Level.WARNING, "Failed to setup Metrics"); //$NON-NLS-1$
+				}
+			}
 
 			/*
 			 * Flag that we are now loaded and should start processing events.
