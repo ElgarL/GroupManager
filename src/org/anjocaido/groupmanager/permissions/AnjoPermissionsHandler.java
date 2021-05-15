@@ -409,7 +409,6 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 *            Player's name
 	 * @return true if the user can build
 	 */
-	@SuppressWarnings("unused")
 	public boolean canUserBuild(String userName) {
 
 		return getPermissionBoolean(userName, "build");
