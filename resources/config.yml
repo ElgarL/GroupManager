@@ -52,6 +52,11 @@
       enabled: true
       # Number of days of inactivity before an user is deleted.
       user_expires: 90d
+      
+    # If false timed permissions and sub-groups
+    # will not expire until this is re-enabled.
+    timed:
+      enabled: true
 
   logging:
     # Level of detail GroupManager will use when logging.

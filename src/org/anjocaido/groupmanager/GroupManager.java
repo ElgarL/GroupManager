@@ -527,7 +527,10 @@ public class GroupManager extends JavaPlugin {
 
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(committer, minutes, minutes, TimeUnit.MINUTES);
-				scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
+				
+				if (getGMConfig().isTimedEnabled())
+					scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
+				
 				if (getGMConfig().isPurgeEnabled())
 					scheduler.schedule(maintenance, 30, TimeUnit.SECONDS);
 

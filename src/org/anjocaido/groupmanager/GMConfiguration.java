@@ -59,6 +59,7 @@ public class GMConfiguration {
 
 	private boolean purgeEnabled;
 	private long userExpires;
+	private boolean timedEnabled;
 
 	private String loggerLevel; //$NON-NLS-1$
 	private Map<String, Object> mirrorsMap;
@@ -92,6 +93,9 @@ public class GMConfiguration {
 
 		purgeEnabled = true;
 		userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
+		
+		timedEnabled = true;
+		
 		loggerLevel = "INFO"; //$NON-NLS-1$
 	}
 
@@ -280,6 +284,15 @@ public class GMConfiguration {
 					GroupManager.logger.log(Level.SEVERE, nodeError("user_expires"), ex); //$NON-NLS-1$
 					userExpires = Tasks.parsePeriod("90d"); //$NON-NLS-1$
 				}
+				
+				section = getElement("timed", getElement("maintenance", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				
+				try {
+					timedEnabled = (boolean) section.get("enabled"); //$NON-NLS-1$
+				} catch (Exception ex) {
+					GroupManager.logger.log(Level.SEVERE, nodeError("timed-enabled"), ex); //$NON-NLS-1$
+					purgeEnabled = true;
+				}
 
 			} catch (Exception ex) {
 				GroupManager.logger.log(Level.SEVERE, nodeError("purge"), ex); //$NON-NLS-1$
@@ -364,6 +377,11 @@ public class GMConfiguration {
 	public long userExpires() {
 
 		return userExpires;
+	}
+	
+	public boolean isTimedEnabled() {
+
+		return timedEnabled;
 	}
 
 	public int getSaveInterval() {

@@ -305,3 +305,4 @@ v3.0:
     - Add Portuguese translation (@ice41)
     - Prevent oversized permission lists overflowing BungeeCord servers.
     - Add Console tab-complete on commands.
+    - Add a config setting to disable timed permissions expiring.
