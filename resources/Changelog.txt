@@ -306,3 +306,4 @@ v3.0:
     - Prevent oversized permission lists overflowing BungeeCord servers.
     - Add Console tab-complete on commands.
     - Add a config setting to disable timed permissions expiring.
+    - Fix NPE when using ManUDelAllTemp with no overloaded users.
