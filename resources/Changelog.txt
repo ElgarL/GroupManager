@@ -307,3 +307,4 @@ v3.0:
     - Add Console tab-complete on commands.
     - Add a config setting to disable timed permissions expiring.
     - Fix NPE when using ManUDelAllTemp with no overloaded users.
+    - Add intelligent tab complete for permissions in `mangaddp,manuaddp,mangcheckp,manucheckp`.

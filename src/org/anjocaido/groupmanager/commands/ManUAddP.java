@@ -138,8 +138,18 @@ public class ManUAddP extends BaseCommand {
 		/*
 		 * Return a TabComplete for users.
 		 */
-		if (args.length == 1) {
+		switch (args.length) {
+
+		case 0:
+			break;
+
+		case 1:
 			result = tabCompleteUsers(args[0]);
+			break;
+
+		default:
+			result = getPermissionNodes(args[args.length - 1]);
+			break;
 		}
 
 		return result;

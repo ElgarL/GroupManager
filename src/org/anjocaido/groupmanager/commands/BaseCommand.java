@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -365,6 +366,18 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 				worlds.add(world.getName());
 
 		return worlds;
+	}
+	
+	/**
+	 * List all permissions registered with Bukkit.
+	 * 
+	 * @return	a List of all known permissions, including child nodes.
+	 */
+	protected List<String> getPermissionNodes(String arg) {
+		
+		return GroupManager.getBukkitPermissions().getAllRegisteredPermissions(true)
+				.stream().filter(perm -> perm.toLowerCase().contains(arg.toLowerCase()))
+				.collect(Collectors.toList());
 	}
 
 	protected abstract boolean parseCommand(@NotNull String[] args);
