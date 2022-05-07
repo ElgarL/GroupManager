@@ -21,6 +21,8 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+import org.anjocaido.groupmanager.GroupManager;
+
 /**
  * 
  * @author gabrielcouto
@@ -29,11 +31,14 @@ public class GMLoggerHandler extends ConsoleHandler {
 
 	@Override
 	public void publish(LogRecord record) {
+
 		String message = "[GroupManager] " + record.getMessage();
-		if (record.getLevel().equals(Level.SEVERE) || record.getLevel().equals(Level.WARNING)) {
-			System.err.println(message);
+		if (record.getLevel().equals(Level.SEVERE)) {
+			GroupManager.logger.log(Level.SEVERE, message);
+		} else if (record.getLevel().equals(Level.WARNING)) {
+			GroupManager.logger.log(Level.WARNING, message);
 		} else {
-			System.out.println(message);
+			GroupManager.logger.log(Level.INFO, message);
 		}
 	}
 }
