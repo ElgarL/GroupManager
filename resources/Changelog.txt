@@ -310,3 +310,4 @@ v3.0:
     - Fix NPE when using ManUDelAllTemp with no overloaded users.
     - Add intelligent tab complete for permissions in `mangaddp,manuaddp,mangcheckp,manucheckp`.
     - Fix for failing to correctly initialize a mirror parent data.
+    - Remove GMLogHandler to stop Paper nagging.

@@ -28,8 +28,8 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.commands.ManCheckW;
 import org.anjocaido.groupmanager.commands.ManClear;
@@ -86,7 +86,6 @@ import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
 import org.anjocaido.groupmanager.tasks.BukkitPermsUpdateTask;
 import org.anjocaido.groupmanager.tasks.UpdateTask;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
-import org.anjocaido.groupmanager.utils.GMLoggerHandler;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -116,8 +115,6 @@ public class GroupManager extends JavaPlugin {
 	private String lastError = ""; //$NON-NLS-1$
 
 	private static GlobalGroups globalGroups;
-
-	private GMLoggerHandler ch;
 
 	private static GroupManagerEventHandler GMEventHandler;
 	@Deprecated // This field will be changing to private in the future. Please use the static getBukkitPermissions() method
@@ -151,7 +148,6 @@ public class GroupManager extends JavaPlugin {
 			this.getServer().getServicesManager().unregister(this);
 			if (WorldEvents != null) WorldEvents = null;
 			BukkitPermissions = null;
-			GroupManager.logger.removeHandler(ch);
 		}
 
 		disableScheduler(); // Shutdown before we save, so it doesn't interfere.
@@ -185,15 +181,6 @@ public class GroupManager extends JavaPlugin {
 			overloadedUsers = new HashMap<>();
 			selectedWorlds = new HashMap<>();
 			lastError = ""; //$NON-NLS-1$
-
-			/*
-			 * Setup our logger if we are not restarting.
-			 */
-			if (!restarting) {
-				GroupManager.logger.setUseParentHandlers(false);
-				ch = new GMLoggerHandler();
-				GroupManager.logger.addHandler(ch);
-			}
 
 			/*
 			 * Load our config.yml
