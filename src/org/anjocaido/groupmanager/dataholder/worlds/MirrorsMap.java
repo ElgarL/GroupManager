@@ -33,6 +33,12 @@ public class MirrorsMap extends WorldsHolder {
 		Map<String, Object> mirrorsMap = GroupManager.getGMConfig().getMirrorsMap();
 
 		if (mirrorsMap == null) return;
+		
+		/*
+		 * Add the server default world.
+		 */
+		if (serverDefaultWorldName != null)
+			addRootWorld(serverDefaultWorldName);
 
 		/*
 		 * All keys under this entry should be world name/mirror maps.
@@ -41,7 +47,8 @@ public class MirrorsMap extends WorldsHolder {
 
 			String rootWorld = root.toString().toLowerCase();
 			/*
-			 * The first root world sets the default.
+			 * The first root world sets the default
+			 * if it's not already set.
 			 */
 			if (serverDefaultWorldName == null)
 				serverDefaultWorldName = rootWorld;
@@ -53,12 +60,7 @@ public class MirrorsMap extends WorldsHolder {
 			 * this world, if there is no key stored already
 			 * and there is no mirror defined.
 			 */
-			try {
-
-				if (!isParentWorld(rootWorld) && (!hasGroupsMirror(rootWorld) || !hasUsersMirror(rootWorld)))
-					addWorldData(rootWorld, null);
-
-			} catch (Exception ignored) {}
+			addRootWorld(rootWorld);
 
 			/*
 			 * Load all child entries for this node.
@@ -176,5 +178,22 @@ public class MirrorsMap extends WorldsHolder {
 				logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.UNKNOWN_MIRRORING_FORMAT"), world)); //$NON-NLS-1$
 			}
 		}
+	}
+	
+	private void addRootWorld(String rootWorld) {
+		
+		/*
+		 * This is a root world so...
+		 * 
+		 * Store a key so we know to load data for
+		 * this world, if there is no key stored already
+		 * and there is no mirror defined.
+		 */
+		try {
+
+			if (!isParentWorld(rootWorld) && (!hasGroupsMirror(rootWorld) || !hasUsersMirror(rootWorld)))
+				addWorldData(rootWorld, null);
+
+		} catch (Exception ignored) {}
 	}
 }

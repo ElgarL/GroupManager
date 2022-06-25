@@ -309,3 +309,4 @@ v3.0:
     - Add a config setting to disable timed permissions expiring.
     - Fix NPE when using ManUDelAllTemp with no overloaded users.
     - Add intelligent tab complete for permissions in `mangaddp,manuaddp,mangcheckp,manucheckp`.
+    - Fix for failing to correctly initialize a mirror parent data.

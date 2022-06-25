@@ -102,8 +102,6 @@ public abstract class WorldsHolder extends ChildMirrors {
 		clearGroupsMirror();
 		clearUsersMirror();
 
-		// Initialize our DataSource.
-		detectDefaultWorldName();
 		// Setup mirrors and load all data.
 		initialLoad();
 
@@ -113,6 +111,8 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 	private void initialLoad() {
 
+		// Initialize our DataSource.
+		detectDefaultWorldName();
 		// Load all worlds and mirrors as defined in config.yml
 		parseMirrors();
 		// search the worlds folder for any manually created worlds (not listed in config.yml)
