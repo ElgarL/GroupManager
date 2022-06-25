@@ -120,7 +120,7 @@ public class GroupManager extends JavaPlugin {
 	@Deprecated // This field will be changing to private in the future. Please use the static getBukkitPermissions() method
 	public static BukkitPermissions BukkitPermissions;
 	private GMWorldListener WorldEvents;
-	public static final Logger logger = Logger.getLogger(GroupManager.class.getName());
+	public static final Logger logger = Logger.getLogger("GroupManager");
 
 
 	@Override
