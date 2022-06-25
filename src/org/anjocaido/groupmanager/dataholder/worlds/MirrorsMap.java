@@ -33,12 +33,6 @@ public class MirrorsMap extends WorldsHolder {
 		Map<String, Object> mirrorsMap = GroupManager.getGMConfig().getMirrorsMap();
 
 		if (mirrorsMap == null) return;
-		
-		/*
-		 * Add the server default world.
-		 */
-		if (serverDefaultWorldName != null)
-			addRootWorld(serverDefaultWorldName);
 
 		/*
 		 * All keys under this entry should be world name/mirror maps.
@@ -52,7 +46,12 @@ public class MirrorsMap extends WorldsHolder {
 			 */
 			if (serverDefaultWorldName == null)
 				serverDefaultWorldName = rootWorld;
-
+			/*
+			 * Override broken mirroring
+			 * for the root world.
+			 */
+			if (mirroredWorlds.isEmpty() && !serverDefaultWorldName.equalsIgnoreCase(rootWorld))
+				rootWorld = serverDefaultWorldName;
 			/*
 			 * This is a root world so...
 			 * 
