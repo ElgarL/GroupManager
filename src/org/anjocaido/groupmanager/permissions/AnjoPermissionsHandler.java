@@ -785,7 +785,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public boolean checkUserPermission(User user, String permission) {
 
-		PermissionCheckResult result = checkFullGMPermission(user, permission, true);
+		PermissionCheckResult result = checkFullGMPermission(user, permission, false);
 		return result.resultType == PermissionCheckResult.Type.EXCEPTION || result.resultType == PermissionCheckResult.Type.FOUND;
 	}
 
