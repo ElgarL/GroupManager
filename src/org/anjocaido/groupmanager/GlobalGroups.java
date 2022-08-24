@@ -19,9 +19,9 @@ package org.anjocaido.groupmanager;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.events.GMGroupEvent;
@@ -33,7 +33,7 @@ import org.anjocaido.groupmanager.utils.PermissionCheckResult;
  */
 public class GlobalGroups {
 
-	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<>());
+	private final SortedMap<String, Group> groups = Collections.synchronizedSortedMap(new TreeMap<>());
 
 	private long timeStampGroups = 0;
 	private boolean haveGroupsChanged = false;
@@ -210,7 +210,7 @@ public class GlobalGroups {
 	 * 
 	 * @return the groups
 	 */
-	public Map<String, Group> getGroups() {
+	public SortedMap<String, Group> getGroups() {
 
 		return groups;
 	}

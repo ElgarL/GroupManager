@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -377,6 +378,7 @@ public class WorldDataHolder {
 		}
 		User newUser = new User(this, userId);
 		newUser.setGroup(groups.getDefaultGroup(), false);
+		newUser.flagAsChanged();
 		addUser(newUser);
 		setUsersChanged(true);
 		return newUser;
@@ -595,7 +597,7 @@ public class WorldDataHolder {
 	 *
 	 * @return the groups
 	 */
-	public Map<String, Group> getGroups() {
+	public SortedMap<String, Group> getGroups() {
 
 		return groups.getGroups();
 	}
@@ -605,7 +607,7 @@ public class WorldDataHolder {
 	 *
 	 * @return the users
 	 */
-	public Map<String, User> getUsers() {
+	public SortedMap<String, User> getUsers() {
 
 		return users.getUsers();
 	}
@@ -640,38 +642,6 @@ public class WorldDataHolder {
 	public void setUsersObject(UsersDataHolder usersDataHolder) {
 
 		users = usersDataHolder;
-	}
-
-	/**
-	 * @return the time stamp for Groups.
-	 */
-	public long getTimeStampGroups() {
-
-		return groups.getTimeStamp();
-	}
-
-	/**
-	 * @return the time stamp for Users.
-	 */
-	public long getTimeStampUsers() {
-
-		return users.getTimeStamp();
-	}
-
-	/**
-	 * @param timeStamp the time stamp to set for Groups.
-	 */
-	public void setTimeStampGroups(long timeStamp) {
-
-		groups.setTimeStamp(timeStamp);
-	}
-
-	/**
-	 * @param timeStamp the time stamp to set for Users.
-	 */
-	public void setTimeStampUsers(long timeStamp) {
-
-		users.setTimeStamp(timeStamp);
 	}
 
 	/* Name to UUID lookups **/

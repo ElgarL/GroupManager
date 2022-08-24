@@ -182,7 +182,7 @@ public abstract class DataUnit {
 	/**
 	 * @param timeStamp the time stamp to set
 	 */
-	public void setTimeStampGroups(long timeStamp) {
+	public void setTimeStamp(long timeStamp) {
 
 		this.timeStamp = timeStamp;
 	}

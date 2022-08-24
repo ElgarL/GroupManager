@@ -6,8 +6,13 @@ package org.anjocaido.groupmanager.storage;
 import java.io.IOException;
 
 import org.anjocaido.groupmanager.GlobalGroups;
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
+import org.anjocaido.groupmanager.storage.statements.H2Statements;
+import org.anjocaido.groupmanager.storage.statements.MySQLStatements;
+import org.anjocaido.groupmanager.storage.statements.PostgreSQLStatements;
+import org.anjocaido.groupmanager.storage.statements.SQLiteStatements;
 
 /**
  * All data load/saving classes should implement this Interface.
@@ -53,8 +58,9 @@ public interface DataSource {
 	 * 
 	 * @param dataHolder	the world container to load data into.
 	 * @throws IOException
+	 * @throws Exception 
 	 */
-	void loadGroups(WorldDataHolder dataHolder) throws IOException;
+	void loadGroups(WorldDataHolder dataHolder) throws Exception;
 
 	/**
 	 * Load Users data into this world holder.
@@ -62,7 +68,7 @@ public interface DataSource {
 	 * @param dataHolder	the world container to load data into.
 	 * @throws IOException
 	 */
-	void loadUsers(WorldDataHolder dataHolder) throws IOException;
+	void loadUsers(WorldDataHolder dataHolder) throws Exception;
 
 	/**
 	 * Reload data for this world.
@@ -137,10 +143,32 @@ public interface DataSource {
 	 * Remove old backups as per the settings in the config.
 	 */
 	void purgeBackups();
+	
+	static DataSource getSource(GroupManager plugin) throws Exception {
+		
+		switch(GroupManager.getGMConfig().getDatabaseType()) {
+
+		case H2:
+			return new CoreSQL(plugin, new H2Statements());
+
+		case MYSQL:
+			return new CoreSQL(plugin, new MySQLStatements());
+
+		case SQLITE:
+			return new CoreSQL(plugin, new SQLiteStatements());
+			
+		case POSTGRESQL:
+			return new CoreSQL(plugin, new PostgreSQLStatements());
+
+		case YAML:
+		default:
+			return new CoreYaml(plugin);
+		}
+	}
 
 	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS }
 
-	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL }
+	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL, POSTGRESQL }
 
 	enum ACCESS_LEVEL { READ, READ_WRITE }
 }

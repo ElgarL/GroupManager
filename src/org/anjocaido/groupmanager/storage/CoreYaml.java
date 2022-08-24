@@ -41,7 +41,7 @@ import org.yaml.snakeyaml.reader.UnicodeReader;
  * @author ElgarL
  *
  */
-public class Yaml implements DataSource {
+public class CoreYaml implements DataSource {
 
 	private final GroupManager plugin;
 	private final File worldsFolder;
@@ -50,7 +50,7 @@ public class Yaml implements DataSource {
 	 * 
 	 * @param plugin
 	 */
-	public Yaml(GroupManager plugin) {
+	public CoreYaml(GroupManager plugin) {
 
 		this.plugin = plugin;
 		this.worldsFolder = new File(this.plugin.getDataFolder(), "worlds"); //$NON-NLS-1$
@@ -175,11 +175,11 @@ public class Yaml implements DataSource {
 				// Set the file TimeStamps as it will be default from the initial creation.
 				if (usersFile != null) {
 					thisWorldData.setUsersFile(tempHolder.getUsersFile());
-					thisWorldData.setTimeStampUsers(tempHolder.getUsersFile().lastModified());
+					thisWorldData.getUsersObject().setTimeStamp(tempHolder.getUsersFile().lastModified());
 				}
 				if (groupsFile != null) {
 					thisWorldData.setGroupsFile(tempHolder.getGroupsFile());
-					thisWorldData.setTimeStampGroups(tempHolder.getGroupsFile().lastModified());
+					thisWorldData.getGroupsObject().setTimeStamp(tempHolder.getGroupsFile().lastModified());
 				}
 				GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.WORLD_LOAD_SUCCESS"), worldName)); //$NON-NLS-1$
 				holder.addWorldData(worldNameLowered, thisWorldData);
@@ -501,7 +501,7 @@ public class Yaml implements DataSource {
 
 		// Update the LastModified time.
 		dataHolder.setGroupsFile(groupsFile);
-		dataHolder.setTimeStampGroups(groupsFile.lastModified());
+		dataHolder.getGroupsObject().setTimeStamp(groupsFile.lastModified());
 	}
 
 	@Override
@@ -750,7 +750,7 @@ public class Yaml implements DataSource {
 		dataHolder.removeUsersChangedFlag();
 		// Update the LastModified time.
 		dataHolder.setUsersFile(usersFile);
-		dataHolder.setTimeStampUsers(usersFile.lastModified());
+		dataHolder.getUsersObject().setTimeStamp(usersFile.lastModified());
 	}
 
 	@Override
@@ -784,7 +784,7 @@ public class Yaml implements DataSource {
 
 			dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
 			dataHolder.removeGroupsChangedFlag();
-			dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
+			dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
@@ -819,7 +819,7 @@ public class Yaml implements DataSource {
 				tempUser.clone(dataHolder);
 			}
 			dataHolder.removeUsersChangedFlag();
-			dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
+			dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
@@ -887,7 +887,7 @@ public class Yaml implements DataSource {
 
 		// Update the LastModified time.
 		dataHolder.setGroupsFile(dataHolder.getGroupsFile());
-		dataHolder.setTimeStampGroups(dataHolder.getGroupsFile().lastModified());
+		dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
 		dataHolder.removeGroupsChangedFlag();
 
 		if (GroupManager.isLoaded())
@@ -954,7 +954,7 @@ public class Yaml implements DataSource {
 
 		// Update the LastModified time.
 		dataHolder.setUsersFile(dataHolder.getUsersFile());
-		dataHolder.setTimeStampUsers(dataHolder.getUsersFile().lastModified());
+		dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
 		dataHolder.removeUsersChangedFlag();
 
 		if (GroupManager.isLoaded())
@@ -970,13 +970,13 @@ public class Yaml implements DataSource {
 	@Override
 	public boolean hasNewGroupsData(WorldDataHolder dataHolder) {
 
-		return dataHolder.getTimeStampGroups() < dataHolder.getGroupsFile().lastModified();
+		return dataHolder.getGroupsObject().getTimeStamp() < dataHolder.getGroupsFile().lastModified();
 	}
 
 	@Override
 	public boolean hasNewUsersData(WorldDataHolder dataHolder) {
 
-		return dataHolder.getTimeStampUsers() < dataHolder.getUsersFile().lastModified();
+		return dataHolder.getUsersObject().getTimeStamp() < dataHolder.getUsersFile().lastModified();
 	}
 
 	@Override

@@ -19,6 +19,8 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
@@ -42,28 +44,31 @@ public class ManSave extends BaseCommand {
 	@Override
 	protected boolean parseCommand(@NotNull String[] args) {
 
-		boolean forced = false;
+		AtomicBoolean forced = new AtomicBoolean(false);
 
 		if ((args.length == 1) && (args[0].equalsIgnoreCase("force"))) //$NON-NLS-1$
-			forced = true;
+			forced.set(true);
 
-		try {
-			/*
-			 * Obtain a lock so we can save.
-			 */
-			plugin.getSaveLock().lock();
+		CompletableFuture.runAsync(() -> {
+			try {
+				/*
+				 * Obtain a lock so we can save.
+				 */
+				plugin.getSaveLock().lock();
 
-			plugin.getWorldsHolder().saveChanges(forced);
-			sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+				plugin.getWorldsHolder().saveChanges(forced.get());
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
 
-		} catch (IllegalStateException ex) {
-			sender.sendMessage(ChatColor.RED + ex.getMessage());
+			} catch (IllegalStateException ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
 
-		} finally {
-			// Release lock.
-			if(plugin.getSaveLock().isHeldByCurrentThread())
-				plugin.getSaveLock().unlock();
-		}
+			} finally {
+				// Release lock.
+				if(plugin.getSaveLock().isHeldByCurrentThread())
+					plugin.getSaveLock().unlock();
+			}
+		});
+
 		return true;
 	}
 

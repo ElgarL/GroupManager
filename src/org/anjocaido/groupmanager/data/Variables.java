@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.data;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A class that holds variables of a user/group.
@@ -29,9 +30,9 @@ import java.util.Map;
  * suffix
  * build
  * 
- * @author gabrielcouto
+ * @author gabrielcouto, ElgarL
  */
-public abstract class Variables implements Cloneable {
+public class Variables implements Cloneable {
 
 	private final DataUnit owner;
 	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
@@ -39,6 +40,47 @@ public abstract class Variables implements Cloneable {
 	public Variables(DataUnit owner) {
 
 		this.owner = owner;
+	}
+	
+	public Variables(DataUnit owner, Map<? extends String, ?> varList) {
+
+		this.owner = owner;
+		this.variables.clear();
+		this.variables.putAll(varList);
+	}
+
+	/**
+	 * A clone of all vars here.
+	 * 
+	 * @return Variables clone
+	 */
+	protected Variables clone(DataUnit newOwner) {
+
+		Variables clone = new Variables(newOwner);
+		synchronized(variables) {
+			for (String key : variables.keySet()) {
+				clone.variables.put(key, variables.get(key));
+			}
+		}
+		newOwner.flagAsChanged();
+		return clone;
+	}
+	
+	/**
+	 * Get data as a Blob (csv String) for storing.
+	 * 
+	 * @return
+	 */
+	public String getBlob() {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		for (Entry<String, Object> entry : variables.entrySet()) {
+			builder.append(entry.getKey()).append("|").append(entry.getValue());
+			builder.append(",");
+		}
+		
+		return builder.length() == 0 ? new String() : builder.substring(0, builder.lastIndexOf(","));
 	}
 
 	/**

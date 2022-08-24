@@ -77,6 +77,7 @@ import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.worlds.MirrorsMap;
 import org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder;
+import org.anjocaido.groupmanager.dependencies.DependencyManager;
 import org.anjocaido.groupmanager.events.GMWorldListener;
 import org.anjocaido.groupmanager.events.GroupManagerEventHandler;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -122,6 +123,12 @@ public class GroupManager extends JavaPlugin {
 	private GMWorldListener WorldEvents;
 	public static final Logger logger = Logger.getLogger("GroupManager");
 
+	@Override
+	public void onLoad() {
+		
+		// Check dependencies
+		getLogger().info("Dependencies: " + (DependencyManager.checkDependencies(this) ? "OK" : "Warning unknown state!"));
+	}
 
 	@Override
 	public void onDisable() {
@@ -131,7 +138,7 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-
+		
 		/*
 		 * Initialize the event handler
 		 */
@@ -420,8 +427,8 @@ public class GroupManager extends JavaPlugin {
 						getSaveLock().lock();
 
 						if (worldsHolder.saveChanges(false)) {
-
-							GroupManager.logger.log(Level.INFO, (Messages.getString("GroupManager.REFRESHED"))); //$NON-NLS-1$
+							// Annoying spam.
+							//GroupManager.logger.log(Level.INFO, (Messages.getString("GroupManager.REFRESHED"))); //$NON-NLS-1$
 						}
 					} catch (IllegalStateException ex) {
 						GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
@@ -429,7 +436,8 @@ public class GroupManager extends JavaPlugin {
 						/*
 						 * Release the lock.
 						 */
-						getSaveLock().unlock();
+						if(getSaveLock().isHeldByCurrentThread())
+							getSaveLock().unlock();
 					}
 				}
 			};
@@ -451,8 +459,10 @@ public class GroupManager extends JavaPlugin {
 						 */
 						if (worldsHolder.purgeExpiredPerms()) {
 
-							if (worldsHolder.saveChanges(false))
-								GroupManager.logger.log(Level.INFO, Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+							if (worldsHolder.saveChanges(false)) {
+								// Annoying spam.
+								//GroupManager.logger.log(Level.INFO, Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+							}
 
 						}
 					} catch (Exception ex) {
@@ -461,7 +471,8 @@ public class GroupManager extends JavaPlugin {
 						/*
 						 * Release the lock.
 						 */
-						getSaveLock().unlock();
+						if(getSaveLock().isHeldByCurrentThread())
+							getSaveLock().unlock();
 					}
 				}
 			};

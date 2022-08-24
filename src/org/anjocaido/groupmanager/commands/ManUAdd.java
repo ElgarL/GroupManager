@@ -68,6 +68,8 @@ public class ManUAdd extends BaseCommand {
 		// else attempt a name search for the account.
 		if (match != null) {
 			auxUser = dataHolder.getUser(match.toString());
+			if (args[0].length() < 36)
+				auxUser.setLastName(args[0]);
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
 		}

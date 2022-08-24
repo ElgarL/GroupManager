@@ -19,14 +19,15 @@ package org.anjocaido.groupmanager.dataholder.worlds;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
@@ -35,7 +36,6 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
-import org.anjocaido.groupmanager.storage.Yaml;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
 
@@ -57,30 +57,18 @@ public abstract class WorldsHolder extends ChildMirrors {
 	private DataSource dataSource;
 
 	/**
+	 * Throw any exceptions as we want to prevent
+	 * the plugin loading if the database fails.
 	 * 
 	 * @param plugin
+	 * @throws SQLException 
 	 */
-	protected WorldsHolder(GroupManager plugin) {
+	protected WorldsHolder(GroupManager plugin) throws Exception {
 
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
 
-		switch(GroupManager.getGMConfig().getDatabaseType()) {
-
-		case H2: // TODO
-			//break;
-
-		case MYSQL: // TODO
-			//break;
-
-		case SQLITE: // TODO
-			//break;
-
-		case YAML:
-		default:
-			dataSource = new Yaml(plugin);
-			break;
-		}
+		dataSource = DataSource.getSource(plugin);
 	}
 
 	/**

@@ -32,6 +32,7 @@ import java.util.logging.Level;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.events.GMUserEvent;
+import org.anjocaido.groupmanager.utils.Supported;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,8 +62,6 @@ public class BukkitPermissions {
 	protected GroupManager plugin;
 	private boolean player_join = false;
 
-	private boolean hasUpdateCommand;
-
 	/**
 	 * @return the player_join
 	 */
@@ -77,16 +76,6 @@ public class BukkitPermissions {
 	public void setPlayer_join(boolean player_join) {
 
 		this.player_join = player_join;
-	}
-
-	/**
-	 * Does the server support Player.updateCommand().
-	 *
-	 * @return true/false
-	 */
-	public boolean hasUpdateCommand() {
-
-		return hasUpdateCommand;
 	}
 
 	private static Field permissions;
@@ -106,16 +95,6 @@ public class BukkitPermissions {
 		this.plugin = plugin;
 		this.reset();
 		this.registerEvents();
-
-		try {
-			// Method only available post 1.14
-			Player.class.getMethod("updateCommands");
-			hasUpdateCommand = true;
-		} catch (Exception ex) {
-			// Server too old to support updateCommands.
-			hasUpdateCommand = false;
-		}
-
 
 		GroupManager.logger.info("Superperms support enabled.");
 	}
@@ -231,7 +210,7 @@ public class BukkitPermissions {
 
 				// Tab complete and command visibility
 				// Method only available post 1.14
-				if (hasUpdateCommand()) {
+				if (Supported.hasUpdateCommand()) {
 					if (Bukkit.isPrimaryThread()) {
 						player.updateCommands();
 					} else {
@@ -457,7 +436,7 @@ public class BukkitPermissions {
 
 			// Tab complete command visibility
 			// Server too old to support updateCommands.
-			if (!hasUpdateCommand())
+			if (!Supported.hasUpdateCommand())
 				playerJoin(event);
 		}
 

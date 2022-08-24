@@ -45,7 +45,7 @@ public class User extends DataUnit implements Cloneable {
 	 * This holds the fields in INFO node,
 	 * like prefix = 'c' or build = false.
 	 */
-	private UserVariables variables = new UserVariables(this);
+	private Variables variables = new Variables(this);
 
 	/**
 	 * @param name
@@ -363,7 +363,7 @@ public class User extends DataUnit implements Cloneable {
 	/**
 	 * @return the variables
 	 */
-	public UserVariables getVariables() {
+	public Variables getVariables() {
 
 		return variables;
 	}

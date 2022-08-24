@@ -50,7 +50,7 @@ public class GMConfiguration {
 
 	private DATABASE_TYPE dbType;
 	private String dbName;
-	private String dbTable;
+	private String dbGroup;
 	private ACCESS_LEVEL accessType;
 	private String dbUsername;
 	private String dbPassword;
@@ -84,7 +84,7 @@ public class GMConfiguration {
 
 		dbType = DATABASE_TYPE.YAML;
 		dbName = "minecraft";
-		dbTable = "GroupManager";
+		dbGroup = "GroupManager";
 		accessType = ACCESS_LEVEL.READ_WRITE;
 		dbUsername = "root";
 		dbPassword = "pass";
@@ -227,10 +227,10 @@ public class GMConfiguration {
 				}
 
 				try {
-					dbTable = (String) section.get("table"); //$NON-NLS-1$
+					dbGroup = (String) section.get("group"); //$NON-NLS-1$
 				} catch (Exception ex) {
-					GroupManager.logger.log(Level.SEVERE, nodeError("table"), ex); //$NON-NLS-1$
-					dbTable = "GroupManager";
+					GroupManager.logger.log(Level.SEVERE, nodeError("group"), ex); //$NON-NLS-1$
+					dbGroup = "GroupManager";
 				}
 
 				try {
@@ -415,9 +415,9 @@ public class GMConfiguration {
 	/**
 	 * @return the dbTable
 	 */
-	public String getDatabaseTableName() {
+	public String getDatabaseGroup() {
 
-		return dbTable;
+		return dbGroup;
 	}
 
 

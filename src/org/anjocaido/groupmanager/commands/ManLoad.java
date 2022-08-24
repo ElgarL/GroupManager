@@ -19,6 +19,7 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.events.GMSystemEvent;
@@ -62,30 +63,52 @@ public class ManLoad extends BaseCommand {
 				}
 			}
 
-			GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
+			CompletableFuture.runAsync(() -> {
 
-			GroupManager.getGlobalGroups().load();
-			plugin.getWorldsHolder().getDataSource().loadWorld(auxString, false);
+				try {
+					/*
+					 * Obtain a lock so we can load.
+					 */
+					plugin.getSaveLock().lock();
 
-			sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
+					GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
 
-			GroupManager.setLoaded(true);
+					GroupManager.getGlobalGroups().load();
+					plugin.getWorldsHolder().getDataSource().loadWorld(auxString, false);
 
-			GroupManager.getBukkitPermissions().reset();
+					sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
+
+					GroupManager.setLoaded(true);
+
+					GroupManager.getBukkitPermissions().reset();
+
+				} finally {
+					// Release lock.
+					if(plugin.getSaveLock().isHeldByCurrentThread())
+						plugin.getSaveLock().unlock();
+				}
+			});
 
 		} else {
 
 			/**
 			 * Reload all settings and data as no world was specified.
 			 */
+			try {
+				/*
+				 * Obtain a lock so we can load.
+				 */
+				plugin.getSaveLock().lock();
 
-			/*
-			 * Attempting a fresh load.
-			 */
-			plugin.onDisable(true);
-			plugin.onEnable(true);
+				plugin.onDisable(true);
+				plugin.onEnable(true);
 
-			sender.sendMessage(Messages.getString("RELOADED")); //$NON-NLS-1$
+				sender.sendMessage(Messages.getString("RELOADED")); //$NON-NLS-1$
+			} finally {
+				// Release lock.
+				if(plugin.getSaveLock().isHeldByCurrentThread())
+					plugin.getSaveLock().unlock();
+			}
 		}
 
 		/**

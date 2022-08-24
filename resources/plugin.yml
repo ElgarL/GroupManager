@@ -11,6 +11,13 @@ authors:
 website: https://github.com/ElgarL/GroupManager
 description: Provides on-the-fly system for permissions system created by Nijikokun. But all in memory, and with flat-file saving schedule.
 
+libraries:
+    - org.postgresql:postgresql:42.4.2
+    - com.h2database:h2:2.1.214
+    - mysql:mysql-connector-java:8.0.30
+    - com.zaxxer:HikariCP:5.0.1
+    - org.slf4j:slf4j-api:2.0.0
+
 softdepend: [PlaceholderAPI]
 
 permissions:
