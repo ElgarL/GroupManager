@@ -121,10 +121,10 @@ public class CoreYaml implements DataSource {
 		WorldsHolder holder = plugin.getWorldsHolder();
 		String worldNameLowered = worldName.toLowerCase();
 
-		if (holder.hasOwnData(worldNameLowered)) {
+		/*if (holder.hasOwnData(worldNameLowered)) {
 			holder.getDataSource().reload(holder.getWorldData(worldNameLowered));
 			return;
-		}
+		}*/
 		GroupManager.logger.finest(String.format(Messages.getString("WorldsHolder.ATTEMPT_TO_LOAD"), worldName)); //$NON-NLS-1$
 
 		File thisWorldFolder = new File(worldsFolder, worldNameLowered);

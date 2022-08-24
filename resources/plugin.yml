@@ -64,6 +64,7 @@ permissions:
             groupmanager.tempdelall: true
             groupmanager.mansave: true
             groupmanager.manload: true
+            groupmanager.manimport: true
             groupmanager.manpromote: true
             groupmanager.mandemote: true
             groupmanager.mantogglevalidate: true
@@ -215,6 +216,10 @@ commands:
     description: Reloads current world and config.yml, or loads given world from file to server.
     usage: /<command> [world]
     permission: groupmanager.manload
+  manimport:
+    description: Loads data from Yaml and saves to SQL.
+    usage: /<command>
+    permission: groupmanager.manimport
   manpromote:
     description: Promotes a user in the same heritage line to a higher rank.
     usage: /<command> <player> <group>

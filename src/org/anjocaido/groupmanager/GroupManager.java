@@ -48,6 +48,7 @@ import org.anjocaido.groupmanager.commands.ManGDelV;
 import org.anjocaido.groupmanager.commands.ManGList;
 import org.anjocaido.groupmanager.commands.ManGListP;
 import org.anjocaido.groupmanager.commands.ManGListV;
+import org.anjocaido.groupmanager.commands.ManImport;
 import org.anjocaido.groupmanager.commands.ManLoad;
 import org.anjocaido.groupmanager.commands.ManPromote;
 import org.anjocaido.groupmanager.commands.ManSave;
@@ -304,6 +305,7 @@ public class GroupManager extends JavaPlugin {
 		getCommand("manglist").setExecutor(new ManGList()); //$NON-NLS-1$
 		getCommand("manglistp").setExecutor(new ManGListP()); //$NON-NLS-1$
 		getCommand("manglistv").setExecutor(new ManGListV()); //$NON-NLS-1$
+		getCommand("manimport").setExecutor(new ManImport()); //$NON-NLS-1$
 		getCommand("manload").setExecutor(new ManLoad()); //$NON-NLS-1$
 		getCommand("manpromote").setExecutor(new ManPromote()); //$NON-NLS-1$
 		getCommand("mansave").setExecutor(new ManSave()); //$NON-NLS-1$

@@ -445,6 +445,15 @@ public class WorldDataHolder {
 
 		users.setUsersChanged(haveUsersChanged);
 	}
+	
+	/**
+	 * Flag all users and groups as changed so we can force save to SQL.
+	 */
+	public void setAllChanged() {
+		
+		users.setAllChanged();
+		groups.setAllChanged();
+	}
 
 	/**
 	 *

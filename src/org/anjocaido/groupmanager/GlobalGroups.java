@@ -283,4 +283,17 @@ public class GlobalGroups {
 			}
 		}
 	}
+	
+	/**
+	 * Flag every group changed so we can force update SQL.
+	 */
+	public void setAllGroupsChangedFlag() {
+
+		setGroupsChanged(true);
+		synchronized(groups) {
+			for (Group g : groups.values()) {
+				g.flagAsChanged();;
+			}
+		}
+	}
 }

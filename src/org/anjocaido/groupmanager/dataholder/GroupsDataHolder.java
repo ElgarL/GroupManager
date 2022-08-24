@@ -119,6 +119,15 @@ public class GroupsDataHolder {
 
 		return changed;
 	}
+	
+	/**
+	 * Flag all users as changed so we can force save to SQL.
+	 */
+	public void setAllChanged() {
+		
+		setGroupsChanged(true);
+		groups.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+	}
 
 	/**
 	 * @param changed the state to set for changed.
