@@ -48,7 +48,7 @@ public class CoreSQL implements DataSource {
 	protected final String UPDATE_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_TABLES").toUpperCase();
 	protected final String GLOBALGROUPS_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_GLOBALGROUPS").toUpperCase();
 
-	private Statements STATEMENTS;
+	private Statements statements;
 
 	/**
 	 * Throw any exceptions as we want to prevent
@@ -58,23 +58,23 @@ public class CoreSQL implements DataSource {
 	 * @param statements
 	 * @throws Exception
 	 */
-	protected CoreSQL(GroupManager plugin, Statements statements) throws Exception {
+	public CoreSQL(GroupManager plugin, Statements statements) throws Exception {
 
 		this.plugin = plugin;
-		this.STATEMENTS = statements;
+		this.statements = statements;
 
-		hikari = new HikariCPDataSource(STATEMENTS.DRIVER, STATEMENTS.URL);
+		hikari = new HikariCPDataSource(this.statements.getDriver(), this.statements.getURL());
 
 		// Create the time stamp table if it doesn't exist.
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement create = conn.prepareStatement(String.format(STATEMENTS.CREATE_UPDATE_TABLE, UPDATE_TABLE))) {
+				PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateGlobalGroupTable(), UPDATE_TABLE))) {
 
 			create.execute();
 		}
 
 		// Create the GlobalGroups table if it doesn't exist.
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement create = conn.prepareStatement(String.format(STATEMENTS.CREATE_GLOBALGROUP_TABLE, GLOBALGROUPS_TABLE))) {
+				PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateGlobalGroupTable(), GLOBALGROUPS_TABLE))) {
 
 			
 			create.execute();
@@ -94,7 +94,7 @@ public class CoreSQL implements DataSource {
 			String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + worldNameLowered + "_GROUPS").toUpperCase();
 
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement create = conn.prepareStatement(String.format(STATEMENTS.CREATE_GROUP_TABLE, tableName))) {
+					PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateGroupTable(), tableName))) {
 
 				create.execute();
 
@@ -103,7 +103,7 @@ public class CoreSQL implements DataSource {
 			}
 
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement empty = conn.prepareStatement(String.format(STATEMENTS.SELECT_IS_EMPTY, tableName))) {
+					PreparedStatement empty = conn.prepareStatement(String.format(this.statements.getSelectIsEmpty(), tableName))) {
 
 				ResultSet result = empty.executeQuery();
 
@@ -116,10 +116,10 @@ public class CoreSQL implements DataSource {
 				e1.printStackTrace();
 			}
 
-			// TODO: populate fresh data if the table is empty.
+			// Populate fresh data if the table is empty.
 			if (isEmpty) {
 				try (Connection conn = hikari.getConnection();
-						PreparedStatement insert = conn.prepareStatement(String.format(STATEMENTS.INSERT_REPLACE_GROUP, tableName))) {
+						PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGroup(), tableName))) {
 
 					insert.setString(1, "default");
 					insert.setBoolean(2, true);
@@ -129,8 +129,8 @@ public class CoreSQL implements DataSource {
 
 					insert.executeUpdate();
 
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
 
 				updateTableTimeStamp(tableName, Instant.now().toEpochMilli());
@@ -144,7 +144,7 @@ public class CoreSQL implements DataSource {
 			String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + worldNameLowered + "_USERS").toUpperCase();
 
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement create = conn.prepareStatement(String.format(STATEMENTS.CREATE_USER_TABLE, tableName))) {
+					PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateUserTable(), tableName))) {
 
 				create.execute();
 
@@ -174,7 +174,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(STATEMENTS.SELECT_ALL, GLOBALGROUPS_TABLE))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), GLOBALGROUPS_TABLE))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -240,7 +240,7 @@ public class CoreSQL implements DataSource {
 
 				// Batch push any changed Group data to the database.
 				try (Connection conn = hikari.getConnection();
-						PreparedStatement insert = conn.prepareStatement(String.format(STATEMENTS.INSERT_REPLACE_GLOBALGROUP, GLOBALGROUPS_TABLE));) {
+						PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGlobalGroup(), GLOBALGROUPS_TABLE));) {
 
 					conn.setAutoCommit(false);
 
@@ -488,7 +488,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(STATEMENTS.SELECT_ALL, tableName))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -626,7 +626,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(STATEMENTS.SELECT_ALL, tableName))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -868,7 +868,7 @@ public class CoreSQL implements DataSource {
 
 			// Batch push any changed Group data to the database.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement insert = conn.prepareStatement(String.format(STATEMENTS.INSERT_REPLACE_GROUP, tableName));) {
+					PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGroup(), tableName));) {
 
 				conn.setAutoCommit(false);
 
@@ -1005,7 +1005,7 @@ public class CoreSQL implements DataSource {
 
 			// Batch push any changed User data to the database.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement insert = conn.prepareStatement(String.format(STATEMENTS.INSERT_REPLACE_USER, tableName))) {
+					PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceUser(), tableName))) {
 
 				conn.setAutoCommit(false);
 
@@ -1147,7 +1147,7 @@ public class CoreSQL implements DataSource {
 	private void updateTableTimeStamp(String tableName, Long timeStamp) {
 
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement insert = conn.prepareStatement(String.format(STATEMENTS.INSERT_REPLACE_UPDATE, UPDATE_TABLE))) {
+				PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceUpdate(), UPDATE_TABLE))) {
 
 			insert.setString(1, tableName);
 			insert.setLong(2, timeStamp);
@@ -1226,7 +1226,7 @@ public class CoreSQL implements DataSource {
 
 		// Fetch the time stamp for this table.
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement query = conn.prepareStatement(String.format(STATEMENTS.SELECT_TIMESTAMP, UPDATE_TABLE, tableName))) {
+				PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectTimeStamp(), UPDATE_TABLE, tableName))) {
 
 			ResultSet result = query.executeQuery();
 			if (result.next()) {

@@ -36,6 +36,7 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
+import org.anjocaido.groupmanager.storage.statements.Statements;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
 
@@ -68,7 +69,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		this.plugin = plugin;
 		this.logger = plugin.getLogger();
 
-		dataSource = DataSource.getSource(plugin);
+		dataSource = Statements.getSource(plugin);
 	}
 
 	/**

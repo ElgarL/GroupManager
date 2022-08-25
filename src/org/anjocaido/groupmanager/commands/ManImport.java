@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.storage.CoreYaml;
-import org.anjocaido.groupmanager.storage.DataSource.DATABASE_TYPE;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +22,7 @@ public class ManImport extends BaseCommand {
 	@Override
 	protected boolean parseCommand(@NotNull String[] args) {
 
-		if (GroupManager.getGMConfig().getDatabaseType() == DATABASE_TYPE.YAML) {
+		if (GroupManager.getGMConfig().getDatabaseType().equals("YAML")) {
 			
 			sender.sendMessage(ChatColor.RED + "You can only import when using SQL.");
 			return true;

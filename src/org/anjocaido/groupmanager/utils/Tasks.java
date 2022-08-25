@@ -35,11 +35,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.bukkit.plugin.Plugin;
 
 /**
  * 
@@ -81,6 +83,19 @@ public abstract class Tasks {
 
 		InputStream in = new FileInputStream(src);
 		copy(in, dst);
+	}
+	
+	public static void saveResource(Plugin plugin, File file) {
+		
+		if (!file.exists() || file.length() == 0) {
+
+			InputStream template = plugin.getResource(file.getName()); //$NON-NLS-1$
+			try {
+				Tasks.copy(template, file);
+			} catch (IOException ex) {
+				GroupManager.logger.log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
 	/**

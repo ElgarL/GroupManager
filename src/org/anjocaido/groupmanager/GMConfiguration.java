@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.localization.Messages;
-import org.anjocaido.groupmanager.storage.DataSource;
-import org.anjocaido.groupmanager.storage.DataSource.DATABASE_TYPE;
 import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.yaml.snakeyaml.Yaml;
@@ -48,7 +46,7 @@ public class GMConfiguration {
 	private int saveInterval;
 	private int backupDuration;
 
-	private DATABASE_TYPE dbType;
+	private String dbType;
 	private String dbName;
 	private String dbGroup;
 	private ACCESS_LEVEL accessType;
@@ -82,7 +80,7 @@ public class GMConfiguration {
 		saveInterval = 10;
 		backupDuration = 24;
 
-		dbType = DATABASE_TYPE.YAML;
+		dbType = "YAML";
 		dbName = "minecraft";
 		dbGroup = "GroupManager";
 		accessType = ACCESS_LEVEL.READ_WRITE;
@@ -201,10 +199,10 @@ public class GMConfiguration {
 				section = getElement("database", getElement("data", getElement("settings", GMconfig))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 				try {
-					dbType = DataSource.DATABASE_TYPE.valueOf(section.get("type").toString().toUpperCase()); //$NON-NLS-1$
+					dbType = section.get("type").toString().toUpperCase(); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("type"), ex); //$NON-NLS-1$
-					dbType = DataSource.DATABASE_TYPE.YAML;
+					dbType = "YAML";
 				}
 
 				/*
@@ -397,7 +395,7 @@ public class GMConfiguration {
 	/**
 	 * @return the dbType
 	 */
-	public DataSource.DATABASE_TYPE getDatabaseType() {
+	public String getDatabaseType() {
 
 		return dbType;
 	}
