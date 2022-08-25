@@ -33,7 +33,7 @@
       hours: 24
       
     database:
-      # YAML, H2, MYSQL, SQLITE, POSTGRESQL (SQLite is not supported on pre-1.14 servers)
+      # YAML, H2, MYSQL, SQLITE, POSTGRESQL, MARIADB (SQLite is not supported on pre-1.14 servers)
       type: YAML
       sql:
         # Access level is READ or READ_WRITE.
@@ -44,8 +44,8 @@
         password: pass
         hostname: localhost
         port: 3306
-        #Default ports
-        # MYSQL 3306
+        # Default ports
+        # MYSQL & MARIADB 3306
         # POSTGRESQL 5432
 
   maintenance:

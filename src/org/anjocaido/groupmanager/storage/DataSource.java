@@ -10,6 +10,7 @@ import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.storage.statements.H2Statements;
+import org.anjocaido.groupmanager.storage.statements.MariaDBStatements;
 import org.anjocaido.groupmanager.storage.statements.MySQLStatements;
 import org.anjocaido.groupmanager.storage.statements.PostgreSQLStatements;
 import org.anjocaido.groupmanager.storage.statements.SQLiteStatements;
@@ -159,6 +160,9 @@ public interface DataSource {
 			
 		case POSTGRESQL:
 			return new CoreSQL(plugin, new PostgreSQLStatements());
+			
+		case MARIADB:
+			return new CoreSQL(plugin, new MariaDBStatements());
 
 		case YAML:
 		default:
@@ -168,7 +172,7 @@ public interface DataSource {
 
 	enum BACKUP_TYPE { GROUPS, USERS, GLOBALGROUPS }
 
-	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL, POSTGRESQL }
+	enum DATABASE_TYPE { YAML, SQLITE, H2, MYSQL, POSTGRESQL, MARIADB }
 
 	enum ACCESS_LEVEL { READ, READ_WRITE }
 }
