@@ -294,6 +294,8 @@ v2.9:
         PAPI permission checks - %groupmanager_perm_permission.here%
 v3.0:
     - Performance improvements.
+    - Add database support for - YAML, H2, MYSQL, SQLITE, POSTGRESQL
+    - Add "manimport" command to load Yaml data into SQL.
     - Version update checking now works correctly.
     - Add a purge for old users (runs at server start).
         If players do not log in for (default 90 days) their data will be deleted.
