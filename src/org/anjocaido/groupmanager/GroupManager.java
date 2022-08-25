@@ -422,7 +422,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			Runnable committer = () -> {
 
-				worldsHolder.refreshPermissions();
+				getWorldsHolder().refreshPermissions();
 			};
 			/*
 			 * Thread for purging expired permissions.
@@ -432,30 +432,19 @@ public class GroupManager extends JavaPlugin {
 				if (isLoaded()) {
 
 					try {
-						// obtain a lock so we are the only thread saving (blocking).
-						getSaveLock().lock();
 
 						/*
 						 * If we removed any permissions and saving is not disabled
 						 * update our data files so we are not updating perms
 						 * every 60 seconds.
 						 */
-						if (worldsHolder.purgeExpiredPerms()) {
+						if (getWorldsHolder().purgeExpiredPerms()) {
 
-							if (worldsHolder.saveChanges(false)) {
-								// Annoying spam.
-								//GroupManager.logger.log(Level.INFO, Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-							}
-
+							getWorldsHolder().refreshPermissions();
 						}
+						
 					} catch (Exception ex) {
 						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions: " + ex.getMessage());
-					} finally {
-						/*
-						 * Release the lock.
-						 */
-						if(getSaveLock().isHeldByCurrentThread())
-							getSaveLock().unlock();
 					}
 				}
 			};
