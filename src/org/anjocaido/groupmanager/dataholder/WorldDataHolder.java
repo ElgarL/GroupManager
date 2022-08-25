@@ -154,7 +154,9 @@ public class WorldDataHolder {
 		if (user != null) {
 
 			GroupManager.logger.fine("User record found for UUID: " + uUID + ":" + currentName);
-			user.setLastName(currentName);
+			
+			if (!user.getLastName().equals(currentName))
+				user.setLastName(currentName);
 			/*
 			 * Check for a non UUID name match as
 			 * its possible some plugin (worldedit)
