@@ -434,6 +434,8 @@ public class BukkitPermissions {
 			 * later in the PlayerJoinEvent.
 			 */
 
+			plugin.getWorldsHolder().refreshPermissions();
+			
 			// Tab complete command visibility
 			// Server too old to support updateCommands.
 			if (!Supported.hasUpdateCommand())
@@ -473,7 +475,6 @@ public class BukkitPermissions {
 			updatePermissions(player);
 
 			setPlayer_join(false);
-			plugin.getWorldsHolder().refreshPermissions();
 		}
 
 		@EventHandler(priority = EventPriority.LOWEST)
