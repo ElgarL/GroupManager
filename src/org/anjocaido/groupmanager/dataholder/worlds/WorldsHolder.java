@@ -237,6 +237,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 					plugin.getSaveLock().unlock();
 				}
 			}
+			GroupManager.getBukkitPermissions().updateAllPlayers();
 		});
 	}
 
