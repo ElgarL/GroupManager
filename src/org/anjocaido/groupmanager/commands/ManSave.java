@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -55,6 +56,7 @@ public class ManSave extends BaseCommand {
 				 * Obtain a lock so we can save.
 				 */
 				plugin.getSaveLock().lock();
+				GroupManager.setLoaded(false);
 
 				plugin.getWorldsHolder().saveChanges(forced.get());
 				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
@@ -64,8 +66,10 @@ public class ManSave extends BaseCommand {
 
 			} finally {
 				// Release lock.
-				if(plugin.getSaveLock().isHeldByCurrentThread())
+				if(plugin.getSaveLock().isHeldByCurrentThread()) {
+					GroupManager.setLoaded(true);
 					plugin.getSaveLock().unlock();
+				}
 			}
 		});
 

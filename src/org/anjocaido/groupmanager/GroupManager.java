@@ -422,26 +422,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			Runnable committer = () -> {
 
-				if (isLoaded()) {
-
-					try {
-						// obtain a lock so we are the only thread saving (blocking).
-						getSaveLock().lock();
-
-						if (worldsHolder.saveChanges(false)) {
-							// Annoying spam.
-							//GroupManager.logger.log(Level.INFO, (Messages.getString("GroupManager.REFRESHED"))); //$NON-NLS-1$
-						}
-					} catch (IllegalStateException ex) {
-						GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
-					} finally {
-						/*
-						 * Release the lock.
-						 */
-						if(getSaveLock().isHeldByCurrentThread())
-							getSaveLock().unlock();
-					}
-				}
+				worldsHolder.refreshPermissions();
 			};
 			/*
 			 * Thread for purging expired permissions.

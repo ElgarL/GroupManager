@@ -473,6 +473,7 @@ public class BukkitPermissions {
 			updatePermissions(player);
 
 			setPlayer_join(false);
+			plugin.getWorldsHolder().refreshPermissions();
 		}
 
 		@EventHandler(priority = EventPriority.LOWEST)
@@ -505,6 +506,7 @@ public class BukkitPermissions {
 			 * force remove any attachments as bukkit may not
 			 */
 			removeAttachment(uuid);
+			plugin.getWorldsHolder().refreshPermissions();
 		}
 	}
 

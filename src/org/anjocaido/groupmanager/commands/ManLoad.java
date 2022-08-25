@@ -70,7 +70,6 @@ public class ManLoad extends BaseCommand {
 					 * Obtain a lock so we can load.
 					 */
 					plugin.getSaveLock().lock();
-
 					GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
 
 					GroupManager.getGlobalGroups().load();
@@ -78,14 +77,15 @@ public class ManLoad extends BaseCommand {
 
 					sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
 
-					GroupManager.setLoaded(true);
-
-					GroupManager.getBukkitPermissions().reset();
 
 				} finally {
 					// Release lock.
-					if(plugin.getSaveLock().isHeldByCurrentThread())
+					if(plugin.getSaveLock().isHeldByCurrentThread()) {
+						GroupManager.setLoaded(true);
 						plugin.getSaveLock().unlock();
+						
+						GroupManager.getBukkitPermissions().reset();
+					}
 				}
 			});
 

@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -205,11 +206,56 @@ public abstract class WorldsHolder extends ChildMirrors {
 		}
 		return result;
 	}
+	
+	/**
+	 * Verify we have the most up to date permissions.
+	 */
+	public void refreshPermissions() {
+
+		// Check for any updated permissions
+		CompletableFuture.runAsync(() -> {
+
+			try {
+
+				if (GroupManager.isLoaded()) {
+
+					try {
+						/*
+						 * Obtain a lock so we can load.
+						 */
+						plugin.getSaveLock().lock();
+						GroupManager.setLoaded(false);
+
+						saveChanges(false);
+		
+					} catch (IllegalStateException ex) {
+						GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
+					} finally {
+						/*
+						 * Release the lock.
+						 */
+						if(plugin.getSaveLock().isHeldByCurrentThread()) {
+							GroupManager.setLoaded(true);
+							plugin.getSaveLock().unlock();
+						}
+					}
+				}
+
+			} finally {
+				// Release lock.
+				if(plugin.getSaveLock().isHeldByCurrentThread()) {
+					GroupManager.setLoaded(false);
+					plugin.getSaveLock().unlock();
+				}
+			}
+		});
+	}
 
 	/**
 	 * Wrapper to retain backwards compatibility
 	 * (call this function to auto overwrite files)
 	 */
+	@Deprecated
 	public void saveChanges() {
 
 		saveChanges(true);
