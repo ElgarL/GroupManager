@@ -476,6 +476,7 @@ public class GroupManager extends JavaPlugin {
 										if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
 
 											world.removeUser(user.getUUID());
+											world.setUsersChanged(true);
 											count++;
 										}
 									}
