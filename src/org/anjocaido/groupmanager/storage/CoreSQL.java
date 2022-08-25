@@ -112,8 +112,8 @@ public class CoreSQL implements DataSource {
 					GroupManager.logger.info("Total Count for Groups in " + worldNameLowered + ":" + result.getInt(1));
 				}
 
-			} catch (SQLException e1) {
-				e1.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 			// Populate fresh data if the table is empty.
@@ -148,8 +148,8 @@ public class CoreSQL implements DataSource {
 
 				create.execute();
 
-			} catch (SQLException e1) {
-				e1.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 			// All done. We don't need any default data for users.
