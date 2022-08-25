@@ -190,8 +190,8 @@ public abstract class WorldsHolder extends ChildMirrors {
 			}
 
 			/*
-			* Update individual player permissions if changed.
-			*/
+			 * Update individual player permissions if changed.
+			 */
 			if (world.purgeTimedPermissions()) {
 				result = true;
 
@@ -206,7 +206,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Verify we have the most up to date permissions.
 	 */
@@ -215,36 +215,25 @@ public abstract class WorldsHolder extends ChildMirrors {
 		// Check for any updated permissions
 		CompletableFuture.runAsync(() -> {
 
+			if (!GroupManager.isLoaded()) return;
+
 			try {
+				/*
+				 * Obtain a lock so we can load.
+				 */
+				plugin.getSaveLock().lock();
+				GroupManager.setLoaded(false);
 
-				if (GroupManager.isLoaded()) {
+				saveChanges(false);
 
-					try {
-						/*
-						 * Obtain a lock so we can load.
-						 */
-						plugin.getSaveLock().lock();
-						GroupManager.setLoaded(false);
-
-						saveChanges(false);
-		
-					} catch (IllegalStateException ex) {
-						GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
-					} finally {
-						/*
-						 * Release the lock.
-						 */
-						if(plugin.getSaveLock().isHeldByCurrentThread()) {
-							GroupManager.setLoaded(true);
-							plugin.getSaveLock().unlock();
-						}
-					}
-				}
-
+			} catch (IllegalStateException ex) {
+				GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
 			} finally {
-				// Release lock.
+				/*
+				 * Release the lock.
+				 */
 				if(plugin.getSaveLock().isHeldByCurrentThread()) {
-					GroupManager.setLoaded(false);
+					GroupManager.setLoaded(true);
 					plugin.getSaveLock().unlock();
 				}
 			}
@@ -334,8 +323,8 @@ public abstract class WorldsHolder extends ChildMirrors {
 						// Newer file found.
 						GroupManager.logger.log(Level.WARNING, Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE") + w.getName()); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
-						}
-					} else {
+					}
+				} else {
 					// Check for newer file as no local changes.
 					if (dataSource.hasNewUsersData(w)) {
 						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
@@ -573,9 +562,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 					// users isn't mirrored so we need to add this worlds data source
 					list.add(data);
-					}
 				}
 			}
+		}
 		return list;
 	}
 }
