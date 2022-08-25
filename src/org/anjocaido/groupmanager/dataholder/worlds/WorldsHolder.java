@@ -213,10 +213,11 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public void refreshPermissions() {
 
 		// Check for any updated permissions
-		CompletableFuture.runAsync(() -> {
+		CompletableFuture.supplyAsync(() -> {
 
-			if (!GroupManager.isLoaded()) return;
+			if (!GroupManager.isLoaded()) return false;
 
+			boolean changed = false;
 			try {
 				/*
 				 * Obtain a lock so we can load.
@@ -224,7 +225,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 				plugin.getSaveLock().lock();
 				GroupManager.setLoaded(false);
 
-				saveChanges(false);
+				changed = saveChanges(false);
 
 			} catch (IllegalStateException ex) {
 				GroupManager.logger.log(Level.SEVERE, ("Failed to save changes: " + ex.getMessage()));
@@ -237,7 +238,13 @@ public abstract class WorldsHolder extends ChildMirrors {
 					plugin.getSaveLock().unlock();
 				}
 			}
-			GroupManager.getBukkitPermissions().updateAllPlayers();
+
+			return changed;
+		}).thenAccept((changed) -> {
+			
+			if (changed) {
+				GroupManager.getBukkitPermissions().updateAllPlayers();
+			}
 		});
 	}
 
