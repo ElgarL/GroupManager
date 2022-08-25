@@ -329,7 +329,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 					} else {
 						// Newer file found.
-						GroupManager.logger.log(Level.WARNING, Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE") + w.getName()); //$NON-NLS-1$
+						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
