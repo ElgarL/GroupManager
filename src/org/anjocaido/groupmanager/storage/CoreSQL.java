@@ -1162,19 +1162,19 @@ public class CoreSQL implements DataSource {
 	@Override
 	public boolean hasNewGlobalGroupsData() {
 
-		return GroupManager.getGlobalGroups().getTimeStampGroups() < timeStampQuery(GLOBALGROUPS_TABLE);
+		return GroupManager.getGlobalGroups().getTimeStampGroups() != timeStampQuery(GLOBALGROUPS_TABLE);
 	}
 
 	@Override
 	public boolean hasNewGroupsData(WorldDataHolder dataHolder) {
 
-		return dataHolder.getGroupsObject().getTimeStamp() < getDatabaseTimeStampGroups(dataHolder);
+		return dataHolder.getGroupsObject().getTimeStamp() != getDatabaseTimeStampGroups(dataHolder);
 	}
 
 	@Override
 	public boolean hasNewUsersData(WorldDataHolder dataHolder) {
 
-		return dataHolder.getUsersObject().getTimeStamp() < getDatabaseTimeStampUsers(dataHolder);
+		return dataHolder.getUsersObject().getTimeStamp() != getDatabaseTimeStampUsers(dataHolder);
 	}
 
 	/**

@@ -37,6 +37,7 @@ import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
+import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.storage.statements.Statements;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
@@ -268,11 +269,13 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		// Remove old backups.
 		dataSource.purgeBackups();
+		
+		boolean canWrite = GroupManager.getGMConfig().getAccessType() == ACCESS_LEVEL.READ_WRITE;
 
 		/*
 		 * Save Global Groups
 		 */
-		if (GroupManager.getGlobalGroups().haveGroupsChanged()) {
+		if (GroupManager.getGlobalGroups().haveGroupsChanged() && canWrite) {
 			dataSource.backup(null, DataSource.BACKUP_TYPE.GLOBALGROUPS);
 			plugin.getWorldsHolder().getDataSource().saveGlobalGroups(overwrite);
 
@@ -296,7 +299,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 			}
 
 			if (!hasGroupsMirror(w.getName())) {
-				if (w.haveGroupsChanged()) {
+				if (w.haveGroupsChanged() && canWrite) {
 					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(w))) {
 						// Backup Groups file
 						dataSource.backup(w, DataSource.BACKUP_TYPE.GROUPS);
@@ -320,7 +323,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 			}
 
 			if (!hasUsersMirror(w.getName())) {
-				if (w.haveUsersChanged()) {
+				if (w.haveUsersChanged() && canWrite) {
 					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(w))) {
 						// Backup Users file
 						dataSource.backup(w, DataSource.BACKUP_TYPE.USERS);
