@@ -35,9 +35,9 @@
     database:
       # YAML, H2, MYSQL, SQLITE, POSTGRESQL, MARIADB (SQLite is not supported on pre-1.14 servers)
       type: YAML
+      # Access level is READ or READ_WRITE.
+      access: READ_WRITE
       sql:
-        # Access level is READ or READ_WRITE.
-        access: READ_WRITE
         name: minecraft
         group: GroupManager
         username: root

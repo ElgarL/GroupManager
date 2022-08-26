@@ -204,18 +204,18 @@ public class GMConfiguration {
 					GroupManager.logger.log(Level.SEVERE, nodeError("type"), ex); //$NON-NLS-1$
 					dbType = "YAML";
 				}
-
-				/*
-				 * SQL nodes.
-				 */
-				section = getElement("sql", getElement("database", getElement("data", getElement("settings", GMconfig)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-
+				
 				try {
 					accessType = ACCESS_LEVEL.valueOf(section.get("access").toString().toUpperCase()); //$NON-NLS-1$
 				} catch (Exception ex) {
 					GroupManager.logger.log(Level.SEVERE, nodeError("access"), ex); //$NON-NLS-1$
 					accessType = ACCESS_LEVEL.READ_WRITE;
 				}
+
+				/*
+				 * SQL nodes.
+				 */
+				section = getElement("sql", getElement("database", getElement("data", getElement("settings", GMconfig)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 				try {
 					dbName = (String) section.get("name"); //$NON-NLS-1$
