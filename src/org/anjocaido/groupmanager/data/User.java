@@ -85,6 +85,8 @@ public class User extends DataUnit implements Cloneable {
 		}
 
 		User clone = dataSource.createUser(this.getUUID());
+		
+		clone.setLastName(this.getLastName());
 
 		if (dataSource.getGroup(group) == null) {
 			clone.setGroup(dataSource.getDefaultGroup());
@@ -101,7 +103,7 @@ public class User extends DataUnit implements Cloneable {
 		clone.subGroups.putAll(this.subGroups);
 
 		clone.variables = this.variables.clone(this);
-		clone.flagAsChanged();
+		// No need to flagAsChanged as its done in createUser
 		return clone;
 	}
 

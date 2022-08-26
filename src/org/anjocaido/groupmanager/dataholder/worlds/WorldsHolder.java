@@ -242,7 +242,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 			return changed;
 		}).thenAccept((changed) -> {
-			
+
 			if (changed) {
 				GroupManager.getBukkitPermissions().updateAllPlayers();
 			}
@@ -269,7 +269,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		// Remove old backups.
 		dataSource.purgeBackups();
-		
+
 		boolean canWrite = GroupManager.getGMConfig().getAccessType() == ACCESS_LEVEL.READ_WRITE;
 
 		/*
@@ -289,64 +289,67 @@ public abstract class WorldsHolder extends ChildMirrors {
 		/*
 		 * Save each world.
 		 */
-		for (OverloadedWorldHolder w : worldsData.values()) {
-			if (alreadyDone.contains(w)) {
+		for (OverloadedWorldHolder dataHolder : worldsData.values()) {
+			if (alreadyDone.contains(dataHolder)) {
 				continue;
 			}
-			if (w == null) {
+			if (dataHolder == null) {
 				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
 				continue;
 			}
 
-			if (!hasGroupsMirror(w.getName())) {
-				if (w.haveGroupsChanged() && canWrite) {
-					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(w))) {
+			if (!hasGroupsMirror(dataHolder.getName())) {
+				if (dataHolder.haveGroupsChanged() && canWrite) {
+					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(dataHolder))) {
 						// Backup Groups file
-						dataSource.backup(w, DataSource.BACKUP_TYPE.GROUPS);
-						dataSource.saveGroups(w);
+						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.GROUPS);
+						dataSource.saveGroups(dataHolder);
 						changed = true;
 
 					} else {
 						// Newer file found.
-						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
+						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
-					//Check for newer file as no local changes.
-					if (dataSource.hasNewGroupsData(w)) {
+					//Check for newer file as no local changes or we are set to READ only.
+					if (dataSource.hasNewGroupsData(dataHolder) || dataHolder.haveGroupsChanged()) {
 						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
-						dataSource.reloadGroups(w);
+						dataSource.reloadGroups(dataHolder);
 						changed = true;
 					}
 				}
 			}
 
-			if (!hasUsersMirror(w.getName())) {
-				if (w.haveUsersChanged() && canWrite) {
-					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(w))) {
+			if (!hasUsersMirror(dataHolder.getName())) {
+				if (dataHolder.haveUsersChanged() && canWrite) {
+					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(dataHolder))) {
 						// Backup Users file
-						dataSource.backup(w, DataSource.BACKUP_TYPE.USERS);
-						dataSource.saveUsers(w);
+						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.USERS);
+						dataSource.saveUsers(dataHolder);
 						changed = true;
 
 					} else {
 						// Newer file found.
-						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE"), w.getName())); //$NON-NLS-1$
+						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
-					// Check for newer file as no local changes.
-					if (dataSource.hasNewUsersData(w)) {
+					// Check for newer file as no local changes or we are set to READ only.
+					if (dataSource.hasNewUsersData(dataHolder) || dataHolder.haveUsersChanged()) {
+
 						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
-						dataSource.reloadUsers(w);
+						dataSource.reloadUsers(dataHolder);
+
 						changed = true;
 					}
 				}
 			}
-			alreadyDone.add(w);
+			alreadyDone.add(dataHolder);
 		}
+
 		return changed;
 	}
 

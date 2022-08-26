@@ -147,16 +147,14 @@ public class WorldDataHolder {
 	 * @return the user object for this player.
 	 */
 	public User getUser(String uUID, String currentName) {
-
+		
 		// Check for a UUID account
 		User user = getUsers().get(uUID.toLowerCase());
 
 		if (user != null) {
-
-			GroupManager.logger.fine("User record found for UUID: " + uUID + ":" + currentName);
 			
-			if (!user.getLastName().equals(currentName))
-				user.setLastName(currentName);
+			user.setLastName(currentName);
+			
 			/*
 			 * Check for a non UUID name match as
 			 * its possible some plugin (worldedit)
@@ -166,7 +164,7 @@ public class WorldDataHolder {
 			 * force create a user .
 			 */
 			getUsers().remove(currentName.toLowerCase());
-
+			
 			return user;
 		}
 
@@ -182,20 +180,12 @@ public class WorldDataHolder {
 			this.removeUser(user.getUUID().toLowerCase());
 			this.addUser(usr);
 
-			GroupManager.logger.fine("Updating User record for UUID: " + uUID + ":" + currentName);
-
 			return getUsers().get(uUID.toLowerCase());
-		}
-
-		if (user != null) {
-			GroupManager.logger.fine("User record found but UUID mismatch for: " + currentName);
 		}
 
 		// No user account found so create a new one.
 		User newUser = createUser(uUID.toLowerCase());
 		newUser.setLastName(currentName);
-
-		GroupManager.logger.fine("New User record created: " + uUID + ":" + currentName);
 
 		return newUser;
 	}
@@ -447,12 +437,12 @@ public class WorldDataHolder {
 
 		users.setUsersChanged(haveUsersChanged);
 	}
-	
+
 	/**
 	 * Flag all users and groups as changed so we can force save to SQL.
 	 */
 	public void setAllChanged() {
-		
+
 		users.setAllChanged();
 		groups.setAllChanged();
 	}
@@ -469,8 +459,8 @@ public class WorldDataHolder {
 		for (User u : users.getUsers().values()) {
 			if (u.isChanged()) {
 				return true;
-				}
 			}
+		}
 		return false;
 	}
 

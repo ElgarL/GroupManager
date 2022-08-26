@@ -142,7 +142,7 @@ public abstract class DataUnit {
 
 	public void setLastName(String lastName) {
 
-		if (!lastName.equals(this.lastName)) {
+		if (!lastName.equalsIgnoreCase(this.lastName)) {
 
 			this.lastName = lastName;
 			dataSource.putUUIDLookup(lastName, uUID);

@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -61,6 +62,11 @@ public abstract class Tasks {
 		PrintWriter pw = new PrintWriter(sw);
 		exception.printStackTrace(pw);
 		return sw.toString();
+	}
+	
+	public static void printStackTrace() {
+		
+		StringUtils.join(new Throwable().getStackTrace(), "\n");
 	}
 
 	public static void copy(InputStream src, File dst) throws IOException {
