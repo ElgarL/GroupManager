@@ -126,7 +126,7 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		
+
 		// Check dependencies
 		getLogger().info("Dependencies: " + (DependencyManager.checkDependencies(this) ? "OK" : "Warning unknown state!"));
 	}
@@ -139,7 +139,7 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		
+
 		/*
 		 * Initialize the event handler
 		 */
@@ -154,7 +154,8 @@ public class GroupManager extends JavaPlugin {
 		if (!restarting) {
 			// Unregister this service if we are shutting down.
 			this.getServer().getServicesManager().unregister(this);
-			if (WorldEvents != null) WorldEvents = null;
+			if (WorldEvents != null)
+				WorldEvents = null;
 			BukkitPermissions = null;
 		}
 
@@ -171,7 +172,6 @@ public class GroupManager extends JavaPlugin {
 		if (BukkitPermissions != null) {
 			BukkitPermissions.removeAllAttachments();
 		}
-
 
 		// log that we are disabled.
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -286,6 +286,9 @@ public class GroupManager extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * Register all our commands.
+	 */
 	private void initCommands() {
 
 		getCommand("mancheckw").setExecutor(new ManCheckW()); //$NON-NLS-1$
@@ -334,6 +337,9 @@ public class GroupManager extends JavaPlugin {
 
 	}
 
+	/**
+	 * Initialize any plugins we may hook in to.
+	 */
 	private void checkPlugins() {
 
 		List<String> addons = new ArrayList<>();
@@ -387,24 +393,6 @@ public class GroupManager extends JavaPlugin {
 
 	}
 
-	/**
-	 * @return the validateOnlinePlayer
-	 */
-	@Deprecated // Use getGMConfig().isToggleValidate()
-	public boolean isValidateOnlinePlayer() {
-
-		return getGMConfig().isToggleValidate();
-	}
-
-	/**
-	 * @param validateOnlinePlayer the validateOnlinePlayer to set
-	 */
-	@Deprecated // Use getGMConfig().setToggleValidate(value)
-	public void setValidateOnlinePlayer(boolean validateOnlinePlayer) {
-
-		getGMConfig().setToggleValidate(validateOnlinePlayer);
-	}
-
 	private void prepareBackupFolder() {
 
 		backupFolder = new File(this.getDataFolder(), "backup"); //$NON-NLS-1$
@@ -442,7 +430,7 @@ public class GroupManager extends JavaPlugin {
 
 							getWorldsHolder().refreshData();
 						}
-						
+
 					} catch (Exception ex) {
 						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions: " + ex.getMessage());
 					}
@@ -463,24 +451,26 @@ public class GroupManager extends JavaPlugin {
 
 							if (!getWorldsHolder().hasUsersMirror(world.getName())) {
 
-								for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
-									User user = iterator.next();
-									long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
+								synchronized (world.getUsers()) {
+									for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
+										User user = iterator.next();
+										long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
 
-									/*
-									 * Users with a lastplayed variable set to 0 are protected from deletion.
-									 */
-									if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
-										long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
+										/*
+										 * Users with a lastplayed variable set to 0 are protected from deletion.
+										 */
+										if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
+											long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
 
-										if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
+											if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
 
-											world.removeUser(user.getUUID());
-											world.setUsersChanged(true);
-											count++;
+												world.removeUser(user.getUUID());
+												world.setUsersChanged(true);
+												count++;
+											}
 										}
+										Thread.sleep(1000);
 									}
-									Thread.sleep(1000);
 								}
 							}
 						}
@@ -498,10 +488,10 @@ public class GroupManager extends JavaPlugin {
 
 			if (minutes > 0) {
 				scheduler.scheduleAtFixedRate(committer, minutes, minutes, TimeUnit.MINUTES);
-				
+
 				if (getGMConfig().isTimedEnabled())
 					scheduler.scheduleAtFixedRate(cleanup, 0, 1, TimeUnit.MINUTES);
-				
+
 				if (getGMConfig().isPurgeEnabled())
 					scheduler.schedule(maintenance, 30, TimeUnit.SECONDS);
 
@@ -520,7 +510,8 @@ public class GroupManager extends JavaPlugin {
 				scheduler.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
 				scheduler.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 				scheduler.shutdown();
-			} catch (Exception ignored) {}
+			} catch (Exception ignored) {
+			}
 			scheduler = null;
 			GroupManager.logger.log(Level.WARNING, Messages.getString("GroupManager.SCHEDULED_DATA_SAVING_DISABLED")); //$NON-NLS-1$
 		}
@@ -627,7 +618,6 @@ public class GroupManager extends JavaPlugin {
 		GroupManager.isLoaded = isLoaded;
 	}
 
-
 	/**
 	 * @return the saveLock
 	 */
@@ -676,5 +666,25 @@ public class GroupManager extends JavaPlugin {
 	private static void setGMEventHandler(GroupManagerEventHandler gMEventHandler) {
 
 		GMEventHandler = gMEventHandler;
+	}
+
+	/**
+	 * @deprecated	Use getGMConfig().isToggleValidate()
+	 * @return the validateOnlinePlayer
+	 */
+	@Deprecated // Use getGMConfig().isToggleValidate()
+	public boolean isValidateOnlinePlayer() {
+
+		return getGMConfig().isToggleValidate();
+	}
+
+	/**
+	 * @deprecated	Use getGMConfig().setToggleValidate(value)
+	 * @param validateOnlinePlayer the validateOnlinePlayer to set
+	 */
+	@Deprecated // Use getGMConfig().setToggleValidate(value)
+	public void setValidateOnlinePlayer(boolean validateOnlinePlayer) {
+
+		getGMConfig().setToggleValidate(validateOnlinePlayer);
 	}
 }
