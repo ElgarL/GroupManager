@@ -48,9 +48,9 @@ public class GMSystemEvent extends Event {
 
 	//////////////////////////////
 
-	protected Action action;
+	private Action action;
 
-	public GMSystemEvent(Action action) {
+	GMSystemEvent(Action action) {
 
 		super();
 
@@ -66,7 +66,7 @@ public class GMSystemEvent extends Event {
 		RELOADED, SAVED, DEFAULT_GROUP_CHANGED, VALIDATE_TOGGLE,
 	}
 
-	public void schedule(final GMSystemEvent event) {
+	void schedule(final GMSystemEvent event) {
 
 		synchronized (GroupManager.getGMEventHandler().getServer()) {
 			if (GroupManager.getGMEventHandler().getServer().getScheduler().scheduleSyncDelayedTask(GroupManager.getGMEventHandler().getPlugin(), () -> GroupManager.getGMEventHandler().getServer().getPluginManager().callEvent(event), 1) == -1)

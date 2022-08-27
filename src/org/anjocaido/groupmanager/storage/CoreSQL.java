@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GlobalGroups;
 import org.anjocaido.groupmanager.GroupManager;
@@ -42,11 +43,11 @@ import org.bukkit.World;
  */
 public class CoreSQL implements DataSource {
 
-	protected final GroupManager plugin;
-	protected HikariCPDataSource hikari;
+	private final GroupManager plugin;
+	private HikariCPDataSource hikari;
 
-	protected final String UPDATE_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_TABLES").toUpperCase();
-	protected final String GLOBALGROUPS_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_GLOBALGROUPS").toUpperCase();
+	private final String UPDATE_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_TABLES").toUpperCase();
+	private final String GLOBALGROUPS_TABLE = (GroupManager.getGMConfig().getDatabaseGroup() + "_GLOBALGROUPS").toUpperCase();
 
 	private Statements statements;
 
@@ -67,7 +68,7 @@ public class CoreSQL implements DataSource {
 
 		// Create the time stamp table if it doesn't exist.
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateGlobalGroupTable(), UPDATE_TABLE))) {
+				PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateUpdateTable(), UPDATE_TABLE))) {
 
 			create.execute();
 		}
@@ -76,7 +77,7 @@ public class CoreSQL implements DataSource {
 		try (Connection conn = hikari.getConnection();
 				PreparedStatement create = conn.prepareStatement(String.format(this.statements.getCreateGlobalGroupTable(), GLOBALGROUPS_TABLE))) {
 
-			
+
 			create.execute();
 		}
 	}
@@ -98,8 +99,8 @@ public class CoreSQL implements DataSource {
 
 				create.execute();
 
-			} catch (SQLException e1) {
-				e1.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 			try (Connection conn = hikari.getConnection();
@@ -109,7 +110,6 @@ public class CoreSQL implements DataSource {
 
 				if (result.next()){
 					isEmpty = (result.getInt(1) == 0);
-					GroupManager.logger.info("Total Count for Groups in " + worldNameLowered + ":" + result.getInt(1));
 				}
 
 			} catch (SQLException e) {
@@ -118,6 +118,8 @@ public class CoreSQL implements DataSource {
 
 			// Populate fresh data if the table is empty.
 			if (isEmpty) {
+
+				long timeStamp = Instant.now().toEpochMilli();
 				try (Connection conn = hikari.getConnection();
 						PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGroup(), tableName))) {
 
@@ -126,6 +128,7 @@ public class CoreSQL implements DataSource {
 					insert.setString(3, null);
 					insert.setString(4, null);
 					insert.setString(5, null);
+					insert.setLong(6, timeStamp);
 
 					insert.executeUpdate();
 
@@ -133,7 +136,7 @@ public class CoreSQL implements DataSource {
 					e.printStackTrace();
 				}
 
-				updateTableTimeStamp(tableName, Instant.now().toEpochMilli());
+				updateTableTimeStamp(tableName, timeStamp);
 			}
 		}
 
@@ -174,7 +177,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), GLOBALGROUPS_TABLE))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), GLOBALGROUPS_TABLE, globalGroups.getTimeStampGroups()))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -254,13 +257,14 @@ public class CoreSQL implements DataSource {
 
 							if (!group.isChanged()) continue;
 
-							changed = Instant.now().toEpochMilli();
+							if (changed == null) changed = Instant.now().toEpochMilli();
 
 							String name = group.getName();
 							List<String> permissions = group.getSavePermissionList();
 
 							insert.setString(1, name);
 							insert.setString(2, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
+							insert.setLong(3, changed);
 
 							insert.addBatch();
 						}
@@ -345,7 +349,7 @@ public class CoreSQL implements DataSource {
 			for (String name : databaseGroups) {
 				if (!keys.contains(name)) {
 
-					changed = Instant.now().toEpochMilli();
+					if (changed == null) changed = Instant.now().toEpochMilli();
 
 					insert.setString(1, name);
 					insert.addBatch();
@@ -362,7 +366,7 @@ public class CoreSQL implements DataSource {
 
 			if (changed == null) {
 				// No data was deleted so catch up
-				changed = Instant.now().toEpochMilli();
+				changed = timeStampQuery(GLOBALGROUPS_TABLE);
 			}
 
 		} catch (Exception e) {
@@ -478,7 +482,7 @@ public class CoreSQL implements DataSource {
 		loadGroupsAsync(dataHolder).get();
 	}
 
-	public CompletableFuture<Void> loadGroupsAsync(WorldDataHolder dataHolder) {
+	private CompletableFuture<Void> loadGroupsAsync(WorldDataHolder dataHolder) {
 
 		return CompletableFuture.supplyAsync(() -> {
 
@@ -488,7 +492,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName, dataHolder.getGroupsObject().getTimeStamp()))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -566,8 +570,6 @@ public class CoreSQL implements DataSource {
 						});
 						thisGrp.setVariables(info);
 					}
-
-
 				}
 
 				/*
@@ -576,7 +578,7 @@ public class CoreSQL implements DataSource {
 				for (String group : inheritanceMap.keySet()) {
 					List<String> inheritedList = inheritanceMap.get(group);
 					Group thisGroup = dataHolder.getGroup(group);
-					if (thisGroup != null)
+					if (thisGroup != null) {
 						for (String inheritedKey : inheritedList) {
 							if (inheritedKey != null) {
 								Group inheritedGroup = dataHolder.getGroup(inheritedKey);
@@ -586,6 +588,7 @@ public class CoreSQL implements DataSource {
 									GroupManager.logger.warning(String.format(Messages.getString("WorldDatHolder.WARN_INHERITED_NOT_FOUND"), inheritedKey, thisGroup.getName(), dataHolder.getName()));
 							}
 						}
+					}
 				}
 
 				if (dataHolder.getDefaultGroup() == null) {
@@ -618,7 +621,7 @@ public class CoreSQL implements DataSource {
 		loadUsersAsync(dataHolder).get();
 	}
 
-	public CompletableFuture<Void> loadUsersAsync(WorldDataHolder dataHolder) {
+	private CompletableFuture<Void> loadUsersAsync(WorldDataHolder dataHolder) {
 
 		return CompletableFuture.supplyAsync(() -> {
 
@@ -626,7 +629,7 @@ public class CoreSQL implements DataSource {
 
 			// Read all groups from SQL.
 			try (Connection conn = hikari.getConnection();
-					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName))) {
+					PreparedStatement query = conn.prepareStatement(String.format(this.statements.getSelectAll(), tableName, dataHolder.getUsersObject().getTimeStamp()))) {
 
 				ResultSet result = query.executeQuery();
 
@@ -758,7 +761,7 @@ public class CoreSQL implements DataSource {
 		}
 	}
 
-	public CompletableFuture<Void> reloadGroupsAsync(WorldDataHolder dataHolder) {
+	private CompletableFuture<Void> reloadGroupsAsync(WorldDataHolder dataHolder) {
 
 		return CompletableFuture.supplyAsync(() -> {
 
@@ -783,12 +786,16 @@ public class CoreSQL implements DataSource {
 
 			if (ph != null) {
 				// transfer new data
-				dataHolder.resetGroups();
-				
+				//dataHolder.resetGroups(); // TODO: partial update of new data.
+
 				for (Group tempGroup : ph.getGroupList()) {
+					if (dataHolder.groupExists(tempGroup.getName()))
+						dataHolder.removeGroup(tempGroup.getName());
 					tempGroup.clone(dataHolder);
 				}
-				
+
+				removeLocalGroups(dataHolder);
+
 				dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
 				dataHolder.removeGroupsChangedFlag();
 				dataHolder.getGroupsObject().setTimeStamp(ph.getGroupsObject().getTimeStamp());
@@ -796,6 +803,52 @@ public class CoreSQL implements DataSource {
 			GroupManager.setLoaded(true);
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
 		});
+	}
+
+	/**
+	 * Remove Groups from the local data which no longer exist in the Database.
+	 * 
+	 * @param dataHolder
+	 */
+	private void removeLocalGroups(WorldDataHolder dataHolder) {
+
+		String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + dataHolder.getName() + "_GROUPS").toUpperCase();
+		Set<String> databaseGroups = getAllGroupKeys(tableName).stream()
+				.map(s -> s.toLowerCase())
+				.collect(Collectors.toSet());
+
+		synchronized (dataHolder.getGroups()) {
+			Iterator<Group> iter = dataHolder.getGroupList().iterator();
+
+			while (iter.hasNext()) {
+				Group group = iter.next();
+				if (!databaseGroups.contains(group.getName().toLowerCase()))
+					dataHolder.removeGroup(group.getName());
+			}
+		}
+	}
+
+	/**
+	 * Remove Users from the local data which no longer exist in the Database.
+	 * 
+	 * @param dataHolder
+	 */
+	private void removeLocalUsers(WorldDataHolder dataHolder) {
+
+		String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + dataHolder.getName() + "_USERS").toUpperCase();
+		Set<String> databaseGroups = getAllUserKeys(tableName).stream()
+				.map(s -> s.toLowerCase())
+				.collect(Collectors.toSet());
+
+		synchronized (dataHolder.getUsers()) {
+			Iterator<User> iter = dataHolder.getUserList().iterator();
+
+			while (iter.hasNext()) {
+				User user = iter.next();
+				if (!databaseGroups.contains(user.getUUID().toLowerCase()))
+					dataHolder.removeUser(user.getUUID());
+			}
+		}
 	}
 
 	@Override
@@ -808,7 +861,7 @@ public class CoreSQL implements DataSource {
 		}
 	}
 
-	public CompletableFuture<Void> reloadUsersAsync(WorldDataHolder dataHolder) {
+	private CompletableFuture<Void> reloadUsersAsync(WorldDataHolder dataHolder) {
 
 		return CompletableFuture.supplyAsync(() -> {
 
@@ -819,12 +872,12 @@ public class CoreSQL implements DataSource {
 			try {
 				// temporary holder in case the load fails.
 				ph = new WorldDataHolder(dataHolder.getName());
-				
+
 				// copy groups for reference
 				for (Group tempGroup : dataHolder.getGroupList()) {
 					tempGroup.clone(ph);
 				}
-				
+
 				// setup the default group before loading user data.
 				ph.setDefaultGroup(ph.getGroup(dataHolder.getDefaultGroup().getName()));
 
@@ -841,11 +894,16 @@ public class CoreSQL implements DataSource {
 
 			if (ph != null) {
 				// transfer new data
-				dataHolder.resetUsers();
-				
+				//dataHolder.resetUsers(); // TODO: partial update of new data.
+
 				for (User tempUser : ph.getUserList()) {
+					if (dataHolder.isUserDeclared(tempUser.getUUID()))
+						dataHolder.removeUser(tempUser.getUUID());
+
 					tempUser.clone(dataHolder);
 				}
+
+				removeLocalUsers(dataHolder);
 
 				dataHolder.removeUsersChangedFlag();
 				dataHolder.getUsersObject().setTimeStamp(ph.getUsersObject().getTimeStamp());
@@ -883,7 +941,7 @@ public class CoreSQL implements DataSource {
 						if (!group.isChanged()) continue;
 
 						boolean isDefault = group.equals(dataHolder.getDefaultGroup());
-						changed = Instant.now().toEpochMilli();
+						if (changed == null) changed = Instant.now().toEpochMilli();
 
 						String name = group.getName();
 						List<String> permissions = group.getSavePermissionList();
@@ -895,6 +953,7 @@ public class CoreSQL implements DataSource {
 						insert.setString(3, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
 						insert.setString(4, inheritance.isEmpty() ? null : StringUtils.join(inheritance, ","));
 						insert.setString(5, variables.length() == 0 ? null : variables);
+						insert.setLong(6,  changed);
 
 						insert.addBatch();
 					}
@@ -911,7 +970,7 @@ public class CoreSQL implements DataSource {
 
 				if (changed == null) {
 					// No data was saved so it must require deleting
-					changed = deleteGroups(dataHolder, tableName);
+					changed = deleteGroupsFromSQL(dataHolder, tableName);
 				}
 				// Update changed timeStamp in SQL table.
 				updateTableTimeStamp(tableName, changed);
@@ -935,21 +994,16 @@ public class CoreSQL implements DataSource {
 		});
 	}
 
-	private Long deleteGroups(WorldDataHolder dataHolder, String tableName) {
+	/**
+	 * Delete Groups from the SQL server which no longer exist in local data.
+	 * 
+	 * @param dataHolder
+	 * @param tableName
+	 * @return a TimeStamp for this update.
+	 */
+	private Long deleteGroupsFromSQL(WorldDataHolder dataHolder, String tableName) {
 
-		Set<String> databaseGroups = new HashSet<>();
-
-		try (Connection conn = hikari.getConnection();
-				PreparedStatement query = conn.prepareStatement("SELECT NAME FROM " + tableName + ";")) {
-
-			ResultSet result = query.executeQuery();
-
-			while (result.next()) {
-				databaseGroups.add(result.getString(1));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Set<String> databaseGroups = getAllGroupKeys(tableName);
 
 		// Batch delete Groups in SQL which are no longer valid in our data.
 
@@ -965,7 +1019,7 @@ public class CoreSQL implements DataSource {
 			for (String name : databaseGroups) {
 				if (!keys.contains(name)) {
 
-					changed = Instant.now().toEpochMilli();
+					if (changed == null) changed = Instant.now().toEpochMilli();
 
 					insert.setString(1, name);
 					insert.addBatch();
@@ -982,7 +1036,7 @@ public class CoreSQL implements DataSource {
 
 			if (changed == null) {
 				// No data was deleted so catch up
-				changed = Instant.now().toEpochMilli();
+				changed = getDatabaseTimeStampGroups(dataHolder);
 			}
 
 		} catch (Exception e) {
@@ -1025,7 +1079,7 @@ public class CoreSQL implements DataSource {
 							continue;
 						}
 
-						changed = Instant.now().toEpochMilli();
+						if (changed == null) changed = Instant.now().toEpochMilli();
 
 						// UUID,LASTNAME,PRIMARYGROUP,SUBGROUPS,PERMISSIONS,INFO
 
@@ -1041,6 +1095,7 @@ public class CoreSQL implements DataSource {
 						insert.setString(4, subGroups.isEmpty() ? null : StringUtils.join(subGroups, ","));
 						insert.setString(5, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
 						insert.setString(6, variables.length() == 0 ? null : variables);
+						insert.setLong(7, changed);
 
 						insert.addBatch();
 					}
@@ -1056,7 +1111,7 @@ public class CoreSQL implements DataSource {
 
 				if (changed == null) {
 					// No data was saved so it must require deleting
-					changed = deleteUsers(dataHolder, tableName);
+					changed = deleteUsersFromSQL(dataHolder, tableName);
 				}
 
 				// Update changed timeStamp in SQL table.
@@ -1081,21 +1136,16 @@ public class CoreSQL implements DataSource {
 		});
 	}
 
-	private Long deleteUsers(WorldDataHolder dataHolder, String tableName) {
+	/**
+	 * Delete Users from the SQL server which no longer exist in local data.
+	 * 
+	 * @param dataHolder
+	 * @param tableName
+	 * @return a TimeStamp for this update.
+	 */
+	private Long deleteUsersFromSQL(WorldDataHolder dataHolder, String tableName) {
 
-		Set<String> databaseUUIDs = new HashSet<>();
-
-		try (Connection conn = hikari.getConnection();
-				PreparedStatement query = conn.prepareStatement("SELECT UUID FROM " + tableName + ";")) {
-
-			ResultSet result = query.executeQuery();
-
-			while (result.next()) {
-				databaseUUIDs.add(result.getString(1));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Set<String> databaseUUIDs = getAllUserKeys(tableName);
 
 		// Batch delete users in SQL who are no longer valid in our data.
 
@@ -1111,7 +1161,7 @@ public class CoreSQL implements DataSource {
 			for (String UUID : databaseUUIDs) {
 				if (!keys.contains(UUID)) {
 
-					changed = Instant.now().toEpochMilli();
+					if (changed == null) changed = Instant.now().toEpochMilli();
 
 					insert.setString(1, UUID);
 					insert.addBatch();
@@ -1128,7 +1178,7 @@ public class CoreSQL implements DataSource {
 
 			if (changed == null) {
 				// No data was deleted so catch up
-				changed = Instant.now().toEpochMilli();
+				changed = getDatabaseTimeStampUsers(dataHolder);
 			}
 
 		} catch (Exception e) {
@@ -1136,6 +1186,44 @@ public class CoreSQL implements DataSource {
 		}
 
 		return changed;
+	}
+
+	/**
+	 * Fetch all keys (NAME) from this table in SQL.
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	private Set<String> getAllGroupKeys(String tableName) {
+		return getAllKeys("NAME", tableName);
+	}
+
+	/**
+	 * Fetch all keys (UUID) from this table in SQL.
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	private Set<String> getAllUserKeys(String tableName) {
+		return getAllKeys("UUID", tableName);
+	}
+
+	private Set<String> getAllKeys(String key, String tableName) {
+
+		Set<String> tableKeys = new HashSet<>();
+
+		try (Connection conn = hikari.getConnection();
+				PreparedStatement query = conn.prepareStatement("SELECT " + key + " FROM " + tableName + ";")) {
+
+			ResultSet result = query.executeQuery();
+
+			while (result.next()) {
+				tableKeys.add(result.getString(1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return tableKeys;
 	}
 
 	/**

@@ -37,7 +37,7 @@ public class Variables implements Cloneable {
 	private final DataUnit owner;
 	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
 
-	public Variables(DataUnit owner) {
+	Variables(DataUnit owner) {
 
 		this.owner = owner;
 	}
@@ -235,7 +235,7 @@ public class Variables implements Cloneable {
 
 	}
 
-	public void clearVars() {
+	void clearVars() {
 
 		variables.clear();
 		owner.flagAsChanged();

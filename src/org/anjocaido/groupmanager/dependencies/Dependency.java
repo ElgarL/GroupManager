@@ -28,14 +28,14 @@ public abstract class Dependency {
 
 	private Plugin plugin;
 
-	public Dependency(Plugin plugin) {
+	Dependency(Plugin plugin) {
 
 		this.plugin = plugin;
 	}
 
 	protected abstract URL buildUrl() throws IOException, ParserConfigurationException, SAXException;
 
-	public void load(Consumer<String> onComplete, Consumer<Exception> onError) {
+	void load(Consumer<String> onComplete, Consumer<Exception> onError) {
 
 		try {
 

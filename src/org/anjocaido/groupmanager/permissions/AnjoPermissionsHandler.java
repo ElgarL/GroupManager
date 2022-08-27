@@ -46,7 +46,7 @@ import org.bukkit.entity.Player;
  */
 public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
-	WorldDataHolder ph;
+	private WorldDataHolder ph;
 
 	/**
 	 * It needs a WorldDataHolder to work with.

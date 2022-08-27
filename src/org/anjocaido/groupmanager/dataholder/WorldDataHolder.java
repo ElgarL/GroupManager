@@ -47,7 +47,7 @@ public class WorldDataHolder {
 	/**
 	 * World name
 	 */
-	protected String name;
+	private String name;
 	/**
 	 * The actual groups holder
 	 */
@@ -60,14 +60,13 @@ public class WorldDataHolder {
 	/**
 	 * List of UUID's associated with this user name.
 	 */
-	protected static Map<String, Set<String>> nameToUUIDLookup = new TreeMap<>();
+	private static Map<String, Set<String>> nameToUUIDLookup = new TreeMap<>();
 	/**
 	 *
 	 */
-	protected AnjoPermissionsHandler permissionsHandler;
+	private AnjoPermissionsHandler permissionsHandler;
 
 	/**
-	 * Prevent direct instantiation
 	 *
 	 * @param worldName
 	 */
@@ -76,19 +75,6 @@ public class WorldDataHolder {
 		name = worldName;
 	}
 
-	/**
-	 * The main constructor for a new WorldDataHolder
-	 *
-	 * @param worldName
-	 * @param groups
-	 * @param users
-	 */
-	public WorldDataHolder(String worldName, GroupsDataHolder groups, UsersDataHolder users) {
-
-		this.name = worldName;
-		this.groups = groups;
-		this.users = users;
-	}
 
 	/**
 	 * update the dataSource to point to this object.
@@ -672,7 +658,7 @@ public class WorldDataHolder {
 	 * @param name
 	 * @param UUID
 	 */
-	public void removeUUIDLookup(String name, String UUID) {
+	private void removeUUIDLookup(String name, String UUID) {
 
 		if (nameToUUIDLookup.containsKey(name.toLowerCase())) {
 
@@ -694,7 +680,7 @@ public class WorldDataHolder {
 	 * @param name
 	 * @return a Set of strings containing the User objects UUID (or name if they don't have a UUID)
 	 */
-	public Set<String> getUUIDLookup(String name) {
+	private Set<String> getUUIDLookup(String name) {
 
 		return nameToUUIDLookup.get(name.toLowerCase());
 	}
@@ -702,7 +688,7 @@ public class WorldDataHolder {
 	/**
 	 * Reset the UUID Lookup cache
 	 */
-	protected void clearUUIDLookup() {
+	private void clearUUIDLookup() {
 
 		nameToUUIDLookup.clear();
 	}

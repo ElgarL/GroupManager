@@ -41,17 +41,17 @@ public class GroupManagerEventHandler {
 
 	}
 
-	protected void callEvent(GMGroupEvent event) {
+	private void callEvent(GMGroupEvent event) {
 
 		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
-	protected void callEvent(GMUserEvent event) {
+	private void callEvent(GMUserEvent event) {
 
 		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
-	protected void callEvent(GMSystemEvent event) {
+	private void callEvent(GMSystemEvent event) {
 
 		try { event.schedule(event); } catch (Exception ignored) {}
 	}

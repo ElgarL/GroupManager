@@ -422,7 +422,7 @@ public class GroupManager extends JavaPlugin {
 			 */
 			Runnable committer = () -> {
 
-				getWorldsHolder().refreshPermissions();
+				getWorldsHolder().refreshData();
 			};
 			/*
 			 * Thread for purging expired permissions.
@@ -440,7 +440,7 @@ public class GroupManager extends JavaPlugin {
 						 */
 						if (getWorldsHolder().purgeExpiredPerms()) {
 
-							getWorldsHolder().refreshPermissions();
+							getWorldsHolder().refreshData();
 						}
 						
 					} catch (Exception ex) {
@@ -673,7 +673,7 @@ public class GroupManager extends JavaPlugin {
 		return GMEventHandler;
 	}
 
-	public static void setGMEventHandler(GroupManagerEventHandler gMEventHandler) {
+	private static void setGMEventHandler(GroupManagerEventHandler gMEventHandler) {
 
 		GMEventHandler = gMEventHandler;
 	}

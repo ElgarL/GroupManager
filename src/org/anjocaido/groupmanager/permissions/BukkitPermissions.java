@@ -57,9 +57,9 @@ import org.bukkit.plugin.PluginManager;
  */
 public class BukkitPermissions {
 
-	protected LinkedHashMap<String, PermissionAttachment> attachments = new LinkedHashMap<>();
-	protected LinkedHashMap<String, Permission> registeredPermissions = new LinkedHashMap<>();
-	protected GroupManager plugin;
+	private LinkedHashMap<String, PermissionAttachment> attachments = new LinkedHashMap<>();
+	private LinkedHashMap<String, Permission> registeredPermissions = new LinkedHashMap<>();
+	private GroupManager plugin;
 	private boolean player_join = false;
 
 	/**
@@ -308,7 +308,7 @@ public class BukkitPermissions {
 	 *                        negations
 	 * @return Map of child permissions
 	 */
-	public Map<String, Boolean> getAllChildren(String node, Set<String> playerPermArray) {
+	Map<String, Boolean> getAllChildren(String node, Set<String> playerPermArray) {
 
 		LinkedList<String> stack = new LinkedList<>();
 		Map<String, Boolean> alreadyVisited = new HashMap<>();
@@ -342,7 +342,7 @@ public class BukkitPermissions {
 	 * @param node
 	 * @return Map of child permissions
 	 */
-	public Map<String, Boolean> getChildren(String node) {
+	private Map<String, Boolean> getChildren(String node) {
 
 		Permission perm = registeredPermissions.get(node.toLowerCase());
 
@@ -420,7 +420,7 @@ public class BukkitPermissions {
 	 *
 	 * @author ElgarL
 	 */
-	protected class PlayerEvents implements Listener {
+	public class PlayerEvents implements Listener {
 
 		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
@@ -434,7 +434,7 @@ public class BukkitPermissions {
 			 * later in the PlayerJoinEvent.
 			 */
 
-			plugin.getWorldsHolder().refreshPermissions();
+			plugin.getWorldsHolder().refreshData();
 			
 			// Tab complete command visibility
 			// Server too old to support updateCommands.
@@ -507,7 +507,7 @@ public class BukkitPermissions {
 			 * force remove any attachments as bukkit may not
 			 */
 			removeAttachment(uuid);
-			plugin.getWorldsHolder().refreshPermissions();
+			plugin.getWorldsHolder().refreshData();
 		}
 	}
 

@@ -51,11 +51,13 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	protected GroupManager plugin;
 
 	protected boolean isConsole = false;
-	protected boolean playerCanDo = false;
+	private boolean playerCanDo = false;
 	protected boolean isOpOverride = false;
-	protected boolean isAllowCommandBlocks = false;
+	private boolean isAllowCommandBlocks = false;
 
-	protected Player senderPlayer, targetPlayer;
+	private Player senderPlayer;
+
+	protected Player targetPlayer;
 	protected CommandSender sender;
 	protected Group senderGroup;
 	protected User senderUser;
@@ -111,7 +113,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @param alias
 	 * @return true if successful.
 	 */
-	public boolean parseSender(CommandSender sender, String alias) {
+	protected boolean parseSender(CommandSender sender, String alias) {
 
 		playerCanDo = false;
 		isConsole = false;
@@ -252,7 +254,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @param type		the type of this test 'user' or group'.
 	 * @return			true if a match is found.
 	 */
-	public boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
+	boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
 
 
 		if (newPerm.startsWith("+")) //$NON-NLS-1$

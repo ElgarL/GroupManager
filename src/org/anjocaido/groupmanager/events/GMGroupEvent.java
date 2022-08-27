@@ -47,13 +47,13 @@ public class GMGroupEvent extends Event {
 		return handlers;
 	}
 
-	protected Group group;
+	private Group group;
 
-	protected String groupName;
+	private String groupName;
 
-	protected Action action;
+	private Action action;
 
-	public GMGroupEvent(Group group, Action action) {
+	GMGroupEvent(Group group, Action action) {
 
 		super();
 
@@ -62,7 +62,7 @@ public class GMGroupEvent extends Event {
 		this.groupName = group.getName();
 	}
 
-	public GMGroupEvent(String groupName, Action action) {
+	GMGroupEvent(String groupName, Action action) {
 
 		super();
 
@@ -89,7 +89,7 @@ public class GMGroupEvent extends Event {
 		GROUP_PERMISSIONS_CHANGED, GROUP_INHERITANCE_CHANGED, GROUP_INFO_CHANGED, GROUP_ADDED, GROUP_REMOVED,
 	}
 
-	public void schedule(final GMGroupEvent event) {
+	void schedule(final GMGroupEvent event) {
 
 		synchronized (GroupManager.getGMEventHandler().getServer()) {
 			if (GroupManager.getGMEventHandler().getServer().getScheduler().scheduleSyncDelayedTask(GroupManager.getGMEventHandler().getPlugin(), () -> GroupManager.getGMEventHandler().getServer().getPluginManager().callEvent(event), 1) == -1)

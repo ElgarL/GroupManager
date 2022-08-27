@@ -69,7 +69,7 @@ public class UpdateTask implements Runnable {
 
 	}
 
-	public double updateCheck() {
+	private double updateCheck() {
 
 		try {
 			URL url = new URL("https://api.github.com/repos/ElgarL/GroupManager/releases/latest"); //$NON-NLS-1$

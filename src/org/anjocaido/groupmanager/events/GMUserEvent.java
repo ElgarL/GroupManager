@@ -49,13 +49,13 @@ public class GMUserEvent extends Event {
 
 	//////////////////////////////
 
-	protected User user;
+	private User user;
 
-	protected String userName;
+	private String userName;
 
-	protected Action action;
+	private Action action;
 
-	public GMUserEvent(User user, Action action) {
+	GMUserEvent(User user, Action action) {
 
 		super();
 
@@ -64,7 +64,7 @@ public class GMUserEvent extends Event {
 		this.userName = user.getLastName();
 	}
 
-	public GMUserEvent(String userName, Action action) {
+	GMUserEvent(String userName, Action action) {
 
 		super();
 
@@ -91,7 +91,7 @@ public class GMUserEvent extends Event {
 		USER_PERMISSIONS_CHANGED, USER_INHERITANCE_CHANGED, USER_INFO_CHANGED, USER_GROUP_CHANGED, USER_SUBGROUP_CHANGED, USER_ADDED, USER_REMOVED,
 	}
 
-	public void schedule(final GMUserEvent event) {
+	void schedule(final GMUserEvent event) {
 
 		synchronized (GroupManager.getGMEventHandler().getServer()) {
 			if (GroupManager.getGMEventHandler().getServer().getScheduler().scheduleSyncDelayedTask(GroupManager.getGMEventHandler().getPlugin(), () -> GroupManager.getGMEventHandler().getServer().getPluginManager().callEvent(event), 1) == -1)

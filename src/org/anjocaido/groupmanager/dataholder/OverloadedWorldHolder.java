@@ -34,7 +34,7 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	/**
 	 *
 	 */
-	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new LinkedHashMap<>());
+	private final Map<String, User> overloadedUsers = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * 

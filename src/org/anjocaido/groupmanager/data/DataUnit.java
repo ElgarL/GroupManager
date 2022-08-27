@@ -46,13 +46,13 @@ public abstract class DataUnit {
 
 	private final Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
 
-	public DataUnit(WorldDataHolder dataSource, String name) {
+	DataUnit(WorldDataHolder dataSource, String name) {
 
 		this.dataSource = dataSource;
 		this.uUID = name;
 	}
 
-	public DataUnit(String name) {
+	DataUnit(String name) {
 
 		this.uUID = name;
 	}

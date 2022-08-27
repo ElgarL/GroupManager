@@ -75,7 +75,7 @@ public class UsersDataHolder {
 	/**
 	 * Resets the Users
 	 */
-	public void resetUsers() {
+	void resetUsers() {
 
 		this.users.clear();
 	}
@@ -107,7 +107,7 @@ public class UsersDataHolder {
 	/**
 	 * Flag all users as changed so we can force save to SQL.
 	 */
-	public void setAllChanged() {
+	void setAllChanged() {
 		
 		setUsersChanged(true);
 		users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());

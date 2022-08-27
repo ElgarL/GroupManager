@@ -92,7 +92,7 @@ public class GroupsDataHolder {
 	/**
 	 * Resets the Groups
 	 */
-	public void resetGroups() {
+	void resetGroups() {
 		this.groups.clear();
 	}
 
@@ -123,7 +123,7 @@ public class GroupsDataHolder {
 	/**
 	 * Flag all users as changed so we can force save to SQL.
 	 */
-	public void setAllChanged() {
+	void setAllChanged() {
 		
 		setGroupsChanged(true);
 		groups.entrySet().forEach(entry -> entry.getValue().flagAsChanged());

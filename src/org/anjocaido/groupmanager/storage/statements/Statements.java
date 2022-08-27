@@ -61,7 +61,7 @@ public class Statements {
 		}
 	}
 
-	public void saveSupportedSQL(GroupManager plugin) {
+	private void saveSupportedSQL(GroupManager plugin) {
 
 		File sqlFolder = new File(plugin.getDataFolder(), "SQL");
 

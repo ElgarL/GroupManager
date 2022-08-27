@@ -17,7 +17,7 @@ import org.anjocaido.groupmanager.localization.Messages;
  */
 public class MirrorsMap extends WorldsHolder {
 
-	HashSet<String> mirroredWorlds = new HashSet<>();
+	private HashSet<String> mirroredWorlds = new HashSet<>();
 
 	public MirrorsMap(GroupManager plugin) throws Exception {
 

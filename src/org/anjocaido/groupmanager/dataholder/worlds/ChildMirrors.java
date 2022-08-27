@@ -10,7 +10,7 @@ import java.util.TreeMap;
  * @author ElgarL
  *
  */
-public class ChildMirrors {
+class ChildMirrors {
 
 	/**
 	 * Map of mirrors: <nonExistingWorldName, existingAndLoadedWorldName>
@@ -29,7 +29,7 @@ public class ChildMirrors {
 	 * @param worldName
 	 * @return the highest parent mirror that will have data.
 	 */
-	public String getGroupsMirrorParent(String worldName) {
+	String getGroupsMirrorParent(String worldName) {
 
 		String result = worldName.toLowerCase();
 
@@ -46,7 +46,7 @@ public class ChildMirrors {
 	 * @param worldName
 	 * @return the highest parent mirror that will have data.
 	 */
-	public String getUsersMirrorParent(String worldName) {
+	String getUsersMirrorParent(String worldName) {
 
 		String result = worldName.toLowerCase();
 

@@ -28,7 +28,7 @@ public class MavenCentralDependency extends Dependency {
 	 * @param artifact	artifactId
 	 * @param version	dependency version
 	 */
-	public MavenCentralDependency(Plugin plugin, String group, String artifact, String version) {
+	MavenCentralDependency(Plugin plugin, String group, String artifact, String version) {
 
 		super(plugin);
 

@@ -41,7 +41,7 @@ public class GlobalGroups {
 
 	private final GroupManager plugin;
 
-	public GlobalGroups(GroupManager plugin) {
+	GlobalGroups(GroupManager plugin) {
 
 		this.plugin = plugin;
 	}

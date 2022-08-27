@@ -132,7 +132,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	/**
 	 * Load data for all listed parent worlds.
 	 */
-	public void loadParentWorlds() {
+	void loadParentWorlds() {
 
 		for (String world : worldsData.keySet()) {
 			dataSource.init(world);
@@ -211,7 +211,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	/**
 	 * Verify we have the most up to date permissions.
 	 */
-	public void refreshPermissions() {
+	public void refreshData() {
 
 		// Check for any updated permissions
 		CompletableFuture.supplyAsync(() -> {
@@ -304,7 +304,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 						// Backup Groups file
 						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.GROUPS);
 						dataSource.saveGroups(dataHolder);
-						changed = true;
+						changed = true;	//TODO should be false?
 
 					} else {
 						// Newer file found.
@@ -312,8 +312,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
-					//Check for newer file as no local changes or we are set to READ only.
+					//Check for newer file as no local changes or we are set to READ only and need new data.
 					if (dataSource.hasNewGroupsData(dataHolder) || dataHolder.haveGroupsChanged()) {
+						
 						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
 
 						dataSource.reloadGroups(dataHolder);
@@ -328,7 +329,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 						// Backup Users file
 						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.USERS);
 						dataSource.saveUsers(dataHolder);
-						changed = true;
+						changed = true;	//TODO should be false?
 
 					} else {
 						// Newer file found.
@@ -336,13 +337,12 @@ public abstract class WorldsHolder extends ChildMirrors {
 						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
 					}
 				} else {
-					// Check for newer file as no local changes or we are set to READ only.
+					// Check for newer file as no local changes or we are set to READ only and need new data.
 					if (dataSource.hasNewUsersData(dataHolder) || dataHolder.haveUsersChanged()) {
 
 						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
 						dataSource.reloadUsers(dataHolder);
-
 						changed = true;
 					}
 				}

@@ -65,7 +65,7 @@ public class GMConfiguration {
 
 	private final GroupManager plugin;
 
-	public GMConfiguration(GroupManager plugin) {
+	GMConfiguration(GroupManager plugin) {
 
 		this.plugin = plugin;
 
@@ -97,8 +97,7 @@ public class GMConfiguration {
 		loggerLevel = "INFO"; //$NON-NLS-1$
 	}
 
-	@SuppressWarnings("unchecked")
-	public void load() {
+	@SuppressWarnings("unchecked") void load() {
 
 		if (!plugin.getDataFolder().exists()) {
 			plugin.getDataFolder().mkdirs();
@@ -372,7 +371,7 @@ public class GMConfiguration {
 		return purgeEnabled;
 	}
 
-	public long userExpires() {
+	long userExpires() {
 
 		return userExpires;
 	}
