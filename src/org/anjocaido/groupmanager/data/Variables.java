@@ -47,8 +47,14 @@ public class Variables implements Cloneable {
 	public Variables(DataUnit owner, Map<? extends String, ?> varList) {
 
 		this.owner = owner;
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		this.variables.clear();
 		this.variables.putAll(varList);
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
 	}
 
 	/**

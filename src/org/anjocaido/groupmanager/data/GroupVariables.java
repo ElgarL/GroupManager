@@ -19,6 +19,8 @@ package org.anjocaido.groupmanager.data;
 
 import java.util.Map;
 
+import org.anjocaido.groupmanager.GroupManager;
+
 /**
  * 
  * @author gabrielcouto
@@ -31,9 +33,15 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		super(owner);
 		this.owner = owner;
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		addVar("prefix", "");
 		addVar("suffix", "");
 		addVar("build", false);
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
 	}
 
 	public GroupVariables(Group owner, Map<? extends String, ?> varList) {

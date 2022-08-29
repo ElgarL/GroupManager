@@ -236,11 +236,11 @@ public class CoreSQL implements DataSource {
 		GlobalGroups globalGroups = GroupManager.getGlobalGroups();
 
 		CompletableFuture.supplyAsync(() -> {
-
+			
 			Long changed = null;
 
 			if (globalGroups.haveGroupsChanged() && GroupManager.getGMConfig().getAccessType() == ACCESS_LEVEL.READ_WRITE) {
-
+				
 				// Batch push any changed Group data to the database.
 				try (Connection conn = hikari.getConnection();
 						PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGlobalGroup(), GLOBALGROUPS_TABLE));) {

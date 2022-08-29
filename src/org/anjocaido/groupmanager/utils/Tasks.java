@@ -64,9 +64,9 @@ public abstract class Tasks {
 		return sw.toString();
 	}
 	
-	public static void printStackTrace() {
+	public static String printStackTrace() {
 		
-		StringUtils.join(new Throwable().getStackTrace(), "\n");
+		return StringUtils.join(new Throwable().getStackTrace(), "\n");
 	}
 
 	public static void copy(InputStream src, File dst) throws IOException {
