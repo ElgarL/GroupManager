@@ -433,9 +433,6 @@ public class CoreSQL implements DataSource {
 
 				if (groupsMirror != null)
 					holder.putGroupsMirror(world.getName().toLowerCase(), groupsMirror);
-
-				//GroupManager.logger.log(Level.FINE, String.format(Messages.getString("WorldsHolder.CREATING_FOLDERS"), world.getName())); //$NON-NLS-1$
-				//init(world.getName());
 			}
 		}
 
