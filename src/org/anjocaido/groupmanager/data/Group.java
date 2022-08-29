@@ -37,7 +37,7 @@ public class Group extends DataUnit implements Cloneable {
 	 * The groups it inherits DIRECTLY!
 	 */
 	private List<String> inherits = new LinkedList<>();
-	
+
 	/**
 	 * This holds the fields in INFO node.
 	 * like prefix = 'c'
@@ -93,6 +93,9 @@ public class Group extends DataUnit implements Cloneable {
 
 		Group clone;
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		if (isGlobal()) {
 			clone = new Group(this.getName());
 		} else {
@@ -105,11 +108,12 @@ public class Group extends DataUnit implements Cloneable {
 		}
 		clone.variables = variables.clone(clone);
 
+		GroupManager.setLoaded(loaded);	// Restore original state.
 		return clone;
 	}
 
 	/**
-	 * Use this to deliver a group from a different dataSource to another
+	 * Use this to deliver a group from one dataSource to another
 	 * 
 	 * @param dataSource
 	 * @return null or Clone
@@ -120,6 +124,9 @@ public class Group extends DataUnit implements Cloneable {
 			return null;
 		}
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		Group clone = dataSource.createGroup(this.getName());
 
 		// Don't add inheritance for GlobalGroups
@@ -132,6 +139,8 @@ public class Group extends DataUnit implements Cloneable {
 		}
 		clone.variables = variables.clone(clone);
 		clone.flagAsChanged(); //use this to make the new dataSource save the new group
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
 		return clone;
 	}
 
@@ -141,6 +150,7 @@ public class Group extends DataUnit implements Cloneable {
 	 * @return the inherits
 	 */
 	public List<String> getInherits() {
+
 		return Collections.unmodifiableList(inherits);
 	}
 
@@ -150,6 +160,10 @@ public class Group extends DataUnit implements Cloneable {
 	public void addInherits(Group inherit) {
 
 		if (!isGlobal()) {
+			
+			boolean loaded = GroupManager.isLoaded();
+			GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+			
 			if (!this.getDataSource().groupExists(inherit.getName())) {
 				getDataSource().addGroup(inherit);
 			}
@@ -157,9 +171,20 @@ public class Group extends DataUnit implements Cloneable {
 				inherits.add(inherit.getName().toLowerCase());
 			}
 			flagAsChanged();
+			
+			GroupManager.setLoaded(loaded);	// Restore original state.
+
 			if (GroupManager.isLoaded()) {
-				GroupManager.getBukkitPermissions().updateAllPlayers();
-				GroupManager.getGMEventHandler().callEvent(this, Action.GROUP_INHERITANCE_CHANGED);
+				Runnable notify = new Runnable() {
+
+					@Override
+					public void run() {
+
+						GroupManager.getGMEventHandler().callEvent(Group.this, Action.GROUP_INHERITANCE_CHANGED);
+					}
+				};
+
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
 			}
 		}
 	}
@@ -168,11 +193,29 @@ public class Group extends DataUnit implements Cloneable {
 
 		if (!isGlobal()) {
 			if (this.inherits.contains(inherit.toLowerCase())) {
+				
+				boolean loaded = GroupManager.isLoaded();
+				GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+				
 				inherits.remove(inherit.toLowerCase());
 
 				flagAsChanged();
-				GroupManager.getGMEventHandler().callEvent(this, Action.GROUP_INHERITANCE_CHANGED);
-				return true;
+				
+				GroupManager.setLoaded(loaded);	// Restore original state.
+
+				if (GroupManager.isLoaded()) {
+					Runnable notify = new Runnable() {
+
+						@Override
+						public void run() {
+
+							GroupManager.getGMEventHandler().callEvent(Group.this, Action.GROUP_INHERITANCE_CHANGED);
+						}
+					};
+
+					GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
+					return true;
+				}
 			}
 		}
 		return false;
@@ -193,14 +236,29 @@ public class Group extends DataUnit implements Cloneable {
 	public void setVariables(Map<?, ?> nodeData) {
 
 		if (!isGlobal()) {
+			
+			boolean loaded = GroupManager.isLoaded();
+			GroupManager.setLoaded(false); // Disable so we can push all vars without triggering a save.
+			
 			variables.clearVars();
 			for (Object key : nodeData.keySet()) {
 				variables.addVar((String) key, nodeData.get(key));
 			}
 			flagAsChanged();
+			
+			GroupManager.setLoaded(loaded);	// Restore original state.
+			
 			if (GroupManager.isLoaded()) {
-				GroupManager.getBukkitPermissions().updateAllPlayers();
-				GroupManager.getGMEventHandler().callEvent(this, Action.GROUP_INFO_CHANGED);
+				Runnable notify = new Runnable() {
+
+					@Override
+					public void run() {
+
+						GroupManager.getGMEventHandler().callEvent(Group.this, Action.GROUP_INFO_CHANGED);
+					}
+				};
+
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
 			}
 		}
 	}

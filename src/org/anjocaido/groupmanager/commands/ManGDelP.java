@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
@@ -81,11 +80,13 @@ public class ManGDelP extends BaseCommand {
 				continue;
 			}
 			// Seems OK
+			
+			// Auto saves.
 			auxGroup.removePermission(auxString);
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_GROUP"), auxString, auxGroup.getName())); //$NON-NLS-1$
 		}
 
-		GroupManager.getBukkitPermissions().updateAllPlayers();
+		//plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

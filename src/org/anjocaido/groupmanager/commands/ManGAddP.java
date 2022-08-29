@@ -104,6 +104,7 @@ public class ManGAddP extends BaseCommand {
 			}
 			// Seems OK
 
+			// Auto saves.
 			if (period != null) {
 				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_GROUP_TIMED"), auxString, auxGroup.getName(), period)); //$NON-NLS-1$
@@ -114,7 +115,7 @@ public class ManGAddP extends BaseCommand {
 			}
 		}
 
-		GroupManager.getBukkitPermissions().updateAllPlayers();
+		//plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

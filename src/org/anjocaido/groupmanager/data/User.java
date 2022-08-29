@@ -59,6 +59,9 @@ public class User extends DataUnit implements Cloneable {
 	@Override
 	public User clone() {
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		User clone = new User(getDataSource(), this.getLastName());
 		clone.group = this.group;
 
@@ -69,6 +72,7 @@ public class User extends DataUnit implements Cloneable {
 		// Clone subgroups.
 		clone.subGroups.putAll(this.subGroups);
 
+		GroupManager.setLoaded(loaded);	// Restore original state.
 		return clone;
 	}
 
@@ -83,9 +87,12 @@ public class User extends DataUnit implements Cloneable {
 		if (dataSource.isUserDeclared(this.getUUID())) {
 			return null;
 		}
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
 
 		User clone = dataSource.createUser(this.getUUID());
-		
+
 		clone.setLastName(this.getLastName());
 
 		if (dataSource.getGroup(group) == null) {
@@ -104,11 +111,16 @@ public class User extends DataUnit implements Cloneable {
 
 		clone.variables = this.variables.clone(this);
 		// No need to flagAsChanged as its done in createUser
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
 		return clone;
 	}
 
 	public User clone(String uUID, String CurrentName) {
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		User clone = this.getDataSource().createUser(uUID);
 
 		clone.setLastName(CurrentName);
@@ -127,6 +139,7 @@ public class User extends DataUnit implements Cloneable {
 		clone.variables = this.variables.clone(this);
 		clone.flagAsChanged();
 
+		GroupManager.setLoaded(loaded);	// Restore original state.
 		return clone;
 	}
 
@@ -197,23 +210,32 @@ public class User extends DataUnit implements Cloneable {
 		String oldGroup = this.group;
 		this.group = group.getName();
 		flagAsChanged();
-		
+
 		if (GroupManager.isLoaded()) {
-			if (!GroupManager.getBukkitPermissions().isPlayer_join() && (updatePerms))
-				GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
 
-			// Do we notify of the group change?
-			String defaultGroupName = getDataSource().getDefaultGroup().getName();
-			// if we were not in the default group
-			// or we were in the default group and the move is to a different
-			// group.
-			boolean notify = (!oldGroup.equalsIgnoreCase(defaultGroupName)) || ((oldGroup.equalsIgnoreCase(defaultGroupName)) && (!this.group.equalsIgnoreCase(defaultGroupName)));
+			Runnable notify = new Runnable() {
 
-			if (notify)
-				GroupManager.notify(this.getLastName(), String.format(Messages.getString("MOVED_TO_GROUP"), group.getName(), this.getDataSource().getName()));
+				// Do we notify of the group change?
+				String defaultGroupName = getDataSource().getDefaultGroup().getName();
+				// if we were not in the default group
+				// or we were in the default group and the move is to a different
+				// group.
+				boolean notify = (!oldGroup.equalsIgnoreCase(defaultGroupName)) || ((oldGroup.equalsIgnoreCase(defaultGroupName)) && (!User.this.group.equalsIgnoreCase(defaultGroupName)));
 
-			if (updatePerms)
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_GROUP_CHANGED);
+				@Override
+				public void run() {
+
+					if (notify)
+						GroupManager.notify(User.this.getLastName(), String.format(Messages.getString("MOVED_TO_GROUP"), User.this.group, User.this.getDataSource().getName()));
+
+					if (updatePerms)
+						GroupManager.getGMEventHandler().callEvent(User.this, Action.USER_GROUP_CHANGED);
+				}
+			};
+
+			if (!GroupManager.getBukkitPermissions().isPlayer_join() && (updatePerms)) {
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
+			}
 		}
 	}
 
@@ -257,9 +279,18 @@ public class User extends DataUnit implements Cloneable {
 
 			flagAsChanged();
 			if (GroupManager.isLoaded()) {
+
+				Runnable notify = new Runnable() {
+
+					@Override
+					public void run() {
+
+						GroupManager.getGMEventHandler().callEvent(User.this, Action.USER_SUBGROUP_CHANGED);
+					}
+				};
+
 				if (!GroupManager.getBukkitPermissions().isPlayer_join())
-					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-				GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+					GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
 			}
 			return true;
 		}
@@ -309,10 +340,20 @@ public class User extends DataUnit implements Cloneable {
 		if (subGroups.remove(subGroup.getName()) != null) {
 			flagAsChanged();
 
-			if (GroupManager.isLoaded())
+			if (GroupManager.isLoaded()) {
+
+				Runnable notify = new Runnable() {
+
+					@Override
+					public void run() {
+
+						GroupManager.getGMEventHandler().callEvent(User.this, Action.USER_SUBGROUP_CHANGED);
+					}
+				};
+
 				if (!GroupManager.getBukkitPermissions().isPlayer_join())
-					GroupManager.getBukkitPermissions().updatePlayer(getBukkitPlayer());
-			GroupManager.getGMEventHandler().callEvent(this, Action.USER_SUBGROUP_CHANGED);
+					GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
+			}
 			return true;
 		}
 		return false;
@@ -329,7 +370,8 @@ public class User extends DataUnit implements Cloneable {
 
 		subGroups.keySet().forEach(name -> {
 			Group g = getDataSource().getGroup(name);
-			if (g != null) groupList.add(g);
+			if (g != null)
+				groupList.add(g);
 		});
 		return groupList;
 	}
@@ -376,13 +418,29 @@ public class User extends DataUnit implements Cloneable {
 	 */
 	public void setVariables(Map<?, ?> nodeData) {
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		variables.clearVars();
 		for (Object key : nodeData.keySet()) {
 			variables.addVar((String) key, nodeData.get(key));
 		}
 		flagAsChanged();
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
+		
 		if (GroupManager.isLoaded()) {
-			GroupManager.getGMEventHandler().callEvent(this, Action.USER_INFO_CHANGED);
+			Runnable notify = new Runnable() {
+
+				@Override
+				public void run() {
+
+					GroupManager.getGMEventHandler().callEvent(User.this, Action.USER_INFO_CHANGED);
+				}
+			};
+
+			if (!GroupManager.getBukkitPermissions().isPlayer_join())
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(notify);
 		}
 	}
 

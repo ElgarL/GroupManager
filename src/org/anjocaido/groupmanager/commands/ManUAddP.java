@@ -113,19 +113,16 @@ public class ManUAddP extends BaseCommand {
 			// Seems Ok
 
 			if (period != null) {
-				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
+				auxUser.addTimedPermission(auxString, timed.getEpochSecond());	// Auto saves.
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period)); //$NON-NLS-1$
 
 			} else {
-				auxUser.addPermission(auxString);
+				auxUser.addPermission(auxString);	// Auto Saves.
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 			}
 		}
 
-		// If the player is online, this will create new data for the user.
-		targetPlayer = plugin.getServer().getPlayer(auxUser.getLastName());
-		if (targetPlayer != null)
-			GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
+		//plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

@@ -235,6 +235,10 @@ public abstract class DataUnit {
 				permissions.put(permission, expires);
 				GroupManager.logger.finest(String.format("Added Timed: %s - expires: %o", permission, expires));
 				flagAsChanged();
+
+				if (GroupManager.isLoaded()) {
+					GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+				}
 			}
 		}
 	}
@@ -253,8 +257,13 @@ public abstract class DataUnit {
 			if (permissions.containsKey(permission))
 				result = permissions.remove(permission) != null;
 		}
-		if (result)
+		if (result) {
 			flagAsChanged();
+
+			if (GroupManager.isLoaded()) {
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+			}
+		}
 
 		return result;
 	}

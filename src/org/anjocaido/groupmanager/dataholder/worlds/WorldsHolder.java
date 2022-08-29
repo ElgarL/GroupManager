@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -39,7 +38,6 @@ import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
 import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.storage.statements.Statements;
-import org.anjocaido.groupmanager.utils.BukkitWrapper;
 import org.bukkit.entity.Player;
 
 /**
@@ -196,27 +194,31 @@ public abstract class WorldsHolder extends ChildMirrors {
 			if (world.purgeTimedPermissions()) {
 				result = true;
 
-				for (User user : world.getUserList()) {
+				/*for (User user : world.getUserList()) {
 					// If the player is online, this will create new data for the user.
 					Player targetPlayer = BukkitWrapper.getInstance().getPlayer(user.getLastName());
 					if (targetPlayer != null)
 						GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-				}
+				}*/
 			}
 			alreadyDone.add(world);
 		}
+		if (result) plugin.getWorldsHolder().refreshData(null);
+		
 		return result;
 	}
 
 	/**
 	 * Verify we have the most up to date permissions.
+	 * @return 
 	 */
-	public void refreshData() {
+	public CompletableFuture<Void> refreshData(Runnable task) {
 
+		GroupManager.logger.info("refreshData called.");
 		// Check for any updated permissions
-		CompletableFuture.supplyAsync(() -> {
+		return CompletableFuture.supplyAsync(() -> {
 
-			if (!GroupManager.isLoaded()) return false;
+			//if (!GroupManager.isLoaded()) return false;
 
 			boolean changed = false;
 			try {
@@ -246,6 +248,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 			if (changed) {
 				GroupManager.getBukkitPermissions().updateAllPlayers();
 			}
+			if (task != null) task.run();
 		});
 	}
 

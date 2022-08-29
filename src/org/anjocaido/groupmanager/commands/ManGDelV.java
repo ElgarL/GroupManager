@@ -71,6 +71,8 @@ public class ManGDelV extends BaseCommand {
 		auxGroup.getVariables().removeVar(args[1]);
 		sender.sendMessage(String.format(ChatColor.YELLOW + Messages.getString("VARIABLE_REMOVED_FROM_GROUP"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxGroup.getLastName()));
 
+		plugin.getWorldsHolder().refreshData(null);
+		
 		return true;
 	}
 

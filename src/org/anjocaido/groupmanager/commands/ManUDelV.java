@@ -68,9 +68,12 @@ public class ManUDelV extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxUser.getVariables().removeVar(args[1]);
 		sender.sendMessage(String.format(ChatColor.YELLOW + Messages.getString("VARIABLE_REMOVED_FROM_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxUser.getLastName())); //$NON-NLS-1$
 
+		//plugin.getWorldsHolder().refreshData(null);
 		return true;
 	}
 

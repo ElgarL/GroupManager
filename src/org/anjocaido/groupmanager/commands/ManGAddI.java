@@ -74,10 +74,8 @@ public class ManGAddI extends BaseCommand {
 			return true;
 		}
 		// Seems OK
-		auxGroup.addInherits(auxGroup2);
+		auxGroup.addInherits(auxGroup2);	// Auto saves.
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_NOW_INHERITS"), auxGroup2.getName(), auxGroup.getName())); //$NON-NLS-1$
-
-		GroupManager.getBukkitPermissions().updateAllPlayers();
 
 		return true;
 	}

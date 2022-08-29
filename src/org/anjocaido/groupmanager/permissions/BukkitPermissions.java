@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -38,6 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -423,6 +425,23 @@ public class BukkitPermissions {
 	public class PlayerEvents implements Listener {
 
 		@EventHandler(priority = EventPriority.LOWEST)
+		public void onPlayerAsyncPreLogin(AsyncPlayerPreLoginEvent event) {
+			
+			GroupManager.logger.log(Level.INFO, "Async Player Login event refresh data... ");
+			/*
+			 * Ensure our data is up to date
+			 * before the player joins.
+			 */
+			try {
+				plugin.getWorldsHolder().refreshData(null).get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+			
+			GroupManager.logger.log(Level.INFO, "Async Player Login event finshed. ");
+		}
+		
+		@EventHandler(priority = EventPriority.LOWEST)
 		public void onPlayerLogin(PlayerLoginEvent event) {
 
 			/* this is a pre Join event (always default world).
@@ -433,8 +452,6 @@ public class BukkitPermissions {
 			 * World specific permissions will be updated
 			 * later in the PlayerJoinEvent.
 			 */
-
-			plugin.getWorldsHolder().refreshData();
 			
 			// Tab complete command visibility
 			// Server too old to support updateCommands.
@@ -494,8 +511,8 @@ public class BukkitPermissions {
 		@EventHandler(priority = EventPriority.HIGHEST)
 		public void onPlayerQuit(PlayerQuitEvent event) {
 
-			if (!GroupManager.isLoaded())
-				return;
+			/*if (!GroupManager.isLoaded())
+				return;*/
 
 			Player player = event.getPlayer();
 			String uuid = player.getUniqueId().toString();
@@ -507,7 +524,7 @@ public class BukkitPermissions {
 			 * force remove any attachments as bukkit may not
 			 */
 			removeAttachment(uuid);
-			plugin.getWorldsHolder().refreshData();
+			plugin.getWorldsHolder().refreshData(null);
 		}
 	}
 

@@ -199,6 +199,7 @@ public class WorldDataHolder {
 		//putUUIDLookup(theUser.getLastName(), theUser.getUUID().toLowerCase());
 
 		setUsersChanged(true);
+		
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(theUser, Action.USER_ADDED);
 	}
@@ -313,6 +314,7 @@ public class WorldDataHolder {
 		removeGroup(groupToAdd.getName());
 		getGroups().put(groupToAdd.getName().toLowerCase(), groupToAdd);
 		setGroupsChanged(true);
+		
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(groupToAdd, GMGroupEvent.Action.GROUP_ADDED);
 	}
@@ -336,6 +338,7 @@ public class WorldDataHolder {
 		if (getGroups().containsKey(groupName.toLowerCase())) {
 			getGroups().remove(groupName.toLowerCase());
 			setGroupsChanged(true);
+			
 			if (GroupManager.isLoaded())
 				GroupManager.getGMEventHandler().callEvent(groupName.toLowerCase(), GMGroupEvent.Action.GROUP_REMOVED);
 			return true;

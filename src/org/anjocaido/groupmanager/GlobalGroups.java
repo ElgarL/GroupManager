@@ -83,6 +83,9 @@ public class GlobalGroups {
 	 */
 	public void addGroup(Group groupToAdd) {
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		// Create a new group if it already exists
 		if (hasGroup(groupToAdd.getName())) {
 			groupToAdd = groupToAdd.clone();
@@ -91,8 +94,13 @@ public class GlobalGroups {
 
 		newGroup(groupToAdd);
 		haveGroupsChanged = true;
-		if (GroupManager.isLoaded())
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
+		
+		if (GroupManager.isLoaded()) {
+			plugin.getWorldsHolder().refreshData(null);
 			GroupManager.getGMEventHandler().callEvent(groupToAdd, GMGroupEvent.Action.GROUP_ADDED);
+		}
 	}
 
 	/**
@@ -105,8 +113,15 @@ public class GlobalGroups {
 
 		// Push a new group
 		if (!groups.containsKey(newGroup.getName().toLowerCase())) {
+			
 			groups.put(newGroup.getName().toLowerCase(), newGroup);
 			this.setGroupsChanged(true);
+			
+			if (GroupManager.isLoaded()) {
+				plugin.getWorldsHolder().refreshData(null);
+				GroupManager.getGMEventHandler().callEvent(newGroup, GMGroupEvent.Action.GROUP_ADDED);
+			}
+			
 			return newGroup;
 		}
 		return null;
@@ -121,10 +136,14 @@ public class GlobalGroups {
 
 		// Push a new group
 		if (groups.containsKey(groupName.toLowerCase())) {
+			
 			groups.remove(groupName.toLowerCase());
 			this.setGroupsChanged(true);
-			if (GroupManager.isLoaded())
+			
+			if (GroupManager.isLoaded()) {
+				plugin.getWorldsHolder().refreshData(null);
 				GroupManager.getGMEventHandler().callEvent(groupName.toLowerCase(), GMGroupEvent.Action.GROUP_REMOVED);
+			}
 			return true;
 		}
 		return false;

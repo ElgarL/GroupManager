@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.anjocaido.groupmanager.GroupManager;
+
 /**
  * A class that holds variables of a user/group.
  * In groups, it holds the contents of INFO node.
@@ -98,6 +100,10 @@ public class Variables implements Cloneable {
 		variables.remove(name);
 		variables.put(name, o);
 		owner.flagAsChanged();
+		
+		if (GroupManager.isLoaded()) {
+			GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+		}
 	}
 
 	/**
@@ -216,6 +222,10 @@ public class Variables implements Cloneable {
 		} catch (Exception ignored) {
 		}
 		owner.flagAsChanged();
+		
+		if (GroupManager.isLoaded()) {
+			GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+		}
 	}
 
 	public static Object parseVariableValue(String value) {

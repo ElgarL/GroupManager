@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -61,7 +60,7 @@ public class ManGDel extends BaseCommand {
 		dataHolder.removeGroup(auxGroup.getName());
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("DELETED_GROUP"), auxGroup.getName()));
 
-		GroupManager.getBukkitPermissions().updateAllPlayers();
+		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

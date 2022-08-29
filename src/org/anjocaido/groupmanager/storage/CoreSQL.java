@@ -1010,7 +1010,7 @@ public class CoreSQL implements DataSource {
 		Long changed = null;
 
 		try (Connection conn = hikari.getConnection();
-				PreparedStatement insert = conn.prepareStatement("DELETE FROM " + tableName + " WHERE NAME = '?';")) {
+				PreparedStatement insert = conn.prepareStatement("DELETE FROM " + tableName + " WHERE NAME = ?;")) {
 
 			conn.setAutoCommit(false);
 
