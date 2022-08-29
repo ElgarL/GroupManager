@@ -61,7 +61,7 @@ public class OfflinePlayerCache {
 	 * @param name	a Players name to search for a UUID match.
 	 * @return  UUID of a known OfflinePlayer or null.
 	 */
-	public UUID getUUID(String name) {
+	public UUID getPlayerUUID(String name) {
 		
 		return nameUUID.get(name.toLowerCase());
 	}
@@ -72,7 +72,7 @@ public class OfflinePlayerCache {
 	 * @param id	a Players UUID to search for a name match.
 	 * @return	Name of a known OfflinePlayer or null.
 	 */
-	public String getName(UUID id) {
+	public String getPlayerName(UUID id) {
 		
 		return nameUUID.inverse().get(id);
 	}

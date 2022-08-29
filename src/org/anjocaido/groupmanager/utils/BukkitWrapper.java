@@ -47,32 +47,6 @@ public class BukkitWrapper {
 	}
 
 	/**
-	 * Find a players UUID from the servers usercache.
-	 * returns null if there is no match.
-	 * 
-	 * @param name	{@String} containing the players name.
-	 * @return	{@UUID} for this player, or null if there is no data.
-	 */
-	public UUID getPlayerUUID (String name) {
-
-		// Search all known players (to this server) for a matching name.
-		return OfflinePlayerCache.getInstance().getUUID(name.toLowerCase());
-	}
-
-	/**
-	 * Find a players name from the servers usercache.
-	 * returns null if there is no match.
-	 * 
-	 * @param uid	{@UUID} to lookup.
-	 * @return	{@String} of the players name, or null if there is no data.
-	 */
-	public String getPlayerName(UUID uid) {
-
-		// Search all known players (to this server) for a matching UUID.
-		return OfflinePlayerCache.getInstance().getName(uid);
-	}
-
-	/**
 	 * (Deprecated) Gets an OfflinePlayer object ![NEVER USE]!
 	 * adds this data to the servers usercache.
 	 * Always returns an object with this name, but the UUID will be generated if there is no account.
@@ -143,21 +117,12 @@ public class BukkitWrapper {
 	public Long getLastOnline(UUID uid) {
 
 		// Search all known players (to this server) for a matching UUID.
-		if (getPlayerName(uid) != null)
-			return getOfflinePlayer(uid).getLastPlayed();
-
-		// A player with this UUID has never been seen on this server.
-		return 0L;
+		return getOfflinePlayer(uid).getLastPlayed();
 	}
 
 	public Long getFirstPlayed(UUID uid) {
 
-		// Search all known players (to this server) for a matching UUID.
-		if (getPlayerName(uid) != null)
-			return getOfflinePlayer(uid).getFirstPlayed();
-
-		// A player with this UUID has never been seen on this server.
-		return 0L;
+		return getOfflinePlayer(uid).getFirstPlayed();
 	}
 
 }

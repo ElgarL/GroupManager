@@ -30,6 +30,7 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
+import org.anjocaido.groupmanager.utils.OfflinePlayerCache;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -221,7 +222,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 				/*
 				 * Check for an offline player (exact match, ignoring case).
 				 */
-				match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
+				match = OfflinePlayerCache.getInstance().getPlayerUUID(playerName);
 
 			} else if (players.size() > 1) {
 				sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
@@ -235,7 +236,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 			 * UUID lookup
 			 */
 			UUID uid = UUID.fromString(playerName);
-			if (BukkitWrapper.getInstance().getPlayerName(uid) != null)
+			if (OfflinePlayerCache.getInstance().getPlayerName(uid) != null)
 				match = uid;
 		}
 
