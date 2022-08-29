@@ -54,7 +54,7 @@
     # To protect users from deletion set their 'lastplayed' variable to '0'.
     purge:
       enabled: true
-      # Number of days of inactivity before an user is deleted.
+      # Number of days of inactivity before a user is deleted.
       user_expires: 90d
       
     # If false timed permissions and sub-groups
