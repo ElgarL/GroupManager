@@ -214,7 +214,6 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	public CompletableFuture<Void> refreshData(Runnable task) {
 
-		GroupManager.logger.info("refreshData called.");
 		// Check for any updated permissions
 		return CompletableFuture.supplyAsync(() -> {
 

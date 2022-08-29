@@ -78,10 +78,10 @@ public class ManGDelI extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxGroup.removeInherits(auxGroup2.getName());
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_REMOVED_INHERITANCE"), auxGroup2.getName(), auxGroup.getName())); //$NON-NLS-1$
-
-		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

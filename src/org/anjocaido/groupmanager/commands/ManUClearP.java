@@ -68,6 +68,10 @@ public class ManUClearP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
+		
 		for (String perm : auxUser.getPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
@@ -78,6 +82,9 @@ public class ManUClearP extends BaseCommand {
 				auxUser.removePermission(perm);
 			}
 		}
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
+				
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_ALL_PERMISSIONS_PLAYER"), auxUser.getLastName())); //$NON-NLS-1$
 
 		plugin.getWorldsHolder().refreshData(null);

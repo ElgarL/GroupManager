@@ -20,6 +20,7 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
@@ -59,6 +60,9 @@ public class ManGClearP extends BaseCommand {
 			return true;
 		}
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
+		
 		for (String perm : auxGroup.getPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
@@ -69,6 +73,8 @@ public class ManGClearP extends BaseCommand {
 				auxGroup.removePermission(perm);
 			}
 		}
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_ALL_PERMISSIONS_GROUP"), auxGroup.getName())); //$NON-NLS-1$
 
 		plugin.getWorldsHolder().refreshData(null);

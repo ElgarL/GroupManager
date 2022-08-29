@@ -76,31 +76,6 @@ public class GroupVariables extends Variables implements Cloneable {
 	}
 
 	/**
-	 * Remove a var from the list
-	 * 
-	 * @param name
-	 */
-	@Override
-	public void removeVar(String name) {
-
-		try {
-			this.variables.remove(name);
-		} catch (Exception ignored) {}
-		switch (name) {
-		case "prefix":
-			addVar("prefix", "");
-			break;
-		case "suffix":
-			addVar("suffix", "");
-			break;
-		case "build":
-			addVar("build", false);
-			break;
-		}
-		owner.flagAsChanged();
-	}
-
-	/**
 	 * @return the owner
 	 */
 	@Override

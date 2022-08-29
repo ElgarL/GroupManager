@@ -67,7 +67,14 @@ public class ManUDel extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
+		
 		dataHolder.removeUser(auxUser.getUUID());
+		
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_DEFAULT"), auxUser.getLastName())); //$NON-NLS-1$
 
 		plugin.getWorldsHolder().refreshData(null);

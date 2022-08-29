@@ -73,10 +73,10 @@ public class ManUDelSub extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxUser.removeSubGroup(auxGroup);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_REMOVED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
-
-		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

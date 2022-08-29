@@ -112,17 +112,16 @@ public class ManUAddP extends BaseCommand {
 			}
 			// Seems Ok
 
+			// Auto saves.
 			if (period != null) {
-				auxUser.addTimedPermission(auxString, timed.getEpochSecond());	// Auto saves.
+				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period)); //$NON-NLS-1$
 
 			} else {
-				auxUser.addPermission(auxString);	// Auto Saves.
+				auxUser.addPermission(auxString);
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 			}
 		}
-
-		//plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

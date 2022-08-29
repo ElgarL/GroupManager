@@ -64,6 +64,9 @@ public class ManUDelP extends BaseCommand {
 			auxUser = dataHolder.getUser(args[0]);
 		}
 
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
+		
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -92,9 +95,12 @@ public class ManUDelP extends BaseCommand {
 			auxUser.removePermission(auxString); // Auto saves.
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_PLAYER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 		}
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
+				
 		// Seems OK
 
-		//plugin.getWorldsHolder().refreshData(null);
+		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

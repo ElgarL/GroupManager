@@ -86,8 +86,6 @@ public class ManGDelP extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_GROUP"), auxString, auxGroup.getName())); //$NON-NLS-1$
 		}
 
-		//plugin.getWorldsHolder().refreshData(null);
-
 		return true;
 	}
 

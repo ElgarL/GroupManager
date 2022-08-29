@@ -141,7 +141,9 @@ public class ManUAddSub extends BaseCommand {
 				}
 
 				// Seems OK
-				if (auxUser.addSubGroup(auxGroup)) { // Auto saves.
+				
+				// Auto saves.
+				if (auxUser.addSubGroup(auxGroup)) {
 					sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 				} else {
 					sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$

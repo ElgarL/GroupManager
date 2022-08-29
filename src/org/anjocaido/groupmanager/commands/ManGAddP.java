@@ -115,8 +115,6 @@ public class ManGAddP extends BaseCommand {
 			}
 		}
 
-		//plugin.getWorldsHolder().refreshData(null);
-
 		return true;
 	}
 

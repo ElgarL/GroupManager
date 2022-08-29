@@ -93,7 +93,9 @@ public class ManPromote extends BaseCommand {
 			return true;
 		}
 		// Seems OK
-		auxUser.setGroup(auxGroup);	// Auto saves.
+		
+		// Auto saves.
+		auxUser.setGroup(auxGroup);
 		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole)) //$NON-NLS-1$
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
 
