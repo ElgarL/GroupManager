@@ -93,7 +93,7 @@ public class GlobalGroups {
 		}
 
 		newGroup(groupToAdd);
-		haveGroupsChanged = true;
+		this.setGroupsChanged(true);
 		
 		GroupManager.setLoaded(loaded);	// Restore original state.
 		
@@ -137,8 +137,13 @@ public class GlobalGroups {
 		// Push a new group
 		if (groups.containsKey(groupName.toLowerCase())) {
 			
+			boolean loaded = GroupManager.isLoaded();
+			GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+			
 			groups.remove(groupName.toLowerCase());
 			this.setGroupsChanged(true);
+			
+			GroupManager.setLoaded(loaded);	// Restore original state.
 			
 			if (GroupManager.isLoaded()) {
 				plugin.getWorldsHolder().refreshData(null);

@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 
 /**
@@ -122,6 +123,10 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 		if (groupName.equals(getDefaultGroup().getName())) {
 			return false;
 		}
+		if (groupName.toLowerCase().startsWith("g:")) {
+			return GroupManager.getGlobalGroups().removeGroup(groupName);
+		}
+		
 		synchronized(getGroups()) {
 			for (String key : getGroups().keySet()) {
 				if (groupName.equalsIgnoreCase(key)) {

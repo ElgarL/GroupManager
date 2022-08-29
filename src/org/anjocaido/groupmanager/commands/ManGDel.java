@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -59,16 +58,9 @@ public class ManGDel extends BaseCommand {
 		}
 		// Seems OK
 		
-		boolean loaded = GroupManager.isLoaded();
-		GroupManager.setLoaded(false);
-		
+		// Auto saves.
 		dataHolder.removeGroup(auxGroup.getName());
-		
-		// Restore setting.
-		GroupManager.setLoaded(loaded);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("DELETED_GROUP"), auxGroup.getName()));
-
-		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}

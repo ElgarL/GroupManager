@@ -217,8 +217,6 @@ public abstract class WorldsHolder extends ChildMirrors {
 		// Check for any updated permissions
 		return CompletableFuture.supplyAsync(() -> {
 
-			//if (!GroupManager.isLoaded()) return false;
-
 			boolean changed = false;
 			try {
 				/*
