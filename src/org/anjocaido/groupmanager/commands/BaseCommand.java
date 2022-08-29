@@ -235,7 +235,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 			 * UUID lookup
 			 */
 			UUID uid = UUID.fromString(playerName);
-			if (BukkitWrapper.getInstance().getOfflinePlayer(uid).getName() != null)
+			if (BukkitWrapper.getInstance().getPlayerName(uid) != null)
 				match = uid;
 		}
 

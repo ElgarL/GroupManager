@@ -88,6 +88,7 @@ import org.anjocaido.groupmanager.placeholder.GMPlaceholderExpansion;
 import org.anjocaido.groupmanager.tasks.BukkitPermsUpdateTask;
 import org.anjocaido.groupmanager.tasks.UpdateTask;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
+import org.anjocaido.groupmanager.utils.OfflinePlayerCache;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -127,6 +128,10 @@ public class GroupManager extends JavaPlugin {
 	@Override
 	public void onLoad() {
 
+		// Instance our cache to populate it.
+		getLogger().info("OfflinePlayers cached ( " + OfflinePlayerCache.getInstance().size() + " ).");
+		
+		
 		// Check dependencies
 		getLogger().info("Dependencies: " + (DependencyManager.checkDependencies(this) ? "OK" : "Warning unknown state!"));
 	}

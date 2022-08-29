@@ -33,7 +33,6 @@ import org.bukkit.plugin.Plugin;
 public class BukkitWrapper {
 
 	private final Plugin plugin;
-	private OfflinePlayer cache;
 	private static BukkitWrapper instance;
 
 	private BukkitWrapper() {
@@ -60,24 +59,8 @@ public class BukkitWrapper {
 	 */
 	public UUID getPlayerUUID (String name) {
 
-		// Check our cache first
-		if (cache != null && cache.getName().equalsIgnoreCase(name))
-			return cache.getUniqueId();
-
-		// Clear our cache as this is a different player
-		cache = null;
-
 		// Search all known players (to this server) for a matching name.
-		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
-
-		for (OfflinePlayer player : offlinePlayer)
-			if (player.getName() != null && player.getName().equalsIgnoreCase(name)) {
-				cache = player;
-				return player.getUniqueId();
-			}
-
-		// A player with this name has never been seen on this server.
-		return null;
+		return OfflinePlayerCache.getInstance().getUUID(name.toLowerCase());
 	}
 
 	/**
@@ -89,24 +72,8 @@ public class BukkitWrapper {
 	 */
 	public String getPlayerName(UUID uid) {
 
-		// Check our cache first
-		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
-			return cache.getName();
-
-		// Clear our cache as this is a different player
-		cache = null;
-
 		// Search all known players (to this server) for a matching UUID.
-		OfflinePlayer[] offlinePlayer = plugin.getServer().getOfflinePlayers();
-
-		for (OfflinePlayer player : offlinePlayer)
-			if (player.getName() != null && player.getUniqueId().compareTo(uid) == 0) {
-				cache = player;
-				return player.getName();
-			}
-
-		// A player with this UUID has never been seen on this server.
-		return null;
+		return OfflinePlayerCache.getInstance().getName(uid);
 	}
 
 	/**
@@ -179,16 +146,9 @@ public class BukkitWrapper {
 
 	public Long getLastOnline(UUID uid) {
 
-		// Check our cache first
-		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
-			return cache.getLastPlayed();
-
-		// Clear our cache as this is a different player
-		cache = null;
-
 		// Search all known players (to this server) for a matching UUID.
 		if (getPlayerName(uid) != null)
-			return cache.getLastPlayed();
+			return getOfflinePlayer(uid).getLastPlayed();
 
 		// A player with this UUID has never been seen on this server.
 		return 0L;
@@ -196,16 +156,9 @@ public class BukkitWrapper {
 
 	public Long getFirstPlayed(UUID uid) {
 
-		// Check our cache first
-		if (cache != null && cache.getUniqueId().compareTo(uid) == 0)
-			return cache.getFirstPlayed();
-
-		// Clear our cache as this is a different player
-		cache = null;
-
 		// Search all known players (to this server) for a matching UUID.
 		if (getPlayerName(uid) != null)
-			return cache.getFirstPlayed();
+			return getOfflinePlayer(uid).getFirstPlayed();
 
 		// A player with this UUID has never been seen on this server.
 		return 0L;

@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.events.GMUserEvent;
+import org.anjocaido.groupmanager.utils.OfflinePlayerCache;
 import org.anjocaido.groupmanager.utils.Supported;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -452,6 +453,9 @@ public class BukkitPermissions {
 			 * World specific permissions will be updated
 			 * later in the PlayerJoinEvent.
 			 */
+			
+			// Update our cache.
+			OfflinePlayerCache.getInstance().forcePutMatch(event.getPlayer().getName(), event.getPlayer().getUniqueId());
 			
 			// Tab complete command visibility
 			// Server too old to support updateCommands.
