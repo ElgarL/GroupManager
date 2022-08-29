@@ -260,7 +260,7 @@ public class GroupManager extends JavaPlugin {
 					Metrics metrics = new Metrics(this, 7982);
 
 					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getLanguage()));
-					metrics.addCustomChart(new Metrics.SimplePie("language", () -> GroupManager.getGMConfig().getDatabaseType()));
+					metrics.addCustomChart(new Metrics.SimplePie("database", () -> GroupManager.getGMConfig().getDatabaseType()));
 				} catch (Exception e) {
 					GroupManager.logger.log(Level.WARNING, "Failed to setup Metrics"); //$NON-NLS-1$
 				}
