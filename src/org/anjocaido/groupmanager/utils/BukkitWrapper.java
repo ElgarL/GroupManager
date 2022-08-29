@@ -20,10 +20,9 @@ package org.anjocaido.groupmanager.utils;
 import java.util.List;
 import java.util.UUID;
 
-import org.anjocaido.groupmanager.GroupManager;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 
 /**
@@ -32,12 +31,9 @@ import org.bukkit.plugin.Plugin;
  */
 public class BukkitWrapper {
 
-	private final Plugin plugin;
 	private static BukkitWrapper instance;
 
-	private BukkitWrapper() {
-		plugin = GroupManager.getPlugin(GroupManager.class);
-	}
+	private BukkitWrapper() {}
 
 	public static BukkitWrapper getInstance(){
 		if (instance == null) {
@@ -94,7 +90,7 @@ public class BukkitWrapper {
 	@Deprecated
 	public OfflinePlayer getOfflinePlayer(String name) {
 
-		return plugin.getServer().getOfflinePlayer(name);
+		return Bukkit.getOfflinePlayer(name);
 	}
 
 	/**
@@ -107,7 +103,7 @@ public class BukkitWrapper {
 	 */
 	public OfflinePlayer getOfflinePlayer(UUID uid) {
 
-		return plugin.getServer().getOfflinePlayer(uid);
+		return Bukkit.getOfflinePlayer(uid);
 	}
 	
 	/**
@@ -117,7 +113,7 @@ public class BukkitWrapper {
 	 */
 	public OfflinePlayer[] getOfflinePlayers() {
 		
-		return plugin.getServer().getOfflinePlayers();
+		return Bukkit.getOfflinePlayers();
 	}
 
 	/**
@@ -129,7 +125,7 @@ public class BukkitWrapper {
 	 */
 	public List<Player> matchPlayer(String name) {
 
-		return plugin.getServer().matchPlayer(name);
+		return Bukkit.matchPlayer(name);
 	}
 
 	/**
@@ -141,7 +137,7 @@ public class BukkitWrapper {
 	 */
 	public Player getPlayer(String name) {
 
-		return plugin.getServer().getPlayer(name);
+		return Bukkit.getPlayer(name);
 	}
 
 	public Long getLastOnline(UUID uid) {

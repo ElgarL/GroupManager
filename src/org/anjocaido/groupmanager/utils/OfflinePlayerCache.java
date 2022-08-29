@@ -23,6 +23,8 @@ public class OfflinePlayerCache {
 	private final BiMap<String, UUID> nameUUID = HashBiMap.create();
 	private static OfflinePlayerCache instance;
 	
+	private OfflinePlayerCache() {}
+	
 	public static OfflinePlayerCache getInstance(){
 		if (instance == null) {
 			synchronized (OfflinePlayerCache.class) {
