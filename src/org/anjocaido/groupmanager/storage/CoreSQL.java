@@ -172,7 +172,7 @@ public class CoreSQL implements DataSource {
 	private CompletableFuture<Void> loadGlobalGroupsAsync(GlobalGroups globalGroups) {
 
 		return CompletableFuture.supplyAsync(() -> {
-			
+
 			Set<Group> groups = new HashSet<>();
 
 			// Read all groups from SQL.
@@ -236,11 +236,11 @@ public class CoreSQL implements DataSource {
 		GlobalGroups globalGroups = GroupManager.getGlobalGroups();
 
 		CompletableFuture.supplyAsync(() -> {
-			
+
 			Long changed = null;
 
 			if (globalGroups.haveGroupsChanged() && GroupManager.getGMConfig().getAccessType() == ACCESS_LEVEL.READ_WRITE) {
-				
+
 				// Batch push any changed Group data to the database.
 				try (Connection conn = hikari.getConnection();
 						PreparedStatement insert = conn.prepareStatement(String.format(this.statements.getInsertReplaceGlobalGroup(), GLOBALGROUPS_TABLE));) {
@@ -281,7 +281,7 @@ public class CoreSQL implements DataSource {
 
 					if (changed == null) {
 						// No data was saved so it must require deleting
-						changed = deleteGlobalGroups(GLOBALGROUPS_TABLE);
+						changed = deleteGlobalGroupsFromSQL(GLOBALGROUPS_TABLE);
 					}
 
 					// Update changed timeStamp in SQL table.
@@ -319,21 +319,9 @@ public class CoreSQL implements DataSource {
 		});
 	}
 
-	private Long deleteGlobalGroups(String tableName) {
+	private Long deleteGlobalGroupsFromSQL(String tableName) {
 
-		Set<String> databaseGroups = new HashSet<>();
-
-		try (Connection conn = hikari.getConnection();
-				PreparedStatement query = conn.prepareStatement("SELECT NAME FROM " + tableName + ";")) {
-
-			ResultSet result = query.executeQuery();
-
-			while (result.next()) {
-				databaseGroups.add(result.getString(1));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Set<String> databaseGroups = getAllGroupKeys(tableName);
 
 		// Batch delete GlobalGroups in SQL who are no longer valid in our data.
 
@@ -344,15 +332,17 @@ public class CoreSQL implements DataSource {
 
 			conn.setAutoCommit(false);
 
-			Set<String> keys = GroupManager.getGlobalGroups().getGroups().keySet();
+			synchronized (GroupManager.getGlobalGroups().getGroups()) {
+				Set<String> keys = GroupManager.getGlobalGroups().getGroups().keySet();
 
-			for (String name : databaseGroups) {
-				if (!keys.contains(name)) {
+				for (String name : databaseGroups) {
+					if (!keys.contains(name.toLowerCase())) {
 
-					if (changed == null) changed = Instant.now().toEpochMilli();
+						if (changed == null) changed = Instant.now().toEpochMilli();
 
-					insert.setString(1, name);
-					insert.addBatch();
+						insert.setString(1, name);
+						insert.addBatch();
+					}
 				}
 			}
 
@@ -1014,15 +1004,17 @@ public class CoreSQL implements DataSource {
 
 			conn.setAutoCommit(false);
 
-			Set<String> keys = dataHolder.getGroups().keySet();
+			synchronized (dataHolder.getGroups()) {
+				Set<String> keys = dataHolder.getGroups().keySet();
 
-			for (String name : databaseGroups) {
-				if (!keys.contains(name)) {
+				for (String name : databaseGroups) {
+					if (!keys.contains(name.toLowerCase())) {
 
-					if (changed == null) changed = Instant.now().toEpochMilli();
+						if (changed == null) changed = Instant.now().toEpochMilli();
 
-					insert.setString(1, name);
-					insert.addBatch();
+						insert.setString(1, name);
+						insert.addBatch();
+					}
 				}
 			}
 
@@ -1156,15 +1148,17 @@ public class CoreSQL implements DataSource {
 
 			conn.setAutoCommit(false);
 
-			Set<String> keys = dataHolder.getUsers().keySet();
+			synchronized (dataHolder.getUsers()) {
+				Set<String> keys = dataHolder.getUsers().keySet();
 
-			for (String UUID : databaseUUIDs) {
-				if (!keys.contains(UUID)) {
+				for (String UUID : databaseUUIDs) {
+					if (!keys.contains(UUID.toLowerCase())) {
 
-					if (changed == null) changed = Instant.now().toEpochMilli();
+						if (changed == null) changed = Instant.now().toEpochMilli();
 
-					insert.setString(1, UUID);
-					insert.addBatch();
+						insert.setString(1, UUID);
+						insert.addBatch();
+					}
 				}
 			}
 
