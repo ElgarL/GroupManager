@@ -27,6 +27,7 @@ The directory structure when you first generate the config files will look somet
             config.yml
             globalgroups.yml
             backups/
+            SQL/
             worlds/
                 world/
                     groups.yml
@@ -38,7 +39,7 @@ Located at: plugins/GroupManager/config.yml
 This config file contains some basic settings and is used when you have multiple worlds. It is used to mirror the permissions from a single world across to others.
 
 The config file will look something like this:
-```
+```yaml
 ssettings:
   config:
     # Languages must have a corresponding properties file.
@@ -137,7 +138,7 @@ ssettings:
 
 ## Mirroring
 Here is an example of how to use mirroring in GM
-```
+```yaml
 # This is an example GroupManager Mirroring system.
 # This will take you into some more complex GM Mirroring.
 
@@ -168,7 +169,7 @@ Located at: plugins/GroupManager/worlds/\<worldname\>/groups.yml
 This is the main and most important config file. This is where you declare the groups for which you are going to be using. The example config file is a little too big to post here, but it will be automatically generated the first time you start GM.
 
 The basics of GroupManager can be summed up by the example shown here:
-```
+```yaml
 groups:
   Default:
     default: true
@@ -223,7 +224,7 @@ Located at: plugins/GroupManager/worlds/\<worldname\>/users.yml
 This is where you define which user goes into which group. You should remember to make sure you add yourself to this config, so you have access to the management commands in game. Most people will rarely edit this file directly, as its simpler to edit it with the in-game commands (and safer).
 
 The config file will look something like this:
-```
+```yaml
 users:
   ElgarL:
     group: Default
