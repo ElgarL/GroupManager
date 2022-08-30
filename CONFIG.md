@@ -39,38 +39,81 @@ This config file contains some basic settings and is used when you have multiple
 
 The config file will look something like this:
 ```
-settings:
+ssettings:
   config:
-    # With this enabled anyone set as op has full permissions when managing GroupManager
+    # Languages must have a corresponding properties file.
+    # Acceptable entries are:
+    #   chinese-simplified, chinese-traditional, czech, english, french, portuguese, portuguese-brazil, russian,
+    #   romanian.
+    language: english
+
+    # With this enabled, every operator will have full permissions when managing GroupManager
     # The user will be able to promote players to the same group or even above.
     opOverrides: true
-    
+
     # Default setting for 'mantogglevalidate'
     # true will cause GroupManager to attempt name matching by default.
     validate_toggle: true
-    # ************************************************************************************************************************************************************
-    # *** NOTE: Having this feature enabled can allow improper use of command blocks which may lead to undesireable permission changes. You have been warned! ***
-    # ************************************************************************************************************************************************************
+
+    # If enabled, tab-complete will follow the mantoggle validate setting when
+    # offering player names. Disabled will offer all known players.
+    tab_validate: true
+
+    # ***************************************************************************************
+    # *** NOTE: Having this feature enabled can allow improper use of command blocks,     ***
+    # ***       which may lead to undesirable permission changes. You have been warned!   ***
+    # ***************************************************************************************
     allow_commandblocks: false
-    
+
   data:
     save:
-      # How often GroupManager will save it's data back to groups.yml and users.yml
+      # How often GroupManager will save it's data.
+      # If set to '0' this will disable all saving and maintenance tasks.
       minutes: 10
-      # Number of hours to retain backups (plugins/GroupManager/backup)
+      # Number of hours to retain backups (/plugins/GroupManager/backup)
       hours: 24
       
+    database:
+      # YAML, H2, MYSQL, SQLITE, POSTGRESQL, MARIADB (SQLite is not supported on pre-1.14 servers)
+      type: YAML
+      # Access level is READ or READ_WRITE.
+      access: READ_WRITE
+      sql:
+        name: minecraft
+        group: GroupManager
+        username: root
+        password: pass
+        hostname: localhost
+        port: 3306
+        # Default ports
+        # MYSQL & MARIADB 3306
+        # POSTGRESQL 5432
+
+  maintenance:
+    # Runs at server start/reload to remove users who have not logged
+    # in for the specified duration.
+    # To protect users from deletion set their 'lastplayed' variable to '0'.
+    purge:
+      enabled: true
+      # Number of days of inactivity before a user is deleted.
+      user_expires: 90d
+      
+    # If false timed permissions and sub-groups
+    # will not expire until this is re-enabled.
+    timed:
+      enabled: true
+
   logging:
     # Level of detail GroupManager will use when logging.
-    # Acceptable entries are - ALL,CONFIG,FINE,FINER,FINEST,INFO,OFF,SEVERE,WARNING
+    # Acceptable entries are - ALL, CONFIG, FINE, FINER, FINEST, INFO, OFF, SEVERE, WARNING
     level: INFO
-    
+
   mirrors:
         # Worlds listed here have their settings mirrored in their children.
-        # The first element 'world' is the main worlds name, and is the parent world.
-        # subsequent elements 'world_nether' and 'world_the_end' are worlds which will use
+        # The first element 'world' is the main world's name, and is the parent world.
+        # Subsequent elements 'world_nether' and 'world_the_end' are worlds which will use
         # the same user/groups files as the parent.
-        # the element 'all_unnamed_worlds' specifies all worlds that aren't listed, and automatically mirrors them to it's parent.
+        # The element 'all_unnamed_worlds' specifies all worlds that aren't listed, and automatically mirrors them to it's parent.
         # Each child world can be configured to mirror the 'groups', 'users' or both files from its parent.
         world:
           world_nether:
@@ -82,13 +125,14 @@ settings:
           all_unnamed_worlds:
           - users
           - groups
-    #  world2:      (World2 would have it's own set of user and groups files)
-    #    world3:
-    #    - users    (World3 would use the users.yml from world2, but it's own groups.yml)
-    #    world4:
-    #    - groups   (World4 would use the groups.yml from world2, but it's own users.yml)
-    #  world5:
-    #    - world6   (this would cause world6 to mirror both files from world5)
+    #   world2:      (World2 would have it's own set of user and groups files)
+    #     world3:
+    #     - users    (World3 would use the users.yml from world2, but it's own groups.yml)
+    #     world4:
+    #     - groups   (World4 would use the groups.yml from world2, but it's own users.yml)
+    #   world5:
+    #     - world6   (this would cause world6 to mirror both files from world5)
+
 ```
 
 ## Mirroring
