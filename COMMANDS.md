@@ -239,6 +239,12 @@ Reload current world and config.yml, or load given world. [world] is an optional
 syntax: <command> [world]
 permission: groupmanager.manload
 ```
+- /manimport  
+When using SQL this imports all data from YAML.
+```
+syntax: <command>
+permission: groupmanager.manimport
+```
 - /mantogglevalidate  
 Toggle on/off the validating if player is online.
 ```
