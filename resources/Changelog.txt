@@ -306,6 +306,8 @@ v3.0:
     - Add Brazilian Portuguese translation (@cid998).
     - Add Portuguese translation (@ice41).
     - Add Romainan translation (@SynOfficial).
+    - Add Swedish translation (@ItsLynix).
+    - Add Turkish translation (@Selcuk05).
     - Prevent oversized permission lists overflowing BungeeCord servers.
     - Add Console tab-complete on commands.
     - Add a config setting to disable timed permissions expiring.
