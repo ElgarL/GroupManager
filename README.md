@@ -16,21 +16,26 @@ Ask for assistance in the GroupManager Discord.
 **To include Groupmanager as a dependency in your own plugins.**
 
 Add a repository in your pom.xml
->        <repository>
->            <id>jitpack.io</id>
->            <url>https://jitpack.io</url>
->        </repository>  
+
+```xml
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+```
 Then add as a dependency in your pom.xml
->        <dependency>
->            <groupId>com.github.ElgarL</groupId>
->            <artifactId>groupmanager</artifactId>
->            <version>2.9</version>
->        </dependency>  
+```xml
+        <dependency>
+            <groupId>com.github.ElgarL</groupId>
+            <artifactId>groupmanager</artifactId>
+            <version>2.9</version>
+        </dependency>  
+```
 
 ---
 This sample class can be used in your plugin to access GroupManager.
         
-```
+```java
 import java.util.Arrays;
 import java.util.List;
 
@@ -127,3 +132,4 @@ public class GMHook
 		return handler.has(player, node);
 	}
 }
+```
