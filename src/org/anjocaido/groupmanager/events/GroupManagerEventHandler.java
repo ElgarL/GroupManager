@@ -29,29 +29,29 @@ import org.bukkit.Server;
  * 
  */
 public class GroupManagerEventHandler {
-	
+
 	private final Server server;
 	private final GroupManager plugin;
-	
+
 
 	public GroupManagerEventHandler(GroupManager plugin) {
-		
+
 		this.plugin = plugin;
 		this.server = plugin.getServer();
-		
+
 	}
 
-	protected void callEvent(GMGroupEvent event) {
-		
-		try { event.schedule(event); } catch (Exception ignored) {}
-	}
-
-	protected void callEvent(GMUserEvent event) {
+	private void callEvent(GMGroupEvent event) {
 
 		try { event.schedule(event); } catch (Exception ignored) {}
 	}
 
-	protected void callEvent(GMSystemEvent event) {
+	private void callEvent(GMUserEvent event) {
+
+		try { event.schedule(event); } catch (Exception ignored) {}
+	}
+
+	private void callEvent(GMSystemEvent event) {
 
 		try { event.schedule(event); } catch (Exception ignored) {}
 	}
@@ -80,22 +80,20 @@ public class GroupManagerEventHandler {
 
 		callEvent(new GMSystemEvent(action));
 	}
-	
+
 	/**
 	 * @return the plugin
 	 */
 	public GroupManager getPlugin() {
-	
+
 		return plugin;
 	}
-	
+
 	/**
 	 * @return the server
 	 */
 	public Server getServer() {
-	
+
 		return server;
 	}
-
-	
 }

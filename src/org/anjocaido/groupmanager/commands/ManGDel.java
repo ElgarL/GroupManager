@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -58,17 +57,17 @@ public class ManGDel extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		dataHolder.removeGroup(auxGroup.getName());
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("DELETED_GROUP"), auxGroup.getName()));
-
-		GroupManager.getBukkitPermissions().updateAllPlayers();
 
 		return true;
 	}
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for groups.

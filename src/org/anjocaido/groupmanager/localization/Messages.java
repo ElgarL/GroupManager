@@ -28,6 +28,7 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.logging.Level;
 
 import org.anjocaido.groupmanager.GroupManager;
 
@@ -49,51 +50,51 @@ public class Messages {
 			return '!' + key + '!';
 		}
 	}
-	
+
 	public static void setLanguage() {
-		
+
 		try {
 			BUNDLE_NAME = "languages." + GroupManager.getGMConfig().getLanguage();
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		} catch (Exception ex) {
 			// Invalid name, use default.
-			GroupManager.logger.warning("Missing or corrupt 'language' node. Using default settings");
+			GroupManager.logger.log(Level.WARNING, "Missing or corrupt 'language' node. Using default settings");
 			BUNDLE_NAME = "languages.english";
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, new UTF8Control());
 		}
 	}
-	
+
 	static class UTF8Control extends Control {
-		
-	    public ResourceBundle newBundle (String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-	            throws IOException
-	    {
-	        // The below is a copy of the default implementation.
-	        String bundleName = toBundleName(baseName, locale);
-	        String resourceName = toResourceName(bundleName, "properties");
-	        ResourceBundle bundle = null;
-	        InputStream stream = null;
-	        if (reload) {
-	            URL url = loader.getResource(resourceName);
-	            if (url != null) {
-	                URLConnection connection = url.openConnection();
-	                if (connection != null) {
-	                    connection.setUseCaches(false);
-	                    stream = connection.getInputStream();
-	                }
-	            }
-	        } else {
-	            stream = loader.getResourceAsStream(resourceName);
-	        }
-	        if (stream != null) {
-	            try {
-	                // Only this line is changed to make it read properties files as UTF-8.
-	                bundle = new PropertyResourceBundle(new InputStreamReader(stream, StandardCharsets.UTF_8));
-	            } finally {
-	                stream.close();
-	            }
-	        }
-	        return bundle;
-	    }
+
+		public ResourceBundle newBundle (String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IOException
+		{
+			// The below is a copy of the default implementation.
+			String bundleName = toBundleName(baseName, locale);
+			String resourceName = toResourceName(bundleName, "properties");
+			ResourceBundle bundle = null;
+			InputStream stream = null;
+			if (reload) {
+				URL url = loader.getResource(resourceName);
+				if (url != null) {
+					URLConnection connection = url.openConnection();
+					if (connection != null) {
+						connection.setUseCaches(false);
+						stream = connection.getInputStream();
+					}
+				}
+			} else {
+				stream = loader.getResourceAsStream(resourceName);
+			}
+			if (stream != null) {
+				try {
+					// Only this line is changed to make it read properties files as UTF-8.
+					bundle = new PropertyResourceBundle(new InputStreamReader(stream, StandardCharsets.UTF_8));
+				} finally {
+					stream.close();
+				}
+			}
+			return bundle;
+		}
 	}
 }

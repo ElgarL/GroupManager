@@ -71,8 +71,10 @@ public class ManGAddV extends BaseCommand {
 				auxString += " ";
 			}
 		}
-		
+
 		auxString = auxString.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		// Auto saves.
 		auxGroup.getVariables().addVar(args[1], Variables.parseVariableValue(auxString));
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_GROUP"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxGroup.getName())); //$NON-NLS-1$
 
@@ -81,7 +83,7 @@ public class ManGAddV extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for groups.

@@ -49,7 +49,7 @@ public class ManUListTemp extends BaseCommand {
 		auxString = ""; //$NON-NLS-1$
 		ArrayList<User> removeList = new ArrayList<>();
 		int count = 0;
-		
+
 		if (GroupManager.getOverloadedUsers().size() > 0)
 			for (User u : GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase())) {
 				if (!dataHolder.isOverloaded(u.getUUID())) {

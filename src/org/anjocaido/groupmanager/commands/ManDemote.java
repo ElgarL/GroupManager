@@ -93,7 +93,8 @@ public class ManDemote extends BaseCommand {
 			return true;
 		}
 		// Seems OK
-		auxUser.setGroup(auxGroup);
+		auxUser.setGroup(auxGroup);	// Auto saves.
+		
 		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
 
@@ -102,9 +103,9 @@ public class ManDemote extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -112,12 +113,12 @@ public class ManDemote extends BaseCommand {
 
 			return tabCompleteUsers(args[0]);
 		}
-		
+
 		/*
 		 * Populate the second argument of TabComplete with a list of valid group names.
 		 */
 		if (args.length == 2) {
-			
+
 			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
 			}
@@ -136,9 +137,9 @@ public class ManDemote extends BaseCommand {
 
 			return result;
 		}
-		
+
 		return null;
-		
+
 	}
 
 }

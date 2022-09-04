@@ -11,6 +11,14 @@ authors:
 website: https://github.com/ElgarL/GroupManager
 description: Provides on-the-fly system for permissions system created by Nijikokun. But all in memory, and with flat-file saving schedule.
 
+libraries:
+    - org.postgresql:postgresql:42.4.2
+    - com.h2database:h2:2.1.214
+    - mysql:mysql-connector-java:8.0.30
+    - org.mariadb.jdbc:mariadb-java-client:3.0.7
+    - com.zaxxer:HikariCP:5.0.1
+    - org.slf4j:slf4j-api:2.0.0
+
 softdepend: [PlaceholderAPI]
 
 permissions:
@@ -57,6 +65,7 @@ permissions:
             groupmanager.tempdelall: true
             groupmanager.mansave: true
             groupmanager.manload: true
+            groupmanager.manimport: true
             groupmanager.manpromote: true
             groupmanager.mandemote: true
             groupmanager.mantogglevalidate: true
@@ -208,6 +217,10 @@ commands:
     description: Reloads current world and config.yml, or loads given world from file to server.
     usage: /<command> [world]
     permission: groupmanager.manload
+  manimport:
+    description: Loads data from Yaml and saves to SQL.
+    usage: /<command>
+    permission: groupmanager.manimport
   manpromote:
     description: Promotes a user in the same heritage line to a higher rank.
     usage: /<command> <player> <group>

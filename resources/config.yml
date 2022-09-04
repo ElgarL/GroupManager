@@ -1,39 +1,72 @@
 ﻿settings:
   config:
     # Languages must have a corresponding properties file.
-    # Acceptable entries are - chinese-simplified, chinese-traditional, czech, english, french, russian.
+    # Acceptable entries are:
+    #   chinese-simplified, chinese-traditional, czech, english, french, portuguese, portuguese-brazil, russian,
+    #   romanian.
     language: english
-    
+
     # With this enabled, every operator will have full permissions when managing GroupManager
     # The user will be able to promote players to the same group or even above.
     opOverrides: true
-    
+
     # Default setting for 'mantogglevalidate'
     # true will cause GroupManager to attempt name matching by default.
     validate_toggle: true
-    
+
     # If enabled, tab-complete will follow the mantoggle validate setting when
     # offering player names. Disabled will offer all known players.
     tab_validate: true
-    
+
     # ***************************************************************************************
     # *** NOTE: Having this feature enabled can allow improper use of command blocks,     ***
-    # ***       which may lead to undesireable permission changes. You have been warned!  ***
+    # ***       which may lead to undesirable permission changes. You have been warned!   ***
     # ***************************************************************************************
     allow_commandblocks: false
-    
+
   data:
     save:
-      # How often GroupManager will save it's data
+      # How often GroupManager will save it's data.
+      # If set to '0' this will disable all saving and maintenance tasks.
       minutes: 10
       # Number of hours to retain backups (/plugins/GroupManager/backup)
       hours: 24
       
+    database:
+      # YAML, H2, MYSQL, SQLITE, POSTGRESQL, MARIADB (SQLite is not supported on pre-1.14 servers)
+      type: YAML
+      # Access level is READ or READ_WRITE.
+      access: READ_WRITE
+      sql:
+        name: minecraft
+        group: GroupManager
+        username: root
+        password: pass
+        hostname: localhost
+        port: 3306
+        # Default ports
+        # MYSQL & MARIADB 3306
+        # POSTGRESQL 5432
+
+  maintenance:
+    # Runs at server start/reload to remove users who have not logged
+    # in for the specified duration.
+    # To protect users from deletion set their 'lastplayed' variable to '0'.
+    purge:
+      enabled: true
+      # Number of days of inactivity before a user is deleted.
+      user_expires: 90d
+      
+    # If false timed permissions and sub-groups
+    # will not expire until this is re-enabled.
+    timed:
+      enabled: true
+
   logging:
     # Level of detail GroupManager will use when logging.
     # Acceptable entries are - ALL, CONFIG, FINE, FINER, FINEST, INFO, OFF, SEVERE, WARNING
     level: INFO
-    
+
   mirrors:
         # Worlds listed here have their settings mirrored in their children.
         # The first element 'world' is the main world's name, and is the parent world.

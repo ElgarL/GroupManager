@@ -72,17 +72,19 @@ public class ManUAddV extends BaseCommand {
 			}
 		}
 		auxString = auxString.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		// Auto saves.
 		auxUser.getVariables().addVar(args[1], Variables.parseVariableValue(auxString));
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("VARIABLE_ADDED_TO_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxString + ChatColor.YELLOW, auxUser.getLastName())); //$NON-NLS-1$
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -90,7 +92,7 @@ public class ManUAddV extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 

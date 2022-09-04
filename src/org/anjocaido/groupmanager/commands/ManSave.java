@@ -19,7 +19,10 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -42,28 +45,34 @@ public class ManSave extends BaseCommand {
 	@Override
 	protected boolean parseCommand(@NotNull String[] args) {
 
-		boolean forced = false;
+		AtomicBoolean forced = new AtomicBoolean(false);
 
 		if ((args.length == 1) && (args[0].equalsIgnoreCase("force"))) //$NON-NLS-1$
-			forced = true;
+			forced.set(true);
 
-		try {
-			/*
-			 * Obtain a lock so we can save.
-			 */
-			plugin.getSaveLock().lock();
-			
-			plugin.getWorldsHolder().saveChanges(forced);
-			sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
-			
-		} catch (IllegalStateException ex) {
-			sender.sendMessage(ChatColor.RED + ex.getMessage());
-			
-		} finally {
-			// Release lock.
-			if(plugin.getSaveLock().isHeldByCurrentThread())
-				plugin.getSaveLock().unlock();
-		}
+		CompletableFuture.runAsync(() -> {
+			try {
+				/*
+				 * Obtain a lock so we can save.
+				 */
+				plugin.getSaveLock().lock();
+				GroupManager.setLoaded(false);
+
+				plugin.getWorldsHolder().saveChanges(forced.get());
+				sender.sendMessage(ChatColor.YELLOW + Messages.getString("GroupManager.REFRESHED")); //$NON-NLS-1$
+
+			} catch (IllegalStateException ex) {
+				sender.sendMessage(ChatColor.RED + ex.getMessage());
+
+			} finally {
+				// Release lock.
+				if(plugin.getSaveLock().isHeldByCurrentThread()) {
+					GroupManager.setLoaded(true);
+					plugin.getSaveLock().unlock();
+				}
+			}
+		});
+
 		return true;
 	}
 
@@ -71,7 +80,7 @@ public class ManSave extends BaseCommand {
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 
 		if (args.length == 1) {
-			
+
 			return Collections.singletonList("force"); //$NON-NLS-1$
 		}
 		return null;

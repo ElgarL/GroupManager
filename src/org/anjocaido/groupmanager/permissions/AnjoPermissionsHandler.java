@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
 import org.anjocaido.groupmanager.data.User;
@@ -44,7 +46,7 @@ import org.bukkit.entity.Player;
  */
 public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
-	WorldDataHolder ph;
+	private WorldDataHolder ph;
 
 	/**
 	 * It needs a WorldDataHolder to work with.
@@ -132,7 +134,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		Set<String> overrides = new LinkedHashSet<>();
 
 		// Add the players own permissions.
-		Set<String> playerPermArray = new LinkedHashSet<>(populatePerms(ph.getUser(userName).getAllPermissionList(), includeChildren));
+		Set<String> playerPermArray = new LinkedHashSet<>(populatePerms(ph.getUser(userName).getPermissionList(), includeChildren));
 
 		ArrayList<String> alreadyProcessed = new ArrayList<>();
 
@@ -150,29 +152,29 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
 				} else {
 					// World Groups
-					groupPermArray = populatePerms(ph.getGroup(group).getAllPermissionList(), includeChildren);
+					groupPermArray = populatePerms(ph.getGroup(group).getPermissionList(), includeChildren);
 				}
 
 				// Add all group permissions, unless negated by earlier permissions.
 				for (String perm : groupPermArray) {
 					boolean negated = (perm.startsWith("-"));
-					
+
 					// Overridden (Exception) permission defeats negation.
 					if (perm.startsWith("+")) {
 						overrides.add(perm.substring(1));
 						continue;
 					}
-					
+
 					// Perm doesn't already exists and there is no negation for it
 					// or It's a negated perm where a normal perm doesn't exists (don't allow inheritance to negate higher perms)
 					if ((!negated && !playerPermArray.contains(perm) && !wildcardNegation(playerPermArray, perm)) || (negated && !playerPermArray.contains(perm.substring(1)) && !wildcardNegation(playerPermArray, perm.substring(1))))
 						playerPermArray.add(perm);
-					
+
 				}
 			}
 
 		}
-		
+
 		// Process overridden permissions
 
 		for (String node : overrides) {
@@ -182,12 +184,12 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			playerPermArray.add(node);
 
 		}
-		
+
 		// Collections.sort(playerPermArray, StringPermissionComparator.getInstance());
 
 		return playerPermArray;
 	}
-	
+
 	/**
 	 * Is there a direct or wildcard negation in the list which covers this permission node.
 	 * 
@@ -196,33 +198,33 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 * @return
 	 */
 	private boolean wildcardNegation(Set<String> playerPermArray, String node) {
-		
+
 		/*
 		 * Check for a negated parent with a wildcard or negated permission
 		 */
-		
+
 		if (playerPermArray.contains("-" + node))
 			return true;
-		
+
 		final String[] parts = node.split("\\.");
 		final StringBuilder builder = new StringBuilder(node.length());
 		for (String part : parts) {
 			builder.append('*');
-			if (playerPermArray.contains("-" + builder.toString())) {
-				GroupManager.logger.fine("Wildcard Negation found for " + node);
+			if (playerPermArray.contains("-" + builder)) {
+				GroupManager.logger.log(Level.FINE, "Wildcard Negation found for " + node);
 				return true;
 			}
 
 			builder.deleteCharAt(builder.length() - 1);
 			builder.append(part).append('.');
 		}
-		
+
 		/*
 		 * No negated parent found so return false.
 		 */
-		GroupManager.logger.fine("No Negation found for " + node);
+		GroupManager.logger.log(Level.FINE, "No Negation found for " + node);
 		return false;
-		
+
 	}
 
 	private Set<String> populatePerms(List<String> permsList, boolean includeChildren) {
@@ -240,12 +242,12 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			// Remove the no offline perms node as this should not be given.
 			perms.remove("groupmanager.noofflineperms");
 		}
-		
+
 		for (String perm : perms) {
-			/**
-			 * all permission sets are passed here pre-sorted, alphabetically.
-			 * This means negated nodes will be processed before all permissions
-			 * other than *.
+			/*
+			  all permission sets are passed here pre-sorted, alphabetically.
+			  This means negated nodes will be processed before all permissions
+			  other than *.
 			 */
 			boolean negated = perm.startsWith("-");
 
@@ -255,11 +257,11 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 				if ((negated))
 					permArray.remove(perm.substring(1));
 
-				/**
-				 * Process child nodes if required,
-				 * or this is a negated node AND we used * to include all
-				 * permissions,
-				 * in which case we need to remove all children of that node.
+				/*
+				  Process child nodes if required,
+				  or this is a negated node AND we used * to include all
+				  permissions,
+				  in which case we need to remove all children of that node.
 				 */
 				if ((includeChildren) || (negated && allPerms)) {
 
@@ -336,12 +338,12 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		String prefix = ph.getUser(user).getVariables().getVarString("prefix");
 		if (!prefix.isEmpty())
 			return prefix;
-		
+
 		// Check for a main group prefix
 		prefix = getGroupPrefix(getGroup(user));
 		if (!prefix.isEmpty())
 			return prefix;
-		
+
 		// Check for a subgroup prefix
 		for (String group : ph.getUser(user).subGroupListStringCopy()) {
 			prefix = getGroupPrefix(group);
@@ -353,14 +355,14 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	}
 
 	/**
-	 * Gets the appropriate prefix for the user. This method is a utility method
-	 * for chat plugins to get the user's prefix without having to look at every
+	 * Gets the appropriate suffix for the user. This method is a utility method
+	 * for chat plugins to get the user's suffix without having to look at every
 	 * one of the user's ancestors. Returns an empty string if user has no
 	 * parent groups.
 	 * 
 	 * @param user
 	 *            Player's name
-	 * @return Player's prefix
+	 * @return Player's suffix
 	 */
 	@Override
 	public String getUserSuffix(String user) {
@@ -369,12 +371,12 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		String suffix = ph.getUser(user).getVariables().getVarString("suffix");
 		if (!suffix.isEmpty())
 			return suffix;
-		
+
 		// Check for a main group suffix
 		suffix = getGroupSuffix(getGroup(user));
 		if (!suffix.isEmpty())
 			return suffix;
-		
+
 		// Check for a subgroup suffix
 		for (String group : ph.getUser(user).subGroupListStringCopy()) {
 			suffix = getGroupSuffix(group);
@@ -410,7 +412,6 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public boolean canUserBuild(String userName) {
 
 		return getPermissionBoolean(userName, "build");
-
 	}
 
 	/**
@@ -423,10 +424,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public String getGroupPrefix(String groupName) {
 
 		Group g = ph.getGroup(groupName);
-		if (g == null) {
-			return "";
-		}
-		return g.getVariables().getVarString("prefix");
+		return g == null ? "" :  g.getVariables().getVarString("prefix");
 	}
 
 	/**
@@ -456,10 +454,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public boolean canGroupBuild(String groupName) {
 
 		Group g = ph.getGroup(groupName);
-		if (g == null) {
-			return false;
-		}
-		return g.getVariables().getVarBoolean("build");
+		return g != null && g.getVariables().getVarBoolean("build");
 	}
 
 	/**
@@ -478,10 +473,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return null;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return null;
-		}
-		return result.getVariables().getVarString(variable);
+		return result == null ? null : result.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -500,10 +492,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return -1;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return -1;
-		}
-		return result.getVariables().getVarInteger(variable);
+		return result == null ? -1 : result.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -522,10 +511,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return false;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return false;
-		}
-		return result.getVariables().getVarBoolean(variable);
+		return result != null && result.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -544,10 +530,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			return -1;
 		}
 		Group result = nextGroupWithVariable(start, variable);
-		if (result == null) {
-			return -1;
-		}
-		return result.getVariables().getVarDouble(variable);
+		return result == null ? -1 : result.getVariables().getVarDouble(variable);
 	}
 
 	/**
@@ -561,10 +544,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public String getUserPermissionString(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return "";
-		}
-		return auser.getVariables().getVarString(variable);
+		return auser == null ? "" : auser.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -578,10 +558,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public int getUserPermissionInteger(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return -1;
-		}
-		return auser.getVariables().getVarInteger(variable);
+		return auser == null ? -1 : auser.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -595,10 +572,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public boolean getUserPermissionBoolean(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return false;
-		}
-		return auser.getVariables().getVarBoolean(variable);
+		return auser != null && auser.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -612,10 +586,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	public double getUserPermissionDouble(String user, String variable) {
 
 		User auser = ph.getUser(user);
-		if (auser == null) {
-			return -1;
-		}
-		return auser.getVariables().getVarDouble(variable);
+		return auser == null ? -1 : auser.getVariables().getVarDouble(variable);
 	}
 
 	/**
@@ -649,11 +620,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return "";
 		}
-		return result.getVariables().getVarString(variable);
-		// return getUserPermissionString(user, variable);
+		return result == null ? "" : result.getVariables().getVarString(variable);
 	}
 
 	/**
@@ -687,11 +655,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return -1;
 		}
-		return result.getVariables().getVarInteger(variable);
-		// return getUserPermissionInteger(string, string1);
+		return result == null ? -1 : result.getVariables().getVarInteger(variable);
 	}
 
 	/**
@@ -725,11 +690,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return false;
 		}
-		return result.getVariables().getVarBoolean(variable);
-		// return getUserPermissionBoolean(user, string1);
+		return result != null && result.getVariables().getVarBoolean(variable);
 	}
 
 	/**
@@ -763,11 +725,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = nextGroupWithVariable(subGroup, variable);
 					// Found value?
 				}
-			if (result == null)
-				return -1.0D;
 		}
-		return result.getVariables().getVarDouble(variable);
-		// return getUserPermissionDouble(string, string1);
+		return result == null ? -1.0D : result.getVariables().getVarDouble(variable);
 	}
 
 	/**
@@ -779,11 +738,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public PermissionCheckResult checkUserOnlyPermission(User user, String permission) {
 
-		user.sortPermissions();
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.askedPermission = permission;
 		result.owner = user;
-		for (String access : user.getAllPermissionList()) {
+		for (String access : user.getPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;
@@ -804,11 +762,10 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public PermissionCheckResult checkGroupOnlyPermission(Group group, String permission) {
 
-		group.sortPermissions();
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.owner = group;
 		result.askedPermission = permission;
-		for (String access : group.getAllPermissionList()) {
+		for (String access : group.getPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
 				result.accessLevel = access;
@@ -828,7 +785,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public boolean checkUserPermission(User user, String permission) {
 
-		PermissionCheckResult result = checkFullGMPermission(user, permission, true);
+		PermissionCheckResult result = checkFullGMPermission(user, permission, false);
 		return result.resultType == PermissionCheckResult.Type.EXCEPTION || result.resultType == PermissionCheckResult.Type.FOUND;
 	}
 
@@ -867,15 +824,15 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		 */
 		if (user == null || targetPermission == null || targetPermission.isEmpty()
 				|| (!Bukkit.getServer().getOnlineMode()
-				&& (checkPermission(user, "groupmanager.noofflineperms", false).resultType == PermissionCheckResult.Type.FOUND))) {
-			
+						&& (checkPermission(user, "groupmanager.noofflineperms", false).resultType == PermissionCheckResult.Type.FOUND))) {
+
 			PermissionCheckResult result = new PermissionCheckResult();
 			result.accessLevel = targetPermission;
 			result.resultType = PermissionCheckResult.Type.NOTFOUND;
-			
+
 			return result;
 		}
-		
+
 		return checkPermission(user, targetPermission, checkBukkit);
 	}
 
@@ -890,11 +847,11 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 * @return PermissionCheckResult
 	 */
 	private PermissionCheckResult checkPermission(User user, String targetPermission, Boolean checkBukkit) {
-		 
+
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.accessLevel = targetPermission;
 		result.resultType = PermissionCheckResult.Type.NOTFOUND;
-		
+
 		if (checkBukkit) {
 			// Check Bukkit perms to support plugins which add perms via code
 			// (Heroes).
@@ -909,60 +866,60 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
 		PermissionCheckResult resultUser = checkUserOnlyPermission(user, targetPermission);
 		if (resultUser.resultType != PermissionCheckResult.Type.NOTFOUND) {
-			
+
 			resultUser.accessLevel = targetPermission;
-			
+
 			if (resultUser.resultType == PermissionCheckResult.Type.EXCEPTION) {
 				return resultUser;
 			}
-			
+
 			result = resultUser;
-			
+
 		}
 
 		// IT ONLY CHECKS GROUPS PERMISSIONS IF RESULT FOR USER IS NOT AN EXCEPTION
 		PermissionCheckResult resultGroup = checkGroupPermissionWithInheritance(user.getGroup(), targetPermission);
 		if (resultGroup.resultType != PermissionCheckResult.Type.NOTFOUND) {
-			
+
 			resultGroup.accessLevel = targetPermission;
-			
+
 			if (resultGroup.resultType == PermissionCheckResult.Type.EXCEPTION) {
 				return resultGroup;
 			}
-			
+
 			// Do not override higher level permissions with negations.
 			if (result.resultType == PermissionCheckResult.Type.NOTFOUND) {
 				result = resultGroup;
 			}
-			
+
 		}
-		
+
 		// Do we have a high level negation?
 		boolean negated = (result.resultType == PermissionCheckResult.Type.NEGATION);
 
 		// SUBGROUPS CHECK
 		for (Group subGroup : user.subGroupListCopy()) {
-			
+
 			PermissionCheckResult resultSubGroup = checkGroupPermissionWithInheritance(subGroup, targetPermission);
 			if (resultSubGroup.resultType != PermissionCheckResult.Type.NOTFOUND) {
-				
+
 				resultSubGroup.accessLevel = targetPermission;
-				
+
 				// Allow exceptions to override higher level negations
 				// but low level negations can not remove higher level permissions.
 				if (resultSubGroup.resultType == PermissionCheckResult.Type.EXCEPTION) {
-					
+
 					return resultSubGroup;
-					
+
 				} else if ((resultSubGroup.resultType == PermissionCheckResult.Type.FOUND) && (result.resultType != PermissionCheckResult.Type.NEGATION) && !negated) {
-					
+
 					result = resultSubGroup;
-					
+
 				} else if ((resultSubGroup.resultType == PermissionCheckResult.Type.NEGATION) && !negated) {
-					
+
 					result = resultSubGroup;
 				}
-				
+
 			}
 		}
 
@@ -1060,30 +1017,30 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		if (start == null || targetPermission == null) {
 			return null;
 		}
-		
+
 		LinkedList<Group> stack = new LinkedList<>();
 		List<Group> alreadyVisited = new ArrayList<>();
 		PermissionCheckResult result = new PermissionCheckResult();
-		
+
 		stack.push(start);
 		alreadyVisited.add(start);
-		
+
 		// Set defaults.
 		result.askedPermission = targetPermission;
 		result.resultType = PermissionCheckResult.Type.NOTFOUND;
-		
+
 		while (!stack.isEmpty()) {
 			Group now = stack.pop();
 			PermissionCheckResult resultNow = checkGroupOnlyPermission(now, targetPermission);
-			
+
 			if (!resultNow.resultType.equals(PermissionCheckResult.Type.NOTFOUND)) {
-				
+
 				if (resultNow.resultType.equals(PermissionCheckResult.Type.EXCEPTION)) {
 					resultNow.accessLevel = targetPermission;
 					GroupManager.logger.fine("Found an " + resultNow.resultType + " for " + targetPermission + " in group " + resultNow.owner.getLastName());
 					return resultNow;
 				}
-				
+
 				/*
 				 * Store the first found permission only.
 				 * This will prevent inherited permission negations overriding higher level perms.
@@ -1095,7 +1052,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = resultNow;
 				}
 			}
-			
+
 			for (String sonName : now.getInherits()) {
 				Group son = ph.getGroup(sonName);
 				if (son != null && !alreadyVisited.contains(son)) {
@@ -1105,7 +1062,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -1174,15 +1131,15 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			userAccessLevelOffset = 1;
 			result = PermissionCheckResult.Type.NEGATION;
 		}
-		
+
 		if (fullPermissionName.equals(userAccessLevel)) {
 			return result;
 		}
-		
+
 		if ("groupmanager.noofflineperms".equals(fullPermissionName)) {
 			result = PermissionCheckResult.Type.NOTFOUND;
 		}
-		
+
 		if ("*".regionMatches(0, userAccessLevel, userAccessLevelOffset, userAccessLevelLength - userAccessLevelOffset)) {
 			return result;
 		}
@@ -1219,7 +1176,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		String[] arr = new String[allGroups.size()];
 		return allGroups.toArray(arr);
 	}
-	
+
 	/**
 	 * Returns a list of all subgroups.
 	 * 
@@ -1227,12 +1184,12 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 * @return String[] of all group names.
 	 */
 	public String[] getSubGroups(String userName) {
-		
+
 		Set<String> allGroups = new HashSet<>();
 		for (Group subg : ph.getUser(userName).subGroupListCopy()) {
 			allGroups.addAll(listAllGroupsInherited(subg));
 		}
-		
+
 		String[] arr = new String[allGroups.size()];
 		return allGroups.toArray(arr);
 	}

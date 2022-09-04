@@ -19,7 +19,6 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -54,7 +53,7 @@ public class ManUDelP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUDELP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
@@ -64,11 +63,14 @@ public class ManUDelP extends BaseCommand {
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
 		}
+
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
 		
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-		
+
 			if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 				sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 				continue;
@@ -90,26 +92,24 @@ public class ManUDelP extends BaseCommand {
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("POSSIBLE_MATCH"), permissionResult.accessLevel)); //$NON-NLS-1$
 				continue;
 			}
-			auxUser.removePermission(auxString);
+			auxUser.removePermission(auxString); // Auto saves.
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_PERMISSION_FROM_PLAYER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 		}
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
+				
 		// Seems OK
 
-		// If the player is online, this will create new data for the user.
-		if (auxUser.getUUID() != null) {
-			targetPlayer = plugin.getServer().getPlayer(UUID.fromString(auxUser.getUUID()));
-			if (targetPlayer != null)
-				GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-		}
+		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -117,7 +117,7 @@ public class ManUDelP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		if (args.length >= 2) {
 			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
@@ -132,7 +132,7 @@ public class ManUDelP extends BaseCommand {
 			return auxUser.getPermissionList();
 
 		}
-		
+
 		return result;
 	}
 

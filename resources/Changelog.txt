@@ -292,5 +292,25 @@ v2.9:
         %groupmanager_user_prefix%, %groupmanager_user_suffix%,
         %groupmanager_group_prefix%, %groupmanager_group_suffix%,
         PAPI permission checks - %groupmanager_perm_permission.here%
-v2.10:
+v3.0:
     - Performance improvements.
+    - Add database support for - YAML, H2, MYSQL, SQLITE, POSTGRESQL
+    - Add "manimport" command to load Yaml data into SQL.
+    - Version update checking now works correctly.
+    - Add a purge for old users (runs at server start).
+        If players do not log in for (default 90 days) their data will be deleted.
+        Manually created users who have never joined will not be deleted.
+        To protect specific accounts from deletion set a lastplayed variable to '0'.
+    - Allow UniqueIds to be used in commands as well as player names.
+    - Allow empty fields in the mirror map to easily define un-mirrored worlds.
+    - Add Brazilian Portuguese translation (@cid998).
+    - Add Portuguese translation (@ice41).
+    - Add Romainan translation (@SynOfficial).
+    - Prevent oversized permission lists overflowing BungeeCord servers.
+    - Add Console tab-complete on commands.
+    - Add a config setting to disable timed permissions expiring.
+    - Fix NPE when using ManUDelAllTemp with no overloaded users.
+    - Add intelligent tab complete for permissions in `mangaddp,manuaddp,mangcheckp,manucheckp`.
+    - Fix for failing to correctly initialize a mirror parent data.
+    - Remove GMLogHandler to stop Paper nagging.
+    - Fix an API incorrect permission result for worlds you are not currently in.

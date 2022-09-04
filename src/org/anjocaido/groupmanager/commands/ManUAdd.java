@@ -58,20 +58,22 @@ public class ManUAdd extends BaseCommand {
 			if (!setDefaultWorldHandler(sender))
 				return true;
 		}
-		
+
 		// If validating players and no player was found by that name.
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
-		
+
 		// If we have a valid match get the account for the target player
 		// else attempt a name search for the account.
 		if (match != null) {
 			auxUser = dataHolder.getUser(match.toString());
+			if (args[0].length() < 36)
+				auxUser.setLastName(args[0]);
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
 		}
-		
+
 		// Find a matching group.
 		auxGroup = dataHolder.getGroup(args[1]);
 		if (auxGroup == null) {
@@ -98,18 +100,20 @@ public class ManUAdd extends BaseCommand {
 		}
 
 		// Seems OK
+		
+		// Auto saves.
 		auxUser.setGroup(auxGroup);
 		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -117,7 +121,7 @@ public class ManUAdd extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		/*
 		 * Populate the second argument of TabComplete with a list of group names.
 		 */
@@ -125,14 +129,14 @@ public class ManUAdd extends BaseCommand {
 
 			result = tabCompleteGroups(args[1]);
 		}
-		
+
 		/*
 		 * Populate the third argument of TabComplete with a list of valid world roots.
 		 */
 		if (args.length == 3) {
 			result = getWorlds(); 
 		}
-		
+
 		return result;
 	}
 

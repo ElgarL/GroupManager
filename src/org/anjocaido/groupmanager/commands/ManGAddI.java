@@ -74,17 +74,15 @@ public class ManGAddI extends BaseCommand {
 			return true;
 		}
 		// Seems OK
-		auxGroup.addInherits(auxGroup2);
+		auxGroup.addInherits(auxGroup2);	// Auto saves.
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_NOW_INHERITS"), auxGroup2.getName(), auxGroup.getName())); //$NON-NLS-1$
-
-		GroupManager.getBukkitPermissions().updateAllPlayers();
 
 		return true;
 	}
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for base groups.
@@ -98,14 +96,14 @@ public class ManGAddI extends BaseCommand {
 			 * Include global groups.
 			 */
 			if (args.length == 2) {
-				
+
 				for (Group g : GroupManager.getGlobalGroups().getGroupList()) {
 					result.add(g.getName());
 				}
 			}
 			return result;
 		}
-		
+
 		return null;
 	}
 

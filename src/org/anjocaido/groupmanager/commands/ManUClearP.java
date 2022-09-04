@@ -19,7 +19,6 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -54,7 +53,7 @@ public class ManUClearP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUCLEARP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
@@ -69,7 +68,11 @@ public class ManUClearP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
-		for (String perm : auxUser.getAllPermissionList()) {
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false);
+		
+		for (String perm : auxUser.getPermissionList()) {
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, perm);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_REMOVE_PERMISSION"), perm)); //$NON-NLS-1$
@@ -79,23 +82,21 @@ public class ManUClearP extends BaseCommand {
 				auxUser.removePermission(perm);
 			}
 		}
+		// Restore setting.
+		GroupManager.setLoaded(loaded);
+				
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("REMOVED_ALL_PERMISSIONS_PLAYER"), auxUser.getLastName())); //$NON-NLS-1$
 
-		// If the player is online, this will create new data for the user.
-		if (auxUser.getUUID() != null) {
-			targetPlayer = plugin.getServer().getPlayer(UUID.fromString(auxUser.getUUID()));
-			if (targetPlayer != null)
-				GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-		}
+		plugin.getWorldsHolder().refreshData(null);
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -103,7 +104,7 @@ public class ManUClearP extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		return result;
 	}
 

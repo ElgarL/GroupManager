@@ -20,7 +20,6 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -74,22 +73,22 @@ public class ManGDelI extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_NOT_INHERIT"), auxGroup.getName(), auxGroup2.getName())); //$NON-NLS-1$
 			return true;
 		}
-		if (!auxGroup.getInherits().contains(auxGroup2.getName())) {
+		if (!auxGroup.getInherits().contains(auxGroup2.getName().toLowerCase())) {
 			sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_GROUP_NOT_INHERIT_DIRECT"), auxGroup.getName(), auxGroup2.getName())); //$NON-NLS-1$
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxGroup.removeInherits(auxGroup2.getName());
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_REMOVED_INHERITANCE"), auxGroup2.getName(), auxGroup.getName())); //$NON-NLS-1$
 
-		GroupManager.getBukkitPermissions().updateAllPlayers();
-
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for base groups.

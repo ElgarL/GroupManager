@@ -20,6 +20,8 @@ package org.anjocaido.groupmanager.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -28,6 +30,7 @@ import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.utils.BukkitWrapper;
+import org.anjocaido.groupmanager.utils.OfflinePlayerCache;
 import org.anjocaido.groupmanager.utils.PermissionCheckResult;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -47,61 +50,63 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 	protected GroupManager plugin;
-	
+
 	protected boolean isConsole = false;
-	protected boolean playerCanDo = false;
+	private boolean playerCanDo = false;
 	protected boolean isOpOverride = false;
-	protected boolean isAllowCommandBlocks = false;
-	
-	protected Player senderPlayer = null, targetPlayer = null;
-	protected CommandSender sender = null;
-	protected Group senderGroup = null;
-	protected User senderUser = null;
-	
-	protected UUID match = null;
-	protected User auxUser = null;
-	protected Group auxGroup = null;
-	protected Group auxGroup2 = null;
-	protected String auxString = null;
-	protected PermissionCheckResult permissionResult = null;
-	
+	private boolean isAllowCommandBlocks = false;
+
+	private Player senderPlayer;
+
+	protected Player targetPlayer;
+	protected CommandSender sender;
+	protected Group senderGroup;
+	protected User senderUser;
+
+	protected UUID match;
+	protected User auxUser;
+	protected Group auxGroup;
+	protected Group auxGroup2;
+	protected String auxString;
+	protected PermissionCheckResult permissionResult;
+
 	// PERMISSIONS FOR COMMAND BEING LOADED
 	protected OverloadedWorldHolder dataHolder = null;
 	protected AnjoPermissionsHandler permissionHandler = null;
-	
-	
+
+
 	/**
 	 * 
 	 */
 	public BaseCommand() {
-		
+
 		plugin = GroupManager.getPlugin(GroupManager.class);
 	}
 
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-		
-		// If parsSender fails exit.
+
+		// If parseSender fails exit.
 		if (!parseSender(sender, label)) return true;
-		
+
 		try {
 			return parseCommand(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		// If parsSender fails return empty.
-		if (!parseSender(sender, alias) || isConsole) return new ArrayList<>();
-		
+		if (!parseSender(sender, alias)) return new ArrayList<>();
+
 		return tabComplete(sender, command, alias, args);
 	}
-	
+
 	/**
 	 * Attempt to setup the data-sources for this command.
 	 * 
@@ -109,26 +114,26 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @param alias
 	 * @return true if successful.
 	 */
-	public boolean parseSender(CommandSender sender, String alias) {
+	protected boolean parseSender(CommandSender sender, String alias) {
 
 		playerCanDo = false;
 		isConsole = false;
-		
+
 		isOpOverride = GroupManager.getGMConfig().isOpOverride();
 		isAllowCommandBlocks = GroupManager.getGMConfig().isAllowCommandBlocks();
-		
+
 		// Prevent all commands other than /manload if we are in an error state.
 		if (!plugin.getLastError().isEmpty() && !alias.equalsIgnoreCase("manload")) { //$NON-NLS-1$
 			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_ERROR")); //$NON-NLS-1$
 			return false;
 		}
-		
+
 		// PREVENT GM COMMANDS BEING USED ON COMMANDBLOCKS
 		if (sender instanceof BlockCommandSender && !isAllowCommandBlocks) {
 			Block block = ((BlockCommandSender)sender).getBlock();
-			GroupManager.logger.warning(ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
-			GroupManager.logger.warning(ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		  	return false;
+			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("COMMAND_BLOCKS")); //$NON-NLS-1$
+			GroupManager.logger.log(Level.WARNING, ChatColor.RED + Messages.getString("LOCATION") + ChatColor.GREEN + block.getWorld().getName() + ", " + block.getX() + ", " + block.getY() + ", " + block.getZ()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			return false;
 		}
 
 		// DETERMINING PLAYER INFORMATION
@@ -146,13 +151,15 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 			isConsole = true;
 		}
-		
+
 		// PERMISSIONS FOR COMMAND BEING LOADED
 		dataHolder = null;
 		permissionHandler = null;
 
 		if (senderPlayer != null) {
 			dataHolder = plugin.getWorldsHolder().getWorldData(senderPlayer);
+		} else {
+			dataHolder = plugin.getWorldsHolder().getDefaultWorld();
 		}
 
 		String selectedWorld = GroupManager.getSelectedWorlds().get(sender.getName());
@@ -163,17 +170,17 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		if (dataHolder != null) {
 			permissionHandler = dataHolder.getPermissionsHandler();
 		}
-		
+
 		this.sender = sender;
-		
+
 		if (!isConsole && !playerCanDo) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("COMMAND_NOT_PERMITTED"));
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Sets up the default world for use.
 	 */
@@ -191,9 +198,8 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.RED + Messages.getString("WORLD_SELECTION_NEEDED"));
 		sender.sendMessage(ChatColor.RED + Messages.getString("USE_MANSELECT"));
 		return false;
-
 	}
-	
+
 	/**
 	 * Load a List of players matching the name given. If none online, check
 	 * Offline.
@@ -204,30 +210,102 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	protected UUID validatePlayer(String playerName, CommandSender sender) {
 
 		List<Player> players;
-		UUID match;
+		UUID match = null;
 
-		players = BukkitWrapper.getInstance().matchPlayer(playerName);
-		
-		if (players.isEmpty()) {
-			// Check for an offline player (exact match, ignoring case).
-			match = BukkitWrapper.getInstance().getPlayerUUID(playerName);
-			
-			if (match == null) {
-				sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
-				return null;
+		if (playerName.length() < 36) {
+			/*
+			 * Name lookup.
+			 */
+			players = BukkitWrapper.getInstance().matchPlayer(playerName);
+
+			if (players.isEmpty()) {
+				/*
+				 * Check for an offline player (exact match, ignoring case).
+				 */
+				match = OfflinePlayerCache.getInstance().getPlayerUUID(playerName);
+
+			} else if (players.size() > 1) {
+				sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
+
+			} else {
+				match = players.get(0).getUniqueId();
 			}
-			
-			return match;
-				
-		} else if (players.size() > 1) {
-			sender.sendMessage(ChatColor.RED + Messages.getString("TOO_MANY_MATCHES"));
-			return null;
+
+		} else {
+			/*
+			 * UUID lookup
+			 */
+			UUID uid = UUID.fromString(playerName);
+			if (OfflinePlayerCache.getInstance().getPlayerName(uid) != null)
+				match = uid;
 		}
 
-		return players.get(0).getUniqueId();
+		if (match == null)
+			sender.sendMessage(ChatColor.RED + Messages.getString("PLAYER_NOT_FOUND"));
 
+		return match;
 	}
-	
+
+	/**
+	 * Checks if a permission exists and has lower/same priority
+	 * 
+	 * @param sender	the sender who asked for the test.
+	 * @param newPerm	the permission to check for a match.
+	 * @param oldPerm	the existing test result to compare against.
+	 * @param type		the type of this test 'user' or group'.
+	 * @return			true if a match is found.
+	 */
+	boolean checkPermissionExists(CommandSender sender, String newPerm, PermissionCheckResult oldPerm, String type) {
+
+
+		if (newPerm.startsWith("+")) //$NON-NLS-1$
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+		}
+		else if (newPerm.startsWith("-")) //$NON-NLS-1$
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+				return true;
+			}
+		}
+		else
+		{
+			if (oldPerm.resultType.equals(PermissionCheckResult.Type.EXCEPTION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_EXCEPTION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.NEGATION))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_MATCHING_NEGATION_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+			}
+			else if (oldPerm.resultType.equals(PermissionCheckResult.Type.FOUND))
+			{
+				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("GroupManager.PERMISSION_DIRECT_ACCESS_ALREADY"), type)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.RED + Messages.getString("GroupManager.PERMISSION_NODE") + oldPerm.accessLevel); //$NON-NLS-1$
+
+				// Since not all plugins define wildcard permissions, allow setting the permission anyway if the permissions don't match exactly.
+				return (oldPerm.accessLevel.equalsIgnoreCase(newPerm));
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Return any users with partial name matches.
 	 * 
@@ -235,17 +313,17 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @return
 	 */
 	protected List<String> tabCompleteUsers(String arg) {
-		
+
 		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
 		for (User user : dataHolder.getUserList()) {
 			// Possible matching player
 			if((user != null) && (user.getLastName() != null) && (user.getLastName().toLowerCase().contains(arg))) {
-				
+
 				// If validating check for online state.
 				if (GroupManager.getGMConfig().isTabValidate() && GroupManager.getGMConfig().isToggleValidate()) {
 					if (user.isOnline())
@@ -258,7 +336,7 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return a List of groups with partial name matches.
 	 * 
@@ -266,37 +344,49 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 	 * @return
 	 */
 	protected List<String> tabCompleteGroups(String arg) {
-		
+
 		List<String> result = new ArrayList<>();
 		arg = arg.toLowerCase();
-		
+
 		for (Group g : dataHolder.getGroupList()) {
 			if ((g != null) && (g.getName() != null) && (g.getName().toLowerCase().contains(arg.toLowerCase())))
 				result.add(g.getName());
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Fetch a list of available worlds for tab Complete.
 	 * 
 	 * @return	a List of all root world names.
 	 */
 	protected List<String> getWorlds() {
-		
+
 		List<String> worlds = new ArrayList<>();
-		
+
 		for (OverloadedWorldHolder world : plugin.getWorldsHolder().allWorldsDataList())
 			if ((world != null) && (world.getName() != null))
 				worlds.add(world.getName());
 
 		return worlds;
 	}
+	
+	/**
+	 * List all permissions registered with Bukkit.
+	 * 
+	 * @return	a List of all known permissions, including child nodes.
+	 */
+	protected List<String> getPermissionNodes(String arg) {
+		
+		return GroupManager.getBukkitPermissions().getAllRegisteredPermissions(true)
+				.stream().filter(perm -> perm.toLowerCase().contains(arg.toLowerCase()))
+				.collect(Collectors.toList());
+	}
 
 	protected abstract boolean parseCommand(@NotNull String[] args);
-	
+
 	protected @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		/*
 		 * Return an empty list so there is no TabComplete on this.
 		 */

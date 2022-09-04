@@ -45,7 +45,7 @@ public class ManUAddP extends BaseCommand {
 
 	@Override
 	protected boolean parseCommand(@NotNull String[] args) {
-		
+
 		// Validating state of sender
 		if (dataHolder == null || permissionHandler == null) {
 			if (!setDefaultWorldHandler(sender))
@@ -56,7 +56,7 @@ public class ManUAddP extends BaseCommand {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANUADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			return true;
 		}
-		
+
 		if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 			return false;
 		}
@@ -66,13 +66,13 @@ public class ManUAddP extends BaseCommand {
 		} else {
 			auxUser = dataHolder.getUser(args[0]);
 		}
-		
+
 		// Validating your permissions
 		if (!isConsole && !isOpOverride && (senderGroup != null && permissionHandler.inGroup(auxUser.getUUID(), senderGroup.getName()))) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_SAME_GROUP_OR_HIGHER")); //$NON-NLS-1$
 			return true;
 		}
-		
+
 		for (int i = 1; i < args.length; i++)
 		{
 			auxString = args[i].replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
@@ -92,13 +92,13 @@ public class ManUAddP extends BaseCommand {
 				}
 				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
 				auxString = split[0];
-				
+
 				if (period == 0) {
 					sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_INVALID_DURATION"), auxString) + Messages.getString("MANUADDP_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 					continue;
 				}
 			}
-		
+
 			permissionResult = permissionHandler.checkFullUserPermission(senderUser, auxString);
 			if (!isConsole && !isOpOverride && (permissionResult.resultType.equals(PermissionCheckResult.Type.NOTFOUND) || permissionResult.resultType.equals(PermissionCheckResult.Type.NEGATION))) {
 				sender.sendMessage(ChatColor.RED + String.format(Messages.getString("ERROR_CANT_ADD_PERMISSION"), auxString)); //$NON-NLS-1$
@@ -106,42 +106,48 @@ public class ManUAddP extends BaseCommand {
 			}
 			// Validating permissions of user
 			permissionResult = permissionHandler.checkUserOnlyPermission(auxUser, auxString);
-			if (plugin.checkPermissionExists(sender, auxString, permissionResult, "user")) //$NON-NLS-1$
+			if (checkPermissionExists(sender, auxString, permissionResult, "user")) //$NON-NLS-1$
 			{
 				continue;
 			}
 			// Seems Ok
-			
+
+			// Auto saves.
 			if (period != null) {
 				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period)); //$NON-NLS-1$
-				
+
 			} else {
 				auxUser.addPermission(auxString);
 				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER"), auxString, auxUser.getLastName())); //$NON-NLS-1$
 			}
 		}
 
-		// If the player is online, this will create new data for the user.
-		targetPlayer = plugin.getServer().getPlayer(auxUser.getLastName());
-		if (targetPlayer != null)
-			GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 
 		/*
 		 * Return a TabComplete for users.
 		 */
-		if (args.length == 1) {
+		switch (args.length) {
+
+		case 0:
+			break;
+
+		case 1:
 			result = tabCompleteUsers(args[0]);
+			break;
+
+		default:
+			result = getPermissionNodes(args[args.length - 1]);
+			break;
 		}
-		
+
 		return result;
 	}
 

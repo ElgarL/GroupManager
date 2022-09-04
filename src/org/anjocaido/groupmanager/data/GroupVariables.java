@@ -19,6 +19,8 @@ package org.anjocaido.groupmanager.data;
 
 import java.util.Map;
 
+import org.anjocaido.groupmanager.GroupManager;
+
 /**
  * 
  * @author gabrielcouto
@@ -27,16 +29,22 @@ public class GroupVariables extends Variables implements Cloneable {
 
 	private final Group owner;
 
-	public GroupVariables(Group owner) {
+	GroupVariables(Group owner) {
 
 		super(owner);
 		this.owner = owner;
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
 		addVar("prefix", "");
 		addVar("suffix", "");
 		addVar("build", false);
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
 	}
 
-	public GroupVariables(Group owner, Map<String, Object> varList) {
+	public GroupVariables(Group owner, Map<? extends String, ?> varList) {
 
 		super(owner);
 		variables.clear();
@@ -45,13 +53,11 @@ public class GroupVariables extends Variables implements Cloneable {
 			variables.put("prefix", "");
 			owner.flagAsChanged();
 		}
-		//thisGrp.prefix = infoNode.get("prefix").toString();
 
 		if (variables.get("suffix") == null) {
 			variables.put("suffix", "");
 			owner.flagAsChanged();
 		}
-		//thisGrp.suffix = infoNode.get("suffix").toString();
 
 		if (variables.get("build") == null) {
 			variables.put("build", false);
@@ -69,38 +75,12 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		GroupVariables clone = new GroupVariables(newOwner);
 		synchronized(variables) {
-		for (String key : variables.keySet()) {
-			clone.variables.put(key, variables.get(key));
-		}
+			for (String key : variables.keySet()) {
+				clone.variables.put(key, variables.get(key));
+			}
 		}
 		newOwner.flagAsChanged();
 		return clone;
-	}
-
-	/**
-	 * Remove a var from the list
-	 * 
-	 * @param name
-	 */
-	@Override
-	public void removeVar(String name) {
-
-		try {
-			this.variables.remove(name);
-		} catch (Exception ignored) {
-		}
-		switch (name) {
-			case "prefix":
-				addVar("prefix", "");
-				break;
-			case "suffix":
-				addVar("suffix", "");
-				break;
-			case "build":
-				addVar("build", false);
-				break;
-		}
-		owner.flagAsChanged();
 	}
 
 	/**

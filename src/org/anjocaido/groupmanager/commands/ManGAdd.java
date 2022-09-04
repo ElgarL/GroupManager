@@ -51,6 +51,8 @@ public class ManGAdd extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxGroup = dataHolder.createGroup(args[0]);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("CREATED_GROUP"), auxGroup.getName())); //$NON-NLS-1$
 

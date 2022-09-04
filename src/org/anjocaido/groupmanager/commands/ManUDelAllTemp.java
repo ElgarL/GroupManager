@@ -47,7 +47,8 @@ public class ManUDelAllTemp extends BaseCommand {
 		}
 		// WORKING
 		int count = 0;
-		
+		GroupManager.getOverloadedUsers().computeIfAbsent(dataHolder.getName().toLowerCase(), k -> new ArrayList<>());
+
 		for (User u : GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase())) {
 			if (dataHolder.isOverloaded(u.getUUID())) {
 				dataHolder.removeOverload(u.getUUID());
@@ -58,7 +59,6 @@ public class ManUDelAllTemp extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + Messages.getString("NO_OVERLOAD")); //$NON-NLS-1$
 			return true;
 		}
-		GroupManager.getOverloadedUsers().computeIfAbsent(dataHolder.getName().toLowerCase(), k -> new ArrayList<>());
 		GroupManager.getOverloadedUsers().get(dataHolder.getName().toLowerCase()).clear();
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("EMPTY_OVERLOAD")); //$NON-NLS-1$
 

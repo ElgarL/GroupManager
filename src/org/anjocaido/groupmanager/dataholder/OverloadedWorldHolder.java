@@ -17,11 +17,13 @@
  */
 package org.anjocaido.groupmanager.dataholder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+
+import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.User;
 
 /**
@@ -31,9 +33,9 @@ import org.anjocaido.groupmanager.data.User;
 public class OverloadedWorldHolder extends WorldDataHolder {
 
 	/**
-     *
-     */
-	protected final Map<String, User> overloadedUsers = Collections.synchronizedMap(new HashMap<>());
+	 *
+	 */
+	private final Map<String, User> overloadedUsers = Collections.synchronizedMap(new LinkedHashMap<>());
 
 	/**
 	 * 
@@ -121,34 +123,38 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 		if (groupName.equals(getDefaultGroup().getName())) {
 			return false;
 		}
-		synchronized(getGroups()) {
-		for (String key : getGroups().keySet()) {
-			if (groupName.equalsIgnoreCase(key)) {
-				getGroups().remove(key);
-				synchronized(getUsers()) {
-				for (String userKey : getUsers().keySet()) {
-					User user = getUsers().get(userKey);
-					if (user.getGroupName().equalsIgnoreCase(key)) {
-						user.setGroup(getDefaultGroup());
-					}
-
-				}
-				}
-				//OVERLOADED CODE
-				synchronized(overloadedUsers) {
-				for (String userKey : overloadedUsers.keySet()) {
-					User user = overloadedUsers.get(userKey);
-					if (user.getGroupName().equalsIgnoreCase(key)) {
-						user.setGroup(getDefaultGroup());
-					}
-
-				}
-				}
-				//END OVERLOAD
-				setGroupsChanged(true);
-				return true;
-			}
+		if (groupName.toLowerCase().startsWith("g:")) {
+			return GroupManager.getGlobalGroups().removeGroup(groupName);
 		}
+		
+		synchronized(getGroups()) {
+			for (String key : getGroups().keySet()) {
+				if (groupName.equalsIgnoreCase(key)) {
+					getGroups().remove(key);
+					synchronized(getUsers()) {
+						for (String userKey : getUsers().keySet()) {
+							User user = getUsers().get(userKey);
+							if (user.getGroupName().equalsIgnoreCase(key)) {
+								user.setGroup(getDefaultGroup());
+							}
+
+						}
+					}
+					//OVERLOADED CODE
+					synchronized(overloadedUsers) {
+						for (String userKey : overloadedUsers.keySet()) {
+							User user = overloadedUsers.get(userKey);
+							if (user.getGroupName().equalsIgnoreCase(key)) {
+								user.setGroup(getDefaultGroup());
+							}
+
+						}
+					}
+					//END OVERLOAD
+					setGroupsChanged(true);
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -160,12 +166,12 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	@Override
 	public Collection<User> getUserList() {
 
-		Collection<User> overloadedList = new ArrayList<>();
+		Collection<User> overloadedList = new LinkedList<>();
 		synchronized(getUsers()) {
-		Collection<User> normalList = getUsers().values();
-		for (User u : normalList) {
-			overloadedList.add(overloadedUsers.getOrDefault(u.getUUID().toLowerCase(), u));
-		}
+			Collection<User> normalList = getUsers().values();
+			for (User u : normalList) {
+				overloadedList.add(overloadedUsers.getOrDefault(u.getUUID().toLowerCase(), u));
+			}
 		}
 		return overloadedList;
 	}

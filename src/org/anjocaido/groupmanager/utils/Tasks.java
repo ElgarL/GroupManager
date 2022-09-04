@@ -17,9 +17,6 @@
  */
 package org.anjocaido.groupmanager.utils;
 
-import org.anjocaido.groupmanager.GroupManager;
-import org.anjocaido.groupmanager.data.Group;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,8 +35,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.anjocaido.groupmanager.GroupManager;
+import org.anjocaido.groupmanager.data.Group;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.plugin.Plugin;
 
 /**
  * 
@@ -60,29 +63,45 @@ public abstract class Tasks {
 		exception.printStackTrace(pw);
 		return sw.toString();
 	}
+	
+	public static String printStackTrace() {
+		
+		return StringUtils.join(new Throwable().getStackTrace(), "\n");
+	}
 
 	public static void copy(InputStream src, File dst) throws IOException {
 
-		InputStream in = src;
 		OutputStream out = new FileOutputStream(dst);
 
 		// Transfer bytes from in to out
 		byte[] buf = new byte[1024];
 		int len;
-		while ((len = in.read(buf)) > 0) {
+		while ((len = src.read(buf)) > 0) {
 			out.write(buf, 0, len);
 		}
 		out.close();
 		try {
-			in.close();
-		} catch (Exception e) {
-		}
+			src.close();
+		} catch (Exception ignored) {}
 	}
 
 	public static void copy(File src, File dst) throws IOException {
 
 		InputStream in = new FileInputStream(src);
 		copy(in, dst);
+	}
+	
+	public static void saveResource(Plugin plugin, File file) {
+		
+		if (!file.exists() || file.length() == 0) {
+
+			InputStream template = plugin.getResource(file.getName()); //$NON-NLS-1$
+			try {
+				Tasks.copy(template, file);
+			} catch (IOException ex) {
+				GroupManager.logger.log(Level.SEVERE, null, ex);
+			}
+		}
 	}
 
 	/**
@@ -135,34 +154,34 @@ public abstract class Tasks {
 		date += now.get(Calendar.MINUTE);
 		return date;
 	}
-	
+
 	private static final Pattern periodPattern = Pattern.compile("([0-9]+)([mhd])");
-	
+
 	public static Long parsePeriod(String period){
-		
-	    if(period == null) return null;
-	    period = period.toLowerCase(Locale.ENGLISH);
-	    Matcher matcher = periodPattern.matcher(period);
-	    Instant instant=Instant.EPOCH;
-	    
-	    while(matcher.find()){
-	        int num = Integer.parseInt(matcher.group(1));
-	        String typ = matcher.group(2);
-	        switch (typ) {
-	        case "m":
-                instant=instant.plus(Duration.ofMinutes(num));
-                break;
-	        case "h":
-	            instant=instant.plus(Duration.ofHours(num));
-	            break;
-	        case "d":
-	            instant=instant.plus(Duration.ofDays(num));
-	            break;
-	        }
-	    }
-	    return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
+
+		if(period == null) return null;
+		period = period.toLowerCase(Locale.ENGLISH);
+		Matcher matcher = periodPattern.matcher(period);
+		Instant instant=Instant.EPOCH;
+
+		while(matcher.find()){
+			int num = Integer.parseInt(matcher.group(1));
+			String typ = matcher.group(2);
+			switch (typ) {
+			case "m":
+				instant=instant.plus(Duration.ofMinutes(num));
+				break;
+			case "h":
+				instant=instant.plus(Duration.ofHours(num));
+				break;
+			case "d":
+				instant=instant.plus(Duration.ofDays(num));
+				break;
+			}
+		}
+		return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
 	}
-	
+
 	/**
 	 * Is this time in the past?
 	 * 
@@ -170,7 +189,8 @@ public abstract class Tasks {
 	 * @return	true if it has expired.
 	 */
 	public static boolean isExpired(Long expires) {
-		
+
+		if (expires == 0) return false;
 		/*
 		 * Time has expired?
 		 */
@@ -182,14 +202,14 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			result += list.get(i);
+			result.append(list.get(i));
 			if (i < list.size() - 1) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String getStringArrayInString(String[] list) {
@@ -197,14 +217,14 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.length; i++) {
-			result += list[i];
+			result.append(list[i]);
 			if (i < ((list.length) - 1)) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String getGroupListInString(List<Group> list) {
@@ -212,24 +232,24 @@ public abstract class Tasks {
 		if (list == null) {
 			return "";
 		}
-		String result = "";
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			result += list.get(i).getName();
+			result.append(list.get(i).getName());
 			if (i < list.size() - 1) {
-				result += ", ";
+				result.append(", ");
 			}
 		}
-		return result;
+		return result.toString();
 	}
 
 	public static String join(String[] arr, String separator) {
 
 		if (arr.length == 0)
 			return "";
-		String out = arr[0];
+		StringBuilder out = new StringBuilder(arr[0]);
 		for (int i = 1; i < arr.length; i++)
-			out += separator + arr[i];
-		return out;
+			out.append(separator).append(arr[i]);
+		return out.toString();
 	}
 
 }

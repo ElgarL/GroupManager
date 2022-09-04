@@ -19,8 +19,8 @@ package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.data.User;
 
@@ -34,49 +34,49 @@ public class UsersDataHolder {
 
 	private WorldDataHolder dataSource;
 	private File usersFile;
-	private boolean haveUsersChanged = false;
-	private long timeStampUsers = 0;
+	private boolean changed = false;
+	private long timeStamp = 0;
 
 	/**
 	 * The actual groups holder
 	 */
-	private final Map<String, User> users = Collections.synchronizedMap(new HashMap<>());
+	private final SortedMap<String, User> users = Collections.synchronizedSortedMap(new TreeMap<>());
 
 	/**
 	 * Constructor
 	 */
-	protected UsersDataHolder() {
-
-	}
+	protected UsersDataHolder() {}
 
 	public void setDataSource(WorldDataHolder dataSource) {
 
 		this.dataSource = dataSource;
-		//push this data source to the users, so they pull the correct groups data.
+		// Push this data source to the users, so they pull the correct groups data.
 		synchronized(users) {
-		for (User user : users.values())
-			user.setDataSource(this.dataSource);
+			for (User user : users.values())
+				user.setDataSource(this.dataSource);
 		}
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronised!
+	 * Note: Iteration over this object has to be synchronized!
+	 * 
 	 * @return the users
 	 */
-	public Map<String, User> getUsers() {
+	public SortedMap<String, User> getUsers() {
 
 		return users;
 	}
-	
+
 	public WorldDataHolder getDataSource() {
-		
+
 		return this.dataSource;
 	}
 
 	/**
 	 * Resets the Users
 	 */
-	public void resetUsers() {
+	void resetUsers() {
+
 		this.users.clear();
 	}
 
@@ -97,35 +97,44 @@ public class UsersDataHolder {
 	}
 
 	/**
-	 * @return the haveUsersChanged
+	 * @return true if Users have changed.
 	 */
-	public boolean HaveUsersChanged() {
+	public boolean isUsersChanged() {
 
-		return haveUsersChanged;
+		return changed;
+	}
+	
+	/**
+	 * Flag all users as changed so we can force save to SQL.
+	 */
+	void setAllChanged() {
+		
+		setUsersChanged(true);
+		users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
 	}
 
 	/**
-	 * @param haveUsersChanged the haveUsersChanged to set
+	 * @param changed the state to set for changed.
 	 */
-	public void setUsersChanged(boolean haveUsersChanged) {
+	public void setUsersChanged(boolean changed) {
 
-		this.haveUsersChanged = haveUsersChanged;
+		this.changed = changed;
 	}
 
 	/**
-	 * @return the timeStampUsers
+	 * @return the timeStamp
 	 */
-	public long getTimeStampUsers() {
+	public long getTimeStamp() {
 
-		return timeStampUsers;
+		return timeStamp;
 	}
 
 	/**
-	 * @param timeStampUsers the timeStampUsers to set
+	 * @param timeStamp the time stamp to set.
 	 */
-	public void setTimeStampUsers(long timeStampUsers) {
+	public void setTimeStamp(long timeStamp) {
 
-		this.timeStampUsers = timeStampUsers;
+		this.timeStamp = timeStamp;
 	}
 
 }

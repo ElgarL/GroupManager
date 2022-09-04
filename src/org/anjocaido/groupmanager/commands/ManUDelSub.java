@@ -19,7 +19,6 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
@@ -74,24 +73,19 @@ public class ManUDelSub extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxUser.removeSubGroup(auxGroup);
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_REMOVED_USER"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 
-		// If the player is online, this will create new data for the user.
-		if (auxUser.getUUID() != null) {
-			targetPlayer = plugin.getServer().getPlayer(UUID.fromString(auxUser.getUUID()));
-			if (targetPlayer != null)
-				GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-		}
-				
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -99,7 +93,7 @@ public class ManUDelSub extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		if (args.length == 2) {
 			if ((GroupManager.getGMConfig().isToggleValidate()) && ((match = validatePlayer(args[0], sender)) == null)) {
 				return null;
@@ -114,7 +108,7 @@ public class ManUDelSub extends BaseCommand {
 			return auxUser.subGroupListStringCopy();
 
 		}
-		
+
 		return result;
 	}
 

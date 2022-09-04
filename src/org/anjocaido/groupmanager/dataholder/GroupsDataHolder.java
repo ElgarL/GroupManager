@@ -19,8 +19,8 @@ package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.anjocaido.groupmanager.data.Group;
 
@@ -33,33 +33,31 @@ import org.anjocaido.groupmanager.data.Group;
 public class GroupsDataHolder {
 
 	private WorldDataHolder dataSource;
-	private Group defaultGroup = null;
+	private Group defaultGroup;
 	private File groupsFile;
-	private boolean haveGroupsChanged = false;
-	private long timeStampGroups = 0;
+	private boolean changed = false;
+	private long timeStamp = 0;
 
 	/**
 	 * The actual groups holder
 	 */
-	private final Map<String, Group> groups = Collections.synchronizedMap(new HashMap<>());
+	private final SortedMap<String, Group> groups = Collections.synchronizedSortedMap(new TreeMap<>());
 
 	/**
 	 * Constructor
 	 */
-	protected GroupsDataHolder() {
-
-	}
+	protected GroupsDataHolder() {}
 
 	public void setDataSource(WorldDataHolder dataSource) {
 
 		this.dataSource = dataSource;
 		//push this data source to the users, so they pull the correct groups data.
 		synchronized(groups) {
-		for (Group group : groups.values())
-			group.setDataSource(this.dataSource);
+			for (Group group : groups.values())
+				group.setDataSource(this.dataSource);
 		}
 	}
-	
+
 	public WorldDataHolder getDataSource() {
 
 		return this.dataSource;
@@ -83,9 +81,10 @@ public class GroupsDataHolder {
 
 	/**
 	 * Note: Iteration over this object has to be synchronised!
+	 * 
 	 * @return the groups
 	 */
-	public Map<String, Group> getGroups() {
+	public SortedMap<String, Group> getGroups() {
 
 		return groups;
 	}
@@ -93,7 +92,7 @@ public class GroupsDataHolder {
 	/**
 	 * Resets the Groups
 	 */
-	public void resetGroups() {
+	void resetGroups() {
 		this.groups.clear();
 	}
 
@@ -114,35 +113,44 @@ public class GroupsDataHolder {
 	}
 
 	/**
-	 * @return the haveGroupsChanged
+	 * @return true if Groups have changed.
 	 */
-	public boolean HaveGroupsChanged() {
+	public boolean isGroupsChanged() {
 
-		return haveGroupsChanged;
+		return changed;
+	}
+	
+	/**
+	 * Flag all users as changed so we can force save to SQL.
+	 */
+	void setAllChanged() {
+		
+		setGroupsChanged(true);
+		groups.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
 	}
 
 	/**
-	 * @param haveGroupsChanged the haveGroupsChanged to set
+	 * @param changed the state to set for changed.
 	 */
-	public void setGroupsChanged(boolean haveGroupsChanged) {
+	public void setGroupsChanged(boolean changed) {
 
-		this.haveGroupsChanged = haveGroupsChanged;
+		this.changed = changed;
 	}
 
 	/**
-	 * @return the timeStampGroups
+	 * @return the time stamp.
 	 */
-	public long getTimeStampGroups() {
+	public long getTimeStamp() {
 
-		return timeStampGroups;
+		return timeStamp;
 	}
 
 	/**
-	 * @param timeStampGroups the timeStampGroups to set
+	 * @param timeStamp the time stamp to set.
 	 */
-	public void setTimeStampGroups(long timeStampGroups) {
+	public void setTimeStamp(long timeStamp) {
 
-		this.timeStampGroups = timeStampGroups;
+		this.timeStamp = timeStamp;
 	}
 
 }

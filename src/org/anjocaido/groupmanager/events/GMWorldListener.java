@@ -17,6 +17,8 @@
  */
 package org.anjocaido.groupmanager.events;
 
+import java.util.logging.Level;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.localization.Messages;
 import org.bukkit.event.EventHandler;
@@ -50,31 +52,31 @@ public class GMWorldListener implements Listener {
 
 		String worldName = event.getWorld().getName();
 
-		if (GroupManager.isLoaded() && !plugin.getWorldsHolder().isInList(worldName)) {
+		if (GroupManager.isLoaded() && !plugin.getWorldsHolder().isWorldKnown(worldName)) {
 			GroupManager.logger.info(Messages.getString("GMWorldListener.DETECTED_NEW_WORLD")); //$NON-NLS-1$
 			GroupManager.logger.info(Messages.getString("GMWorldListener.CREATING_DATA") + worldName); //$NON-NLS-1$
-			
-			if (plugin.getWorldsHolder().isWorldKnown("all_unnamed_worlds")) { //$NON-NLS-1$
-				
-				String usersMirror = plugin.getWorldsHolder().getMirrorsUser().get("all_unnamed_worlds"); //$NON-NLS-1$
-				String groupsMirror = plugin.getWorldsHolder().getMirrorsGroup().get("all_unnamed_worlds"); //$NON-NLS-1$
-				
+
+			if (plugin.getWorldsHolder().isParentWorld("all_unnamed_worlds")) { //$NON-NLS-1$
+
+				String usersMirror = plugin.getWorldsHolder().getUsersMirror("all_unnamed_worlds"); //$NON-NLS-1$
+				String groupsMirror = plugin.getWorldsHolder().getGroupsMirror("all_unnamed_worlds"); //$NON-NLS-1$
+
 				if (usersMirror != null)
-					plugin.getWorldsHolder().getMirrorsUser().put(worldName.toLowerCase(), usersMirror);
-				
+					plugin.getWorldsHolder().putUsersMirror(worldName, usersMirror);
+
 				if (groupsMirror != null)
-					plugin.getWorldsHolder().getMirrorsGroup().put(worldName.toLowerCase(), groupsMirror);
-				
+					plugin.getWorldsHolder().putGroupsMirror(worldName, groupsMirror);
+
 			}
-			
-			plugin.getWorldsHolder().setupWorldFolder(worldName);
-			plugin.getWorldsHolder().loadWorld(worldName);
-			
-			
-			if (plugin.getWorldsHolder().isInList(worldName)) {
-				GroupManager.logger.info(Messages.getString("GMWorldListener.CONFIGURE_NEW_WORLD")); //$NON-NLS-1$
+
+			plugin.getWorldsHolder().getDataSource().init(worldName);
+			plugin.getWorldsHolder().getDataSource().loadWorld(worldName, false);
+
+
+			if (plugin.getWorldsHolder().isWorldKnown(worldName)) {
+				GroupManager.logger.log(Level.INFO, Messages.getString("GMWorldListener.CONFIGURE_NEW_WORLD")); //$NON-NLS-1$
 			} else
-				GroupManager.logger.severe(Messages.getString("GMWorldListener.ERROR_UNRECOGNISED_WORLD")); //$NON-NLS-1$
+				GroupManager.logger.log(Level.SEVERE, (Messages.getString("GMWorldListener.ERROR_UNRECOGNISED_WORLD"))); //$NON-NLS-1$
 		}
 	}
 }

@@ -19,6 +19,7 @@ package org.anjocaido.groupmanager.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.events.GMSystemEvent;
@@ -62,30 +63,52 @@ public class ManLoad extends BaseCommand {
 				}
 			}
 
-			GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
+			CompletableFuture.runAsync(() -> {
 
-			GroupManager.getGlobalGroups().load();
-			plugin.getWorldsHolder().loadWorld(auxString);
+				try {
+					/*
+					 * Obtain a lock so we can load.
+					 */
+					plugin.getSaveLock().lock();
+					GroupManager.setLoaded(false); // Disable Bukkit Perms update and event triggers
 
-			sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
+					GroupManager.getGlobalGroups().load();
+					plugin.getWorldsHolder().getDataSource().loadWorld(auxString, false);
 
-			GroupManager.setLoaded(true);
+					sender.sendMessage(String.format(Messages.getString("RELOAD_REQUEST_ATTEMPT"), auxString)); //$NON-NLS-1$
 
-			GroupManager.getBukkitPermissions().reset();
+
+				} finally {
+					// Release lock.
+					if(plugin.getSaveLock().isHeldByCurrentThread()) {
+						GroupManager.setLoaded(true);
+						plugin.getSaveLock().unlock();
+						
+						GroupManager.getBukkitPermissions().reset();
+					}
+				}
+			});
 
 		} else {
 
 			/**
 			 * Reload all settings and data as no world was specified.
 			 */
+			try {
+				/*
+				 * Obtain a lock so we can load.
+				 */
+				plugin.getSaveLock().lock();
 
-			/*
-			 * Attempting a fresh load.
-			 */
-			plugin.onDisable(true);
-			plugin.onEnable(true);
+				plugin.onDisable(true);
+				plugin.onEnable(true);
 
-			sender.sendMessage(Messages.getString("RELOADED")); //$NON-NLS-1$
+				sender.sendMessage(Messages.getString("RELOADED")); //$NON-NLS-1$
+			} finally {
+				// Release lock.
+				if(plugin.getSaveLock().isHeldByCurrentThread())
+					plugin.getSaveLock().unlock();
+			}
 		}
 
 		/**
@@ -96,17 +119,17 @@ public class ManLoad extends BaseCommand {
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		/*
 		 * Populate the first argument of TabComplete with a list of valid world roots.
 		 */
 		if (args.length == 1) {
 			return getWorlds();
 		}
-		
+
 		return new ArrayList<>();
 	}
 

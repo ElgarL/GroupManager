@@ -47,7 +47,7 @@ public class ManCheckW extends BaseCommand {
 		if (args.length < 1) {
 			sender.sendMessage(ChatColor.RED + Messages.getString("ERROR_REVIEW_ARGUMENTS") + Messages.getString("MANCHECKW_SYNTAX")); //$NON-NLS-1$ //$NON-NLS-2$
 			sender.sendMessage(ChatColor.YELLOW + Messages.getString("WORLDS_AVAILABLE"));
-			
+
 			ArrayList<OverloadedWorldHolder> worlds = plugin.getWorldsHolder().allWorldsDataList();
 			auxString = ""; //$NON-NLS-1$
 			for (int i = 0; i < worlds.size(); i++) {
@@ -59,7 +59,7 @@ public class ManCheckW extends BaseCommand {
 			sender.sendMessage(ChatColor.YELLOW + auxString);
 			return false;
 		}
-		
+
 		auxString = ""; //$NON-NLS-1$
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] == null) {
@@ -72,7 +72,7 @@ public class ManCheckW extends BaseCommand {
 			}
 		}
 		dataHolder = plugin.getWorldsHolder().getWorldData(auxString);
-		
+
 		sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("YOU_HAVE_SELECTED_WORLD"), ChatColor.GREEN + dataHolder.getName())); //$NON-NLS-1$
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("WORLD_USING_DATA_FILES")); //$NON-NLS-1$
 		sender.sendMessage(ChatColor.YELLOW + Messages.getString("GROUPS") + ChatColor.GREEN + dataHolder.getGroupsFile().getAbsolutePath()); //$NON-NLS-1$
@@ -83,14 +83,14 @@ public class ManCheckW extends BaseCommand {
 
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		/*
 		 * Populate the first argument of TabComplete with a list of valid world roots.
 		 */
 		if (args.length == 1) {
 			return getWorlds();
 		}
-		
+
 		return new ArrayList<>();
 	}
 

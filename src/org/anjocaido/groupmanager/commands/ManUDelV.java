@@ -68,17 +68,19 @@ public class ManUDelV extends BaseCommand {
 			return true;
 		}
 		// Seems OK
+		
+		// Auto saves.
 		auxUser.getVariables().removeVar(args[1]);
 		sender.sendMessage(String.format(ChatColor.YELLOW + Messages.getString("VARIABLE_REMOVED_FROM_USER"), ChatColor.GOLD + args[1] + ChatColor.YELLOW, ChatColor.GREEN + auxUser.getLastName())); //$NON-NLS-1$
 
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
-		
+
 		/*
 		 * Return a TabComplete for users.
 		 */
@@ -86,7 +88,7 @@ public class ManUDelV extends BaseCommand {
 
 			result = tabCompleteUsers(args[0]);
 		}
-		
+
 		/*
 		 * Return a TabComplete for Variables on the user.
 		 */
@@ -103,7 +105,7 @@ public class ManUDelV extends BaseCommand {
 
 			return Arrays.asList(auxUser.getVariables().getVarKeyList());
 		}
-		
+
 		return result;
 	}
 

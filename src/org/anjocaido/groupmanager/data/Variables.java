@@ -20,6 +20,9 @@ package org.anjocaido.groupmanager.data;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.anjocaido.groupmanager.GroupManager;
 
 /**
  * A class that holds variables of a user/group.
@@ -29,16 +32,63 @@ import java.util.Map;
  * suffix
  * build
  * 
- * @author gabrielcouto
+ * @author gabrielcouto, ElgarL
  */
-public abstract class Variables implements Cloneable {
+public class Variables implements Cloneable {
 
-	private DataUnit owner;
-	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<String, Object>());
+	private final DataUnit owner;
+	protected final Map<String, Object> variables = Collections.synchronizedMap(new HashMap<>());
 
-	public Variables(DataUnit owner) {
+	Variables(DataUnit owner) {
 
 		this.owner = owner;
+	}
+	
+	public Variables(DataUnit owner, Map<? extends String, ?> varList) {
+
+		this.owner = owner;
+		
+		boolean loaded = GroupManager.isLoaded();
+		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
+		
+		this.variables.clear();
+		this.variables.putAll(varList);
+		
+		GroupManager.setLoaded(loaded);	// Restore original state.
+	}
+
+	/**
+	 * A clone of all vars here.
+	 * 
+	 * @return Variables clone
+	 */
+	protected Variables clone(DataUnit newOwner) {
+
+		Variables clone = new Variables(newOwner);
+		synchronized(variables) {
+			for (String key : variables.keySet()) {
+				clone.variables.put(key, variables.get(key));
+			}
+		}
+		newOwner.flagAsChanged();
+		return clone;
+	}
+	
+	/**
+	 * Get data as a Blob (csv String) for storing.
+	 * 
+	 * @return
+	 */
+	public String getBlob() {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		for (Entry<String, Object> entry : variables.entrySet()) {
+			builder.append(entry.getKey()).append("|").append(entry.getValue());
+			builder.append(",");
+		}
+		
+		return builder.length() == 0 ? new String() : builder.substring(0, builder.lastIndexOf(","));
 	}
 
 	/**
@@ -52,12 +102,14 @@ public abstract class Variables implements Cloneable {
 	 */
 	public void addVar(String name, Object o) {
 
-		if (o == null) {
-			return;
-		}
+		if (o == null) return;
 		variables.remove(name);
 		variables.put(name, o);
 		owner.flagAsChanged();
+		
+		if (GroupManager.isLoaded()) {
+			GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+		}
 	}
 
 	/**
@@ -105,7 +157,7 @@ public abstract class Variables implements Cloneable {
 	/**
 	 * 
 	 * @param name
-	 * @return -1 if null. or a parseInt of the string
+	 * @return -1 if null or if the string cannot be parsed. or a parseInt of the string
 	 */
 	public Integer getVarInteger(String name) {
 
@@ -120,7 +172,7 @@ public abstract class Variables implements Cloneable {
 	/**
 	 * 
 	 * @param name
-	 * @return -1 if null. or a parseDouble of the string
+	 * @return -1 if null or if the string cannot be parsed. or a parseDouble of the string
 	 */
 	public Double getVarDouble(String name) {
 
@@ -176,6 +228,10 @@ public abstract class Variables implements Cloneable {
 		} catch (Exception ignored) {
 		}
 		owner.flagAsChanged();
+		
+		if (GroupManager.isLoaded()) {
+			GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
+		}
 	}
 
 	public static Object parseVariableValue(String value) {
@@ -195,7 +251,7 @@ public abstract class Variables implements Cloneable {
 
 	}
 
-	public void clearVars() {
+	void clearVars() {
 
 		variables.clear();
 		owner.flagAsChanged();

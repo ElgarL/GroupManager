@@ -62,7 +62,13 @@ public class ManGListP extends BaseCommand {
 
 		// Seems OK
 		auxString = ""; //$NON-NLS-1$
-		for (String perm : auxGroup.getAllPermissionList()) {
+		for (String perm : auxGroup.getPermissionList()) {
+			// Prevent over sized strings crashing the parser in BungeeCord
+			if (auxString.length() > 1024) {
+				auxString = auxString.substring(0, auxString.lastIndexOf(",")); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("GROUP_HAS_PERMISSIONS"), auxGroup.getName(), ChatColor.WHITE + auxString)); //$NON-NLS-1$
+				auxString = ""; //$NON-NLS-1$
+			}
 			auxString += perm + ", "; //$NON-NLS-1$
 		}
 		if (auxString.lastIndexOf(",") > 0) { //$NON-NLS-1$
@@ -91,10 +97,10 @@ public class ManGListP extends BaseCommand {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public @Nullable List<String> tabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-		
+
 		List<String> result = new ArrayList<>();
 		/*
 		 * Return a TabComplete for groups.
@@ -102,7 +108,7 @@ public class ManGListP extends BaseCommand {
 		if (args.length == 1) {
 
 			result = tabCompleteGroups(args[0]);
-			
+
 			/*
 			 * Include global groups.
 			 */
