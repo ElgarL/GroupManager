@@ -27,6 +27,7 @@
   data:
     save:
       # How often GroupManager will save it's data.
+      # Set to '1' if using SQL.
       # If set to '0' this will disable all saving and maintenance tasks.
       minutes: 10
       # Number of hours to retain backups (/plugins/GroupManager/backup)
