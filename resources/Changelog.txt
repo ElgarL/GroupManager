@@ -305,7 +305,7 @@ v3.0:
     - Allow empty fields in the mirror map to easily define un-mirrored worlds.
     - Add Brazilian Portuguese translation (@cid998).
     - Add Portuguese translation (@ice41).
-    - Add Romainan translation (@SynOfficial).
+    - Add Romanian translation (@SynOfficial).
     - Add Swedish translation (@ItsLynix).
     - Add Turkish translation (@Selcuk05).
     - Prevent oversized permission lists overflowing BungeeCord servers.
@@ -315,4 +315,4 @@ v3.0:
     - Add intelligent tab complete for permissions in `mangaddp,manuaddp,mangcheckp,manucheckp`.
     - Fix for failing to correctly initialize a mirror parent data.
     - Remove GMLogHandler to stop Paper nagging.
-    - Fix an API incorrect permission result for worlds you are not currently in.
+    - Fix the API returning incorrect permission result for worlds you are not currently in.
