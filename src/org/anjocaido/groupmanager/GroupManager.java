@@ -127,10 +127,6 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-
-		// Instance our cache to populate it.
-		getLogger().info("OfflinePlayers cached ( " + OfflinePlayerCache.getInstance().size() + " ).");
-		
 		
 		// Check dependencies
 		getLogger().info("Dependencies: " + (DependencyManager.checkDependencies(this) ? "OK" : "Warning unknown state!"));
@@ -145,6 +141,9 @@ public class GroupManager extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		// Instance our cache to populate it.
+		getLogger().info("OfflinePlayers cached ( " + OfflinePlayerCache.getInstance().size() + " ).");
+				
 		/*
 		 * Initialize the event handler
 		 */
