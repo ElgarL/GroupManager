@@ -316,3 +316,4 @@ v3.0:
     - Fix for failing to correctly initialize a mirror parent data.
     - Remove GMLogHandler to stop Paper nagging.
     - Fix the API returning incorrect permission result for worlds you are not currently in.
+    - Fix an issue where we removed the permission attachment before Essentials had finished the Player quit (breaks silent quit in EssentialsX).

@@ -525,10 +525,15 @@ public class BukkitPermissions {
 			plugin.getWorldsHolder().getWorldData(player.getWorld().getName()).getUser(uuid, player.getName());
 
 			/*
-			 * force remove any attachments as bukkit may not
+			 * force remove any attachments as bukkit may not,
+			 * but delay it so we don't wipe the player perms
+			 * before all plugins have finished.
 			 */
-			removeAttachment(uuid);
-			plugin.getWorldsHolder().refreshData(null);
+			Bukkit.getScheduler().runTask(plugin, () -> {
+				removeAttachment(uuid);
+				plugin.getWorldsHolder().refreshData(null);
+			});
+			
 		}
 	}
 
