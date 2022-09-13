@@ -304,6 +304,7 @@ v3.0:
     - Allow UniqueIds to be used in commands as well as player names.
     - Allow empty fields in the mirror map to easily define un-mirrored worlds.
     - Add Brazilian Portuguese translation (@cid998).
+    - Add Indonesian translation (@GarudaID)
     - Add Portuguese translation (@ice41).
     - Add Romanian translation (@SynOfficial).
     - Add Swedish translation (@ItsLynix).
