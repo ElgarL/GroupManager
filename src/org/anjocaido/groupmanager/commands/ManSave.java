@@ -70,6 +70,7 @@ public class ManSave extends BaseCommand {
 					GroupManager.setLoaded(true);
 					plugin.getSaveLock().unlock();
 				}
+				if (forced.get()) forced.set(false);
 			}
 		});
 
