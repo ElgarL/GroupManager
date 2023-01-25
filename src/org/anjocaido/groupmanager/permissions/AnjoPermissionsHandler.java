@@ -769,6 +769,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		for (String access : group.getPermissionList()) {
 			result.resultType = comparePermissionString(access, permission);
 			if (result.resultType != PermissionCheckResult.Type.NOTFOUND) {
+				GroupManager.logger.fine("Found an " + result.resultType + " for " + permission + " on group " + group.getName());
 				result.accessLevel = access;
 				return result;
 			}
