@@ -318,3 +318,4 @@ v3.0:
     - Remove GMLogHandler to stop Paper nagging.
     - Fix the API returning incorrect permission result for worlds you are not currently in.
     - Fix an issue where we removed the permission attachment before Essentials had finished the Player quit (breaks silent quit in EssentialsX).
+    - Re-order permission checks so GM permissions will be checked first before failing a wildcard test in superperms.
