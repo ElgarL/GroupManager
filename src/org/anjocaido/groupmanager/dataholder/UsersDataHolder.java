@@ -77,7 +77,9 @@ public class UsersDataHolder {
 	 */
 	void resetUsers() {
 
-		this.users.clear();
+		synchronized(users) {
+			this.users.clear();
+		}
 	}
 
 	/**
@@ -110,7 +112,10 @@ public class UsersDataHolder {
 	void setAllChanged() {
 		
 		setUsersChanged(true);
-		users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+		
+		synchronized(users) {
+			users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+		}
 	}
 
 	/**

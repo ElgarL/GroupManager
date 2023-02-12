@@ -93,7 +93,10 @@ public class GroupsDataHolder {
 	 * Resets the Groups
 	 */
 	void resetGroups() {
-		this.groups.clear();
+		
+		synchronized(groups) {
+			this.groups.clear();
+		}
 	}
 
 	/**
@@ -126,7 +129,9 @@ public class GroupsDataHolder {
 	void setAllChanged() {
 		
 		setGroupsChanged(true);
-		groups.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+		synchronized(groups) {
+			groups.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+		}
 	}
 
 	/**
