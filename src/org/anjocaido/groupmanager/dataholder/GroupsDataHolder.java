@@ -51,10 +51,9 @@ public class GroupsDataHolder {
 	public void setDataSource(WorldDataHolder dataSource) {
 
 		this.dataSource = dataSource;
-		//push this data source to the users, so they pull the correct groups data.
+		//push this data source to the groups, so they pull the correct groups data.
 		synchronized(groups) {
-			for (Group group : groups.values())
-				group.setDataSource(this.dataSource);
+			groups.entrySet().forEach(entry -> entry.getValue().setDataSource(this.dataSource));
 		}
 	}
 
