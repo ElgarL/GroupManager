@@ -133,14 +133,14 @@ public class WorldDataHolder {
 	 * @return the user object for this player.
 	 */
 	public User getUser(String uUID, String currentName) {
-		
+
 		// Check for a UUID account
 		User user = getUsers().get(uUID.toLowerCase());
 
 		if (user != null) {
-			
+
 			user.setLastName(currentName);
-			
+
 			/*
 			 * Check for a non UUID name match as
 			 * its possible some plugin (worldedit)
@@ -150,7 +150,7 @@ public class WorldDataHolder {
 			 * force create a user .
 			 */
 			getUsers().remove(currentName.toLowerCase());
-			
+
 			return user;
 		}
 
@@ -199,7 +199,7 @@ public class WorldDataHolder {
 		//putUUIDLookup(theUser.getLastName(), theUser.getUUID().toLowerCase());
 
 		setUsersChanged(true);
-		
+
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(theUser, Action.USER_ADDED);
 	}
@@ -314,7 +314,7 @@ public class WorldDataHolder {
 		removeGroup(groupToAdd.getName());
 		getGroups().put(groupToAdd.getName().toLowerCase(), groupToAdd);
 		setGroupsChanged(true);
-		
+
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(groupToAdd, GMGroupEvent.Action.GROUP_ADDED);
 	}
@@ -338,7 +338,7 @@ public class WorldDataHolder {
 		if (getGroups().containsKey(groupName.toLowerCase())) {
 			getGroups().remove(groupName.toLowerCase());
 			setGroupsChanged(true);
-			
+
 			if (GroupManager.isLoaded())
 				GroupManager.getGMEventHandler().callEvent(groupName.toLowerCase(), GMGroupEvent.Action.GROUP_REMOVED);
 			return true;
@@ -445,9 +445,11 @@ public class WorldDataHolder {
 		if (users.isUsersChanged()) {
 			return true;
 		}
-		for (User u : users.getUsers().values()) {
-			if (u.isChanged()) {
-				return true;
+		synchronized(getUsers()) {
+			for (User u : users.getUsers().values()) {
+				if (u.isChanged()) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -470,9 +472,11 @@ public class WorldDataHolder {
 		if (groups.isGroupsChanged()) {
 			return true;
 		}
-		for (Group g : groups.getGroups().values()) {
-			if (g.isChanged()) {
-				return true;
+		synchronized(getGroups()) {
+			for (Group g : groups.getGroups().values()) {
+				if (g.isChanged()) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -484,8 +488,10 @@ public class WorldDataHolder {
 	public void removeUsersChangedFlag() {
 
 		setUsersChanged(false);
-		for (User u : getUsers().values()) {
-			u.flagAsSaved();
+		synchronized(getUsers()) {
+			for (User u : getUsers().values()) {
+				u.flagAsSaved();
+			}
 		}
 	}
 
@@ -495,8 +501,10 @@ public class WorldDataHolder {
 	public void removeGroupsChangedFlag() {
 
 		setGroupsChanged(false);
-		for (Group g : getGroups().values()) {
-			g.flagAsSaved();
+		synchronized(getGroups()) {
+			for (Group g : getGroups().values()) {
+				g.flagAsSaved();
+			}
 		}
 	}
 
@@ -508,17 +516,21 @@ public class WorldDataHolder {
 
 		boolean expired = false;
 
-		for (Group group : getGroups().values()) {
-			if (group.removeExpired()) {
-				setGroupsChanged(true);
-				expired = true;
+		synchronized(getUsers()) {
+			for (User user : getUsers().values()) {
+				if (user.removeExpired()) {
+					setUsersChanged(true);
+					expired = true;
+				}
 			}
 		}
 
-		for (User user : getUsers().values()) {
-			if (user.removeExpired()) {
-				setUsersChanged(true);
-				expired = true;
+		synchronized(getGroups()) {
+			for (Group group : getGroups().values()) {
+				if (group.removeExpired()) {
+					setGroupsChanged(true);
+					expired = true;
+				}
 			}
 		}
 
