@@ -33,14 +33,14 @@ public class GroupVariables extends Variables implements Cloneable {
 
 		super(owner);
 		this.owner = owner;
-		
+
 		boolean loaded = GroupManager.isLoaded();
 		GroupManager.setLoaded(false); // Disable so we can push all data without triggering a save.
-		
+
 		addVar("prefix", "");
 		addVar("suffix", "");
 		addVar("build", false);
-		
+
 		GroupManager.setLoaded(loaded);	// Restore original state.
 	}
 
@@ -74,11 +74,11 @@ public class GroupVariables extends Variables implements Cloneable {
 	protected GroupVariables clone(Group newOwner) {
 
 		GroupVariables clone = new GroupVariables(newOwner);
-		synchronized(variables) {
-			for (String key : variables.keySet()) {
-				clone.variables.put(key, variables.get(key));
-			}
+
+		for (String key : variables.keySet()) {
+			clone.variables.put(key, variables.get(key));
 		}
+
 		newOwner.flagAsChanged();
 		return clone;
 	}

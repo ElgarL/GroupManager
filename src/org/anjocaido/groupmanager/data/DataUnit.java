@@ -202,6 +202,7 @@ public abstract class DataUnit {
 	}
 
 	public boolean hasSamePermissionNode(String permission) {
+
 		return permissions.containsKey(permission);
 	}
 
@@ -224,21 +225,19 @@ public abstract class DataUnit {
 	 */
 	public void addTimedPermission(String permission, Long expires) {
 
-		synchronized (permissions) {
-			/*
-			 * Do not add a timed permission if there is
-			 * already a static one, or this Permission
-			 * has a longer duration.
-			 */
-			Long duration = permissions.get(permission);
-			if (!permissions.containsKey(permission) || ((duration != 0) && (duration < expires))) {
-				permissions.put(permission, expires);
-				GroupManager.logger.finest(String.format("Added Timed: %s - expires: %o", permission, expires));
-				flagAsChanged();
+		/*
+		 * Do not add a timed permission if there is
+		 * already a static one, or this Permission
+		 * has a longer duration.
+		 */
+		Long duration = permissions.get(permission);
+		if (!permissions.containsKey(permission) || ((duration != 0) && (duration < expires))) {
+			permissions.put(permission, expires);
+			GroupManager.logger.finest(String.format("Added Timed: %s - expires: %o", permission, expires));
+			flagAsChanged();
 
-				if (GroupManager.isLoaded()) {
-					GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
-				}
+			if (GroupManager.isLoaded()) {
+				GroupManager.getPlugin(GroupManager.class).getWorldsHolder().refreshData(null);
 			}
 		}
 	}
@@ -253,10 +252,9 @@ public abstract class DataUnit {
 
 		boolean result = false;
 
-		synchronized (permissions) {
-			if (permissions.containsKey(permission))
-				result = permissions.remove(permission) != null;
-		}
+		if (permissions.containsKey(permission))
+			result = permissions.remove(permission) != null;
+
 		if (result) {
 			flagAsChanged();
 
@@ -298,15 +296,14 @@ public abstract class DataUnit {
 	public List<String> getSavePermissionList() {
 
 		SortedSet<String> perms = new TreeSet<>();
-		synchronized (permissions) {
-			/*
-			 * Include concatenated timed permissions.
-			 */
-			for (Entry<String, Long> entry : permissions.entrySet()) {
-				perms.add(entry.getKey() + ((entry.getValue() != 0) ? "|" + entry.getValue() : ""));
-			}
-			return new ArrayList<>(perms);
+
+		/*
+		 * Include concatenated timed permissions.
+		 */
+		for (Entry<String, Long> entry : permissions.entrySet()) {
+			perms.add(entry.getKey() + ((entry.getValue() != 0) ? "|" + entry.getValue() : ""));
 		}
+		return new ArrayList<>(perms);
 	}
 
 	/**
@@ -318,18 +315,16 @@ public abstract class DataUnit {
 
 		boolean expired = false;
 
-		synchronized (permissions) {
+		for (Entry<String, Long> perm : permissions.entrySet()) {
+			if ((perm.getValue() != 0) && Tasks.isExpired(perm.getValue())) {
+				if (permissions.remove(perm.getKey()) != null) {
 
-			for (Entry<String, Long> perm : permissions.entrySet()) {
-				if ((perm.getValue() != 0) && Tasks.isExpired(perm.getValue())) {
-					if (permissions.remove(perm.getKey()) != null) {
-
-						expired = true;
-						GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
-					}
+					expired = true;
+					GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
 				}
 			}
 		}
+
 		return expired;
 	}
 }

@@ -777,14 +777,16 @@ public class CoreYaml implements DataSource {
 			loadGroups(ph);
 
 			// transfer new data
-			dataHolder.resetGroups();
-			for (Group tempGroup : ph.getGroupList()) {
-				tempGroup.clone(dataHolder);
-			}
+			synchronized (dataHolder.getGroups()) {
+				dataHolder.resetGroups();
+				for (Group tempGroup : ph.getGroupList()) {
+					tempGroup.clone(dataHolder);
+				}
 
-			dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
-			dataHolder.removeGroupsChangedFlag();
-			dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
+				dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
+				dataHolder.removeGroupsChangedFlag();
+				dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
+			}
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
@@ -814,12 +816,14 @@ public class CoreYaml implements DataSource {
 			loadUsers(ph);
 
 			// transfer new data
-			dataHolder.resetUsers();
-			for (User tempUser : ph.getUserList()) {
-				tempUser.clone(dataHolder);
+			synchronized (dataHolder.getUsers()) {
+				dataHolder.resetUsers();
+				for (User tempUser : ph.getUserList()) {
+					tempUser.clone(dataHolder);
+				}
+				dataHolder.removeUsersChangedFlag();
+				dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
 			}
-			dataHolder.removeUsersChangedFlag();
-			dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
@@ -837,59 +841,61 @@ public class CoreYaml implements DataSource {
 
 		root.put("groups", groupsMap);
 
-		for (String groupKey : dataHolder.getGroups().keySet()) {
-			Group group = dataHolder.getGroups().get(groupKey);
+		synchronized (dataHolder.getGroups()) {
+			for (String groupKey : dataHolder.getGroups().keySet()) {
+				Group group = dataHolder.getGroups().get(groupKey);
 
-			Map<String, Object> aGroupMap = new HashMap<>();
-			groupsMap.put(group.getName(), aGroupMap);
+				Map<String, Object> aGroupMap = new HashMap<>();
+				groupsMap.put(group.getName(), aGroupMap);
 
-			if (dataHolder.getDefaultGroup() == null) {
-				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
+				if (dataHolder.getDefaultGroup() == null) {
+					GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
+				}
+				aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
+
+				Map<String, Object> infoMap = new HashMap<>();
+				aGroupMap.put("info", infoMap);
+
+				for (String infoKey : group.getVariables().getVarKeyList()) {
+					infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
+				}
+
+				aGroupMap.put("inheritance", group.getInherits());
+
+				aGroupMap.put("permissions", group.getSavePermissionList());
 			}
-			aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
 
-			Map<String, Object> infoMap = new HashMap<>();
-			aGroupMap.put("info", infoMap);
+			if (!root.isEmpty()) {
+				DumperOptions opt = new DumperOptions();
+				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+				try {
+					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
 
-			for (String infoKey : group.getVariables().getVarKeyList()) {
-				infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
+					String newLine = System.getProperty("line.separator");
+
+					out.write("# Group inheritance" + newLine);
+					out.write("#" + newLine);
+					out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
+					out.write("# and are inherited from the GlobalGroups.yml." + newLine);
+					out.write("#" + newLine);
+					out.write("# Groups without the g: prefix are groups local to this world" + newLine);
+					out.write("# and are defined in the this groups.yml file." + newLine);
+					out.write("#" + newLine);
+					out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
+					out.write(newLine);
+
+					yaml.dump(root, out);
+					out.close();
+				} catch (Exception ignored) {
+				}
 			}
 
-			aGroupMap.put("inheritance", group.getInherits());
-
-			aGroupMap.put("permissions", group.getSavePermissionList());
+			// Update the LastModified time.
+			dataHolder.setGroupsFile(dataHolder.getGroupsFile());
+			dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
+			dataHolder.removeGroupsChangedFlag();
 		}
-
-		if (!root.isEmpty()) {
-			DumperOptions opt = new DumperOptions();
-			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-			try {
-				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
-
-				String newLine = System.getProperty("line.separator");
-
-				out.write("# Group inheritance" + newLine);
-				out.write("#" + newLine);
-				out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
-				out.write("# and are inherited from the GlobalGroups.yml." + newLine);
-				out.write("#" + newLine);
-				out.write("# Groups without the g: prefix are groups local to this world" + newLine);
-				out.write("# and are defined in the this groups.yml file." + newLine);
-				out.write("#" + newLine);
-				out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
-				out.write(newLine);
-
-				yaml.dump(root, out);
-				out.close();
-			} catch (Exception ignored) {}
-		}
-
-		// Update the LastModified time.
-		dataHolder.setGroupsFile(dataHolder.getGroupsFile());
-		dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
-		dataHolder.removeGroupsChangedFlag();
-
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 	}
@@ -902,60 +908,62 @@ public class CoreYaml implements DataSource {
 
 		root.put("users", usersMap);
 
-		// A sorted list of users.
-		for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
-			User user = dataHolder.getUsers().get(userKey);
-			if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
-				continue;
+		synchronized (dataHolder.getUsers()) {
+			// A sorted list of users.
+			for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
+				User user = dataHolder.getUsers().get(userKey);
+				if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
+					continue;
+				}
+
+				LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
+				usersMap.put(user.getUUID(), aUserMap);
+
+				if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
+					aUserMap.put("lastname", user.getLastName());
+				}
+
+				// GROUP NODE
+				if (user.getGroup() == null) {
+					aUserMap.put("group", dataHolder.getDefaultGroup().getName());
+				} else {
+					aUserMap.put("group", user.getGroup().getName());
+				}
+
+				// SUBGROUPS NODE
+				aUserMap.put("subgroups", user.getSaveSubGroupsList());
+
+				// PERMISSIONS NODE
+				aUserMap.put("permissions", user.getSavePermissionList());
+
+				// USER INFO NODE - BETA
+				if (user.getVariables().getSize() > 0) {
+					Map<String, Object> infoMap = new HashMap<>();
+					aUserMap.put("info", infoMap);
+					for (String infoKey : user.getVariables().getVarKeyList()) {
+						infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
+					}
+				}
+				// END USER INFO NODE - BETA
 			}
 
-			LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
-			usersMap.put(user.getUUID(), aUserMap);
-
-			if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
-				aUserMap.put("lastname", user.getLastName());
-			}
-
-			// GROUP NODE
-			if (user.getGroup() == null) {
-				aUserMap.put("group", dataHolder.getDefaultGroup().getName());
-			} else {
-				aUserMap.put("group", user.getGroup().getName());
-			}
-
-			// SUBGROUPS NODE
-			aUserMap.put("subgroups", user.getSaveSubGroupsList());
-
-			// PERMISSIONS NODE
-			aUserMap.put("permissions", user.getSavePermissionList());
-
-			// USER INFO NODE - BETA
-			if (user.getVariables().getSize() > 0) {
-				Map<String, Object> infoMap = new HashMap<>();
-				aUserMap.put("info", infoMap);
-				for (String infoKey : user.getVariables().getVarKeyList()) {
-					infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
+			if (!root.isEmpty()) {
+				DumperOptions opt = new DumperOptions();
+				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+				try {
+					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
+					yaml.dump(root, out);
+					out.close();
+				} catch (Exception ignored) {
 				}
 			}
-			// END USER INFO NODE - BETA
-		}
 
-		if (!root.isEmpty()) {
-			DumperOptions opt = new DumperOptions();
-			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-			try {
-				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
-				yaml.dump(root, out);
-				out.close();
-			} catch (Exception ignored) {
-			}
+			// Update the LastModified time.
+			dataHolder.setUsersFile(dataHolder.getUsersFile());
+			dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
+			dataHolder.removeUsersChangedFlag();
 		}
-
-		// Update the LastModified time.
-		dataHolder.setUsersFile(dataHolder.getUsersFile());
-		dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
-		dataHolder.removeUsersChangedFlag();
 
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
