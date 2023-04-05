@@ -79,7 +79,9 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 	public void addWorldData(String key, OverloadedWorldHolder worldData) {
 
-		worldsData.put(key.toLowerCase(), worldData);
+		synchronized(worldsData) {
+			worldsData.put(key.toLowerCase(), worldData);
+		}
 	}
 
 	/**
@@ -87,12 +89,14 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	public void resetWorldsHolder() {
 
-		worldsData = Collections.synchronizedMap(new LinkedHashMap<>());
-		clearGroupsMirror();
-		clearUsersMirror();
+		synchronized(worldsData) {
+			worldsData = Collections.synchronizedMap(new LinkedHashMap<>());
+			clearGroupsMirror();
+			clearUsersMirror();
 
-		// Setup mirrors and load all data.
-		initialLoad();
+			// Setup mirrors and load all data.
+			initialLoad();
+		}
 
 		if (serverDefaultWorldName == null)
 			throw new IllegalStateException(Messages.getString("WorldsHolder.ERROR_NO_DEFAULT_GROUP")); //$NON-NLS-1$
@@ -132,9 +136,11 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	void loadParentWorlds() {
 
-		for (String world : worldsData.keySet()) {
-			dataSource.init(world);
-			dataSource.loadWorld(world, false);
+		synchronized(worldsData) {
+			for (String world : worldsData.keySet()) {
+				dataSource.init(world);
+				dataSource.loadWorld(world, false);
+			}
 		}
 	}
 
@@ -147,17 +153,20 @@ public abstract class WorldsHolder extends ChildMirrors {
 		GroupManager.getGlobalGroups().load();
 
 		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<>();
-		for (WorldDataHolder w : worldsData.values()) {
-			if (alreadyDone.contains(w)) {
-				continue;
+		
+		synchronized (worldsData) {
+			for (WorldDataHolder w : worldsData.values()) {
+				if (alreadyDone.contains(w)) {
+					continue;
+				}
+				if (!hasGroupsMirror(w.getName()))
+					dataSource.reloadGroups(w);
+
+				if (!hasUsersMirror(w.getName()))
+					dataSource.reloadUsers(w);
+
+				alreadyDone.add(w);
 			}
-			if (!hasGroupsMirror(w.getName()))
-				dataSource.reloadGroups(w);
-
-			if (!hasUsersMirror(w.getName()))
-				dataSource.reloadUsers(w);
-
-			alreadyDone.add(w);
 		}
 	}
 
@@ -182,29 +191,33 @@ public abstract class WorldsHolder extends ChildMirrors {
 		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<>();
 		boolean result = false;
 
-		for (WorldDataHolder world : worldsData.values()) {
+		synchronized (worldsData) {
+			for (WorldDataHolder world : worldsData.values()) {
 
-			if (alreadyDone.contains(world)) {
-				continue;
+				if (alreadyDone.contains(world)) {
+					continue;
+				}
+
+				/*
+				 * Update individual player permissions if changed.
+				 */
+				if (world.purgeTimedPermissions()) {
+					result = true;
+
+					/*for (User user : world.getUserList()) {
+						// If the player is online, this will create new data for the user.
+						Player targetPlayer = BukkitWrapper.getInstance().getPlayer(user.getLastName());
+						if (targetPlayer != null)
+							GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
+					}*/
+				}
+				alreadyDone.add(world);
 			}
-
-			/*
-			 * Update individual player permissions if changed.
-			 */
-			if (world.purgeTimedPermissions()) {
-				result = true;
-
-				/*for (User user : world.getUserList()) {
-					// If the player is online, this will create new data for the user.
-					Player targetPlayer = BukkitWrapper.getInstance().getPlayer(user.getLastName());
-					if (targetPlayer != null)
-						GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-				}*/
-			}
-			alreadyDone.add(world);
 		}
-		if (result) plugin.getWorldsHolder().refreshData(null);
-		
+
+		if (result)
+			plugin.getWorldsHolder().refreshData(null);
+
 		return result;
 	}
 
@@ -291,65 +304,67 @@ public abstract class WorldsHolder extends ChildMirrors {
 		/*
 		 * Save each world.
 		 */
-		for (OverloadedWorldHolder dataHolder : worldsData.values()) {
-			if (alreadyDone.contains(dataHolder)) {
-				continue;
-			}
-			if (dataHolder == null) {
-				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
-				continue;
-			}
+		synchronized (worldsData) {
+			for (OverloadedWorldHolder dataHolder : worldsData.values()) {
+				if (alreadyDone.contains(dataHolder)) {
+					continue;
+				}
+				if (dataHolder == null) {
+					GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldsHolder.WHAT_HAPPENED")); //$NON-NLS-1$
+					continue;
+				}
 
-			if (!hasGroupsMirror(dataHolder.getName())) {
-				if (dataHolder.haveGroupsChanged() && canWrite) {
-					if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(dataHolder))) {
-						// Backup Groups file
-						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.GROUPS);
-						dataSource.saveGroups(dataHolder);
-						changed = true;	//TODO should be false?
+				if (!hasGroupsMirror(dataHolder.getName())) {
+					if (dataHolder.haveGroupsChanged() && canWrite) {
+						if (overwrite || (!overwrite && !dataSource.hasNewGroupsData(dataHolder))) {
+							// Backup Groups file
+							dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.GROUPS);
+							dataSource.saveGroups(dataHolder);
+							changed = true;	//TODO should be false?
 
+						} else {
+							// Newer file found.
+							GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
+							throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
+						}
 					} else {
-						// Newer file found.
-						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_GROUPS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
-						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
-					}
-				} else {
-					//Check for newer file as no local changes or we are set to READ only and need new data.
-					if (dataSource.hasNewGroupsData(dataHolder) || dataHolder.haveGroupsChanged()) {
-						
-						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
+						//Check for newer file as no local changes or we are set to READ only and need new data.
+						if (dataSource.hasNewGroupsData(dataHolder) || dataHolder.haveGroupsChanged()) {
 
-						dataSource.reloadGroups(dataHolder);
-						changed = true;
+							GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_GROUPS_FILE_LOADING")); //$NON-NLS-1$
+
+							dataSource.reloadGroups(dataHolder);
+							changed = true;
+						}
 					}
 				}
-			}
 
-			if (!hasUsersMirror(dataHolder.getName())) {
-				if (dataHolder.haveUsersChanged() && canWrite) {
-					if (overwrite || (!overwrite && !dataSource.hasNewUsersData(dataHolder))) {
-						// Backup Users file
-						dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.USERS);
-						dataSource.saveUsers(dataHolder);
-						changed = true;	//TODO should be false?
+				if (!hasUsersMirror(dataHolder.getName())) {
+					if (dataHolder.haveUsersChanged() && canWrite) {
+						if (overwrite || (!overwrite && !dataSource.hasNewUsersData(dataHolder))) {
+							// Backup Users file
+							dataSource.backup(dataHolder, DataSource.BACKUP_TYPE.USERS);
+							dataSource.saveUsers(dataHolder);
+							changed = true;	//TODO should be false?
 
+						} else {
+							// Newer file found.
+							GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
+							throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
+						}
 					} else {
-						// Newer file found.
-						GroupManager.logger.log(Level.WARNING, String.format(Messages.getString("WorldsHolder.WARN_NEWER_USERS_FILE_UNABLE"), dataHolder.getName())); //$NON-NLS-1$
-						throw new IllegalStateException(Messages.getString("ERROR_UNABLE_TO_SAVE")); //$NON-NLS-1$
-					}
-				} else {
-					// Check for newer file as no local changes or we are set to READ only and need new data.
-					if (dataSource.hasNewUsersData(dataHolder) || dataHolder.haveUsersChanged()) {
+						// Check for newer file as no local changes or we are set to READ only and need new data.
+						if (dataSource.hasNewUsersData(dataHolder) || dataHolder.haveUsersChanged()) {
 
-						GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
+							GroupManager.logger.log(Level.INFO, Messages.getString("WorldsHolder.NEWER_USERS_FILE_LOADING")); //$NON-NLS-1$
 
-						dataSource.reloadUsers(dataHolder);
-						changed = true;
+							dataSource.reloadUsers(dataHolder);
+							changed = true;
+						}
 					}
 				}
+				alreadyDone.add(dataHolder);
 			}
-			alreadyDone.add(dataHolder);
 		}
 
 		return changed;
@@ -396,10 +411,13 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		String worldNameLowered = worldName.toLowerCase();
 
-		if (worldsData.containsKey(worldNameLowered)) {
-			OverloadedWorldHolder data = worldsData.get(worldNameLowered);
-			if (data != null) data.updateDataSource();
-			return data;
+		synchronized (worldsData) {
+			if (worldsData.containsKey(worldNameLowered)) {
+				OverloadedWorldHolder data = worldsData.get(worldNameLowered);
+				if (data != null)
+					data.updateDataSource();
+				return data;
+			}
 		}
 		return null;
 	}
@@ -492,7 +510,10 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public boolean hasOwnData(String worldName) {
 
 		String key = worldName.toLowerCase();
-		return worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key));
+		
+		synchronized(worldsData) {
+			return worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key));
+		}
 	}
 
 	/**
@@ -541,46 +562,48 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 		ArrayList<OverloadedWorldHolder> list = new ArrayList<>();
 
-		for (String world : worldsData.keySet()) {
+		synchronized (worldsData) {
+			for (String world : worldsData.keySet()) {
 
-			if (!world.equalsIgnoreCase("all_unnamed_worlds")) { //$NON-NLS-1$
+				if (!world.equalsIgnoreCase("all_unnamed_worlds")) { //$NON-NLS-1$
 
-				// Fetch the relevant world object
-				OverloadedWorldHolder data = getWorldData(world);
+					// Fetch the relevant world object
+					OverloadedWorldHolder data = getWorldData(world);
 
-				if (!list.contains(data)) {
+					if (!list.contains(data)) {
 
-					String worldNameLowered = data.getName().toLowerCase();
-					String usersMirror = getUsersMirror(worldNameLowered);
-					String groupsMirror = getGroupsMirror(worldNameLowered);
+						String worldNameLowered = data.getName().toLowerCase();
+						String usersMirror = getUsersMirror(worldNameLowered);
+						String groupsMirror = getGroupsMirror(worldNameLowered);
 
-					// is users mirrored?
-					if (usersMirror != null) {
+						// is users mirrored?
+						if (usersMirror != null) {
 
-						// If both are mirrored
-						if (groupsMirror != null) {
+							// If both are mirrored
+							if (groupsMirror != null) {
 
-							// if the data sources are the same, return the parent
-							if (usersMirror.equals(groupsMirror)) {
-								data = getWorldData(usersMirror.toLowerCase());
+								// if the data sources are the same, return the parent
+								if (usersMirror.equals(groupsMirror)) {
+									data = getWorldData(usersMirror.toLowerCase());
 
-								// Only add the parent if it's not already listed.
-								if (!list.contains(data))
-									list.add(data);
+									// Only add the parent if it's not already listed.
+									if (!list.contains(data))
+										list.add(data);
 
-								continue;
+									continue;
+								}
+								// Both data sources are mirrors, but they are from different parents
+								// so fall through to add the actual data object.
 							}
-							// Both data sources are mirrors, but they are from different parents
-							// so fall through to add the actual data object.
+							// Groups isn't a mirror so fall through to add this this worlds data source
 						}
-						// Groups isn't a mirror so fall through to add this this worlds data source
-					}
 
-					// users isn't mirrored so we need to add this worlds data source
-					list.add(data);
+						// users isn't mirrored so we need to add this worlds data source
+						list.add(data);
+					}
 				}
 			}
+			return list;
 		}
-		return list;
 	}
 }

@@ -787,14 +787,12 @@ public class CoreSQL implements DataSource {
 		String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + dataHolder.getName() + "_GROUPS").toUpperCase();
 		Set<String> databaseGroups = getAllGroupKeys(tableName).stream().map(s -> s.toLowerCase()).collect(Collectors.toSet());
 
-		synchronized (dataHolder.getGroups()) {
-			Iterator<Group> iter = dataHolder.getGroupList().iterator();
+		Iterator<Group> iter = dataHolder.getGroupList().iterator();
 
-			while (iter.hasNext()) {
-				Group group = iter.next();
-				if (!databaseGroups.contains(group.getName().toLowerCase()))
-					dataHolder.removeGroup(group.getName());
-			}
+		while (iter.hasNext()) {
+			Group group = iter.next();
+			if (!databaseGroups.contains(group.getName().toLowerCase()))
+				dataHolder.removeGroup(group.getName());
 		}
 	}
 
@@ -808,14 +806,12 @@ public class CoreSQL implements DataSource {
 		String tableName = (GroupManager.getGMConfig().getDatabaseGroup() + "_" + dataHolder.getName() + "_USERS").toUpperCase();
 		Set<String> databaseGroups = getAllUserKeys(tableName).stream().map(s -> s.toLowerCase()).collect(Collectors.toSet());
 
-		synchronized (dataHolder.getUsers()) {
-			Iterator<User> iter = dataHolder.getUserList().iterator();
+		Iterator<User> iter = dataHolder.getUserList().iterator();
 
-			while (iter.hasNext()) {
-				User user = iter.next();
-				if (!databaseGroups.contains(user.getUUID().toLowerCase()))
-					dataHolder.removeUser(user.getUUID());
-			}
+		while (iter.hasNext()) {
+			User user = iter.next();
+			if (!databaseGroups.contains(user.getUUID().toLowerCase()))
+				dataHolder.removeUser(user.getUUID());
 		}
 	}
 
@@ -899,32 +895,30 @@ public class CoreSQL implements DataSource {
 				SortedMap<String, Group> groups = dataHolder.getGroups();
 				Set<String> keys = groups.keySet();
 
-				synchronized (groups) {
-					Iterator<String> iter = keys.iterator(); // Must be in synchronized block
-					while (iter.hasNext()) {
-						Group group = groups.get(iter.next());
+				Iterator<String> iter = keys.iterator();
+				while (iter.hasNext()) {
+					Group group = groups.get(iter.next());
 
-						if (!group.isChanged())
-							continue;
+					if (!group.isChanged())
+						continue;
 
-						boolean isDefault = group.equals(dataHolder.getDefaultGroup());
-						if (changed == null)
-							changed = Instant.now().toEpochMilli();
+					boolean isDefault = group.equals(dataHolder.getDefaultGroup());
+					if (changed == null)
+						changed = Instant.now().toEpochMilli();
 
-						String name = group.getName();
-						List<String> permissions = group.getSavePermissionList();
-						List<String> inheritance = group.getInherits();
-						String variables = group.getVariables().getBlob();
+					String name = group.getName();
+					List<String> permissions = group.getSavePermissionList();
+					List<String> inheritance = group.getInherits();
+					String variables = group.getVariables().getBlob();
 
-						insert.setString(1, name);
-						insert.setBoolean(2, isDefault);
-						insert.setString(3, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
-						insert.setString(4, inheritance.isEmpty() ? null : StringUtils.join(inheritance, ","));
-						insert.setString(5, variables.length() == 0 ? null : variables);
-						insert.setLong(6, changed);
+					insert.setString(1, name);
+					insert.setBoolean(2, isDefault);
+					insert.setString(3, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
+					insert.setString(4, inheritance.isEmpty() ? null : StringUtils.join(inheritance, ","));
+					insert.setString(5, variables.length() == 0 ? null : variables);
+					insert.setLong(6, changed);
 
-						insert.addBatch();
-					}
+					insert.addBatch();
 				}
 
 				// Execute batch update.
@@ -981,18 +975,16 @@ public class CoreSQL implements DataSource {
 
 			conn.setAutoCommit(false);
 
-			synchronized (dataHolder.getGroups()) {
-				Set<String> keys = dataHolder.getGroups().keySet();
+			Set<String> keys = dataHolder.getGroups().keySet();
 
-				for (String name : databaseGroups) {
-					if (!keys.contains(name.toLowerCase())) {
+			for (String name : databaseGroups) {
+				if (!keys.contains(name.toLowerCase())) {
 
-						if (changed == null)
-							changed = Instant.now().toEpochMilli();
+					if (changed == null)
+						changed = Instant.now().toEpochMilli();
 
-						insert.setString(1, name);
-						insert.addBatch();
-					}
+					insert.setString(1, name);
+					insert.addBatch();
 				}
 			}
 
@@ -1036,40 +1028,38 @@ public class CoreSQL implements DataSource {
 				SortedMap<String, User> users = dataHolder.getUsers();
 				Set<String> keys = users.keySet();
 
-				synchronized (users) {
-					Iterator<String> iter = keys.iterator(); // Must be in synchronized block
-					while (iter.hasNext()) {
-						User user = users.get(iter.next());
+				Iterator<String> iter = keys.iterator();
+				while (iter.hasNext()) {
+					User user = users.get(iter.next());
 
-						if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
-							continue;
-						}
-
-						if (!user.isChanged()) {
-							continue;
-						}
-
-						if (changed == null)
-							changed = Instant.now().toEpochMilli();
-
-						// UUID,LASTNAME,PRIMARYGROUP,SUBGROUPS,PERMISSIONS,INFO
-
-						String UUID = user.getUUID();
-						String name = user.getLastName();
-						List<String> subGroups = user.getSaveSubGroupsList();
-						List<String> permissions = user.getSavePermissionList();
-						String variables = user.getVariables().getBlob();
-
-						insert.setString(1, UUID);
-						insert.setString(2, (name.equals(UUID)) ? null : name);
-						insert.setString(3, user.getGroupName());
-						insert.setString(4, subGroups.isEmpty() ? null : StringUtils.join(subGroups, ","));
-						insert.setString(5, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
-						insert.setString(6, variables.length() == 0 ? null : variables);
-						insert.setLong(7, changed);
-
-						insert.addBatch();
+					if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
+						continue;
 					}
+
+					if (!user.isChanged()) {
+						continue;
+					}
+
+					if (changed == null)
+						changed = Instant.now().toEpochMilli();
+
+					// UUID,LASTNAME,PRIMARYGROUP,SUBGROUPS,PERMISSIONS,INFO
+
+					String UUID = user.getUUID();
+					String name = user.getLastName();
+					List<String> subGroups = user.getSaveSubGroupsList();
+					List<String> permissions = user.getSavePermissionList();
+					String variables = user.getVariables().getBlob();
+
+					insert.setString(1, UUID);
+					insert.setString(2, (name.equals(UUID)) ? null : name);
+					insert.setString(3, user.getGroupName());
+					insert.setString(4, subGroups.isEmpty() ? null : StringUtils.join(subGroups, ","));
+					insert.setString(5, permissions.isEmpty() ? null : StringUtils.join(permissions, ","));
+					insert.setString(6, variables.length() == 0 ? null : variables);
+					insert.setLong(7, changed);
+
+					insert.addBatch();
 				}
 
 				if (changed != null) {
@@ -1126,18 +1116,16 @@ public class CoreSQL implements DataSource {
 
 			conn.setAutoCommit(false);
 
-			synchronized (dataHolder.getUsers()) {
-				Set<String> keys = dataHolder.getUsers().keySet();
+			Set<String> keys = dataHolder.getUsers().keySet();
 
-				for (String UUID : databaseUUIDs) {
-					if (!keys.contains(UUID.toLowerCase())) {
+			for (String UUID : databaseUUIDs) {
+				if (!keys.contains(UUID.toLowerCase())) {
 
-						if (changed == null)
-							changed = Instant.now().toEpochMilli();
+					if (changed == null)
+						changed = Instant.now().toEpochMilli();
 
-						insert.setString(1, UUID);
-						insert.addBatch();
-					}
+					insert.setString(1, UUID);
+					insert.addBatch();
 				}
 			}
 

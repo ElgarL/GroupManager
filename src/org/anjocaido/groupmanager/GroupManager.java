@@ -127,7 +127,7 @@ public class GroupManager extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
-		
+
 		// Check dependencies
 		getLogger().info("Dependencies: " + (DependencyManager.checkDependencies(this) ? "OK" : "Warning unknown state!"));
 	}
@@ -143,7 +143,7 @@ public class GroupManager extends JavaPlugin {
 
 		// Instance our cache to populate it.
 		getLogger().info("OfflinePlayers cached ( " + OfflinePlayerCache.getInstance().size() + " ).");
-				
+
 		/*
 		 * Initialize the event handler
 		 */
@@ -457,26 +457,24 @@ public class GroupManager extends JavaPlugin {
 
 							if (!getWorldsHolder().hasUsersMirror(world.getName())) {
 
-								synchronized (world.getUsers()) {
-									for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
-										User user = iterator.next();
-										long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
+								for (Iterator<User> iterator = world.getUserList().iterator(); iterator.hasNext();) {
+									User user = iterator.next();
+									long lastPlayed = user.getVariables().getVarDouble("lastplayed").longValue();
 
-										/*
-										 * Users with a lastplayed variable set to 0 are protected from deletion.
-										 */
-										if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
-											long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
+									/*
+									 * Users with a lastplayed variable set to 0 are protected from deletion.
+									 */
+									if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
+										long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
 
-											if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
+										if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
 
-												world.removeUser(user.getUUID());
-												world.setUsersChanged(true);
-												count++;
-											}
+											world.removeUser(user.getUUID());
+											world.setUsersChanged(true);
+											count++;
 										}
-										Thread.sleep(1000);
 									}
+									Thread.sleep(1000);
 								}
 							}
 						}

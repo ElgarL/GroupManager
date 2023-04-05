@@ -126,34 +126,28 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 		if (groupName.toLowerCase().startsWith("g:")) {
 			return GroupManager.getGlobalGroups().removeGroup(groupName);
 		}
-		
-		synchronized(getGroups()) {
-			for (String key : getGroups().keySet()) {
-				if (groupName.equalsIgnoreCase(key)) {
-					getGroups().remove(key);
-					synchronized(getUsers()) {
-						for (String userKey : getUsers().keySet()) {
-							User user = getUsers().get(userKey);
-							if (user.getGroupName().equalsIgnoreCase(key)) {
-								user.setGroup(getDefaultGroup());
-							}
 
-						}
+		for (String key : getGroups().keySet()) {
+			if (groupName.equalsIgnoreCase(key)) {
+				getGroups().remove(key);
+				for (String userKey : getUsers().keySet()) {
+					User user = getUsers().get(userKey);
+					if (user.getGroupName().equalsIgnoreCase(key)) {
+						user.setGroup(getDefaultGroup());
 					}
-					//OVERLOADED CODE
-					synchronized(overloadedUsers) {
-						for (String userKey : overloadedUsers.keySet()) {
-							User user = overloadedUsers.get(userKey);
-							if (user.getGroupName().equalsIgnoreCase(key)) {
-								user.setGroup(getDefaultGroup());
-							}
 
-						}
-					}
-					//END OVERLOAD
-					setGroupsChanged(true);
-					return true;
 				}
+				//OVERLOADED CODE
+				for (String userKey : overloadedUsers.keySet()) {
+					User user = overloadedUsers.get(userKey);
+					if (user.getGroupName().equalsIgnoreCase(key)) {
+						user.setGroup(getDefaultGroup());
+					}
+
+				}
+				//END OVERLOAD
+				setGroupsChanged(true);
+				return true;
 			}
 		}
 		return false;
@@ -167,11 +161,9 @@ public class OverloadedWorldHolder extends WorldDataHolder {
 	public Collection<User> getUserList() {
 
 		Collection<User> overloadedList = new LinkedList<>();
-		synchronized(getUsers()) {
-			Collection<User> normalList = getUsers().values();
-			for (User u : normalList) {
-				overloadedList.add(overloadedUsers.getOrDefault(u.getUUID().toLowerCase(), u));
-			}
+		Collection<User> normalList = getUsers().values();
+		for (User u : normalList) {
+			overloadedList.add(overloadedUsers.getOrDefault(u.getUUID().toLowerCase(), u));
 		}
 		return overloadedList;
 	}

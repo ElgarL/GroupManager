@@ -18,9 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GlobalGroups;
 import org.anjocaido.groupmanager.GroupManager;
@@ -383,7 +382,8 @@ public class CoreYaml implements DataSource {
 										thisGrp.addPermission(o.toString());
 									}
 
-							} catch (NullPointerException ignored) {} // Safe to ignore.
+							} catch (NullPointerException ignored) {
+							} // Safe to ignore.
 
 						}
 					} catch (Exception ex) {
@@ -641,7 +641,8 @@ public class CoreYaml implements DataSource {
 								}
 							}
 						}
-					} catch (NullPointerException ignored) {} // Safe to ignore null.
+					} catch (NullPointerException ignored) {
+					} // Safe to ignore null.
 				}
 
 				/*
@@ -777,20 +778,19 @@ public class CoreYaml implements DataSource {
 			loadGroups(ph);
 
 			// transfer new data
-			synchronized (dataHolder.getGroups()) {
-				dataHolder.resetGroups();
-				for (Group tempGroup : ph.getGroupList()) {
-					tempGroup.clone(dataHolder);
-				}
-
-				dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
-				dataHolder.removeGroupsChangedFlag();
-				dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
+			dataHolder.resetGroups();
+			for (Group tempGroup : ph.getGroupList()) {
+				tempGroup.clone(dataHolder);
 			}
+
+			dataHolder.setDefaultGroup(dataHolder.getGroup(ph.getDefaultGroup().getName()));
+			dataHolder.removeGroupsChangedFlag();
+			dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
+
 		GroupManager.setLoaded(true);
 		GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
 	}
@@ -816,18 +816,17 @@ public class CoreYaml implements DataSource {
 			loadUsers(ph);
 
 			// transfer new data
-			synchronized (dataHolder.getUsers()) {
-				dataHolder.resetUsers();
-				for (User tempUser : ph.getUserList()) {
-					tempUser.clone(dataHolder);
-				}
-				dataHolder.removeUsersChangedFlag();
-				dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
+			dataHolder.resetUsers();
+			for (User tempUser : ph.getUserList()) {
+				tempUser.clone(dataHolder);
 			}
+			dataHolder.removeUsersChangedFlag();
+			dataHolder.getUsersObject().setTimeStamp(dataHolder.getUsersFile().lastModified());
 
 		} catch (Exception ex) {
 			Logger.getLogger(WorldDataHolder.class.getName()).log(Level.WARNING, null, ex);
 		}
+
 		GroupManager.setLoaded(true);
 		GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.RELOADED);
 	}
@@ -841,54 +840,52 @@ public class CoreYaml implements DataSource {
 
 		root.put("groups", groupsMap);
 
-		synchronized (dataHolder.getGroups()) {
-			for (String groupKey : dataHolder.getGroups().keySet()) {
-				Group group = dataHolder.getGroups().get(groupKey);
+		for (String groupKey : dataHolder.getGroups().keySet()) {
+			Group group = dataHolder.getGroups().get(groupKey);
 
-				Map<String, Object> aGroupMap = new HashMap<>();
-				groupsMap.put(group.getName(), aGroupMap);
+			Map<String, Object> aGroupMap = new HashMap<>();
+			groupsMap.put(group.getName(), aGroupMap);
 
-				if (dataHolder.getDefaultGroup() == null) {
-					GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
-				}
-				aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
+			if (dataHolder.getDefaultGroup() == null) {
+				GroupManager.logger.log(Level.SEVERE, Messages.getString("WorldDatHolder.WARN_NO_DEFAULT_GROUP") + dataHolder.getName());
+			}
+			aGroupMap.put("default", group.equals(dataHolder.getDefaultGroup()));
 
-				Map<String, Object> infoMap = new HashMap<>();
-				aGroupMap.put("info", infoMap);
+			Map<String, Object> infoMap = new HashMap<>();
+			aGroupMap.put("info", infoMap);
 
-				for (String infoKey : group.getVariables().getVarKeyList()) {
-					infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
-				}
-
-				aGroupMap.put("inheritance", group.getInherits());
-
-				aGroupMap.put("permissions", group.getSavePermissionList());
+			for (String infoKey : group.getVariables().getVarKeyList()) {
+				infoMap.put(infoKey, group.getVariables().getVarObject(infoKey));
 			}
 
-			if (!root.isEmpty()) {
-				DumperOptions opt = new DumperOptions();
-				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-				try {
-					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
+			aGroupMap.put("inheritance", group.getInherits());
 
-					String newLine = System.getProperty("line.separator");
+			aGroupMap.put("permissions", group.getSavePermissionList());
+		}
 
-					out.write("# Group inheritance" + newLine);
-					out.write("#" + newLine);
-					out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
-					out.write("# and are inherited from the GlobalGroups.yml." + newLine);
-					out.write("#" + newLine);
-					out.write("# Groups without the g: prefix are groups local to this world" + newLine);
-					out.write("# and are defined in the this groups.yml file." + newLine);
-					out.write("#" + newLine);
-					out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
-					out.write(newLine);
+		if (!root.isEmpty()) {
+			DumperOptions opt = new DumperOptions();
+			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+			try {
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getGroupsFile()), StandardCharsets.UTF_8);
 
-					yaml.dump(root, out);
-					out.close();
-				} catch (Exception ignored) {
-				}
+				String newLine = System.getProperty("line.separator");
+
+				out.write("# Group inheritance" + newLine);
+				out.write("#" + newLine);
+				out.write("# Any inherited groups prefixed with a g: are global groups" + newLine);
+				out.write("# and are inherited from the GlobalGroups.yml." + newLine);
+				out.write("#" + newLine);
+				out.write("# Groups without the g: prefix are groups local to this world" + newLine);
+				out.write("# and are defined in the this groups.yml file." + newLine);
+				out.write("#" + newLine);
+				out.write("# Local group inheritances define your promotion tree when using 'manpromote/mandemote'" + newLine);
+				out.write(newLine);
+
+				yaml.dump(root, out);
+				out.close();
+			} catch (Exception ignored) {
 			}
 
 			// Update the LastModified time.
@@ -896,6 +893,7 @@ public class CoreYaml implements DataSource {
 			dataHolder.getGroupsObject().setTimeStamp(dataHolder.getGroupsFile().lastModified());
 			dataHolder.removeGroupsChangedFlag();
 		}
+
 		if (GroupManager.isLoaded())
 			GroupManager.getGMEventHandler().callEvent(GMSystemEvent.Action.SAVED);
 	}
@@ -908,55 +906,53 @@ public class CoreYaml implements DataSource {
 
 		root.put("users", usersMap);
 
-		synchronized (dataHolder.getUsers()) {
-			// A sorted list of users.
-			for (String userKey : new TreeSet<>(dataHolder.getUsers().keySet())) {
-				User user = dataHolder.getUsers().get(userKey);
-				if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
-					continue;
-				}
-
-				LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
-				usersMap.put(user.getUUID(), aUserMap);
-
-				if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
-					aUserMap.put("lastname", user.getLastName());
-				}
-
-				// GROUP NODE
-				if (user.getGroup() == null) {
-					aUserMap.put("group", dataHolder.getDefaultGroup().getName());
-				} else {
-					aUserMap.put("group", user.getGroup().getName());
-				}
-
-				// SUBGROUPS NODE
-				aUserMap.put("subgroups", user.getSaveSubGroupsList());
-
-				// PERMISSIONS NODE
-				aUserMap.put("permissions", user.getSavePermissionList());
-
-				// USER INFO NODE - BETA
-				if (user.getVariables().getSize() > 0) {
-					Map<String, Object> infoMap = new HashMap<>();
-					aUserMap.put("info", infoMap);
-					for (String infoKey : user.getVariables().getVarKeyList()) {
-						infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
-					}
-				}
-				// END USER INFO NODE - BETA
+		// A sorted list of users.
+		for (String userKey : dataHolder.getUsers().keySet()) {
+			User user = dataHolder.getUsers().get(userKey);
+			if ((user.getGroup() == null || user.getGroup().equals(dataHolder.getDefaultGroup())) && user.getPermissionList().isEmpty() && user.getVariables().isEmpty() && user.isSubGroupsEmpty()) {
+				continue;
 			}
 
-			if (!root.isEmpty()) {
-				DumperOptions opt = new DumperOptions();
-				opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-				final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
-				try {
-					OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
-					yaml.dump(root, out);
-					out.close();
-				} catch (Exception ignored) {
+			LinkedHashMap<String, Object> aUserMap = new LinkedHashMap<>();
+			usersMap.put(user.getUUID(), aUserMap);
+
+			if (!user.getUUID().equalsIgnoreCase(user.getLastName())) {
+				aUserMap.put("lastname", user.getLastName());
+			}
+
+			// GROUP NODE
+			if (user.getGroup() == null) {
+				aUserMap.put("group", dataHolder.getDefaultGroup().getName());
+			} else {
+				aUserMap.put("group", user.getGroup().getName());
+			}
+
+			// SUBGROUPS NODE
+			aUserMap.put("subgroups", user.getSaveSubGroupsList());
+
+			// PERMISSIONS NODE
+			aUserMap.put("permissions", user.getSavePermissionList());
+
+			// USER INFO NODE - BETA
+			if (user.getVariables().getSize() > 0) {
+				Map<String, Object> infoMap = new HashMap<>();
+				aUserMap.put("info", infoMap);
+				for (String infoKey : user.getVariables().getVarKeyList()) {
+					infoMap.put(infoKey, user.getVariables().getVarObject(infoKey));
 				}
+			}
+			// END USER INFO NODE - BETA
+		}
+
+		if (!root.isEmpty()) {
+			DumperOptions opt = new DumperOptions();
+			opt.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+			final org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml(opt);
+			try {
+				OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(dataHolder.getUsersFile()), StandardCharsets.UTF_8);
+				yaml.dump(root, out);
+				out.close();
+			} catch (Exception ignored) {
 			}
 
 			// Update the LastModified time.
@@ -1114,7 +1110,7 @@ public class CoreYaml implements DataSource {
 					// Permission nodes
 					try {
 						nodeData = ((Map<?, ?>) allGroups.get(groupName)).get("permissions"); //$NON-NLS-1$
-					} catch ( Exception ex) {
+					} catch (Exception ex) {
 						throw new IllegalArgumentException(String.format(Messages.getString("GlobalGroups.BAD_FORMATTED"), groupName), ex); //$NON-NLS-1$
 					}
 
@@ -1177,7 +1173,8 @@ public class CoreYaml implements DataSource {
 
 					try {
 						yaml.dump(root, new OutputStreamWriter(new FileOutputStream(gg.getGlobalGroupsFile()), StandardCharsets.UTF_8)); //$NON-NLS-1$
-					} catch (FileNotFoundException ignored) {}
+					} catch (FileNotFoundException ignored) {
+					}
 				}
 
 				/*

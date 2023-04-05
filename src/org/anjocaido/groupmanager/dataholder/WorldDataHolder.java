@@ -75,7 +75,6 @@ public class WorldDataHolder {
 		name = worldName;
 	}
 
-
 	/**
 	 * update the dataSource to point to this object.
 	 * <p>
@@ -311,6 +310,7 @@ public class WorldDataHolder {
 		if (groupToAdd.getDataSource() != this) {
 			groupToAdd = groupToAdd.clone(this);
 		}
+
 		removeGroup(groupToAdd.getName());
 		getGroups().put(groupToAdd.getName().toLowerCase(), groupToAdd);
 		setGroupsChanged(true);
@@ -393,9 +393,7 @@ public class WorldDataHolder {
 	 */
 	public Collection<Group> getGroupList() {
 
-		synchronized (getGroups()) {
-			return new LinkedList<>(getGroups().values());
-		}
+		return new LinkedList<>(getGroups().values());
 	}
 
 	/**
@@ -403,9 +401,7 @@ public class WorldDataHolder {
 	 */
 	public Collection<User> getUserList() {
 
-		synchronized (getUsers()) {
-			return new LinkedList<>(getUsers().values());
-		}
+		return new LinkedList<>(getUsers().values());
 	}
 
 	/**
@@ -445,11 +441,9 @@ public class WorldDataHolder {
 		if (users.isUsersChanged()) {
 			return true;
 		}
-		synchronized(getUsers()) {
-			for (User u : users.getUsers().values()) {
-				if (u.isChanged()) {
-					return true;
-				}
+		for (User u : users.getUsers().values()) {
+			if (u.isChanged()) {
+				return true;
 			}
 		}
 		return false;
@@ -472,11 +466,9 @@ public class WorldDataHolder {
 		if (groups.isGroupsChanged()) {
 			return true;
 		}
-		synchronized(getGroups()) {
-			for (Group g : groups.getGroups().values()) {
-				if (g.isChanged()) {
-					return true;
-				}
+		for (Group g : groups.getGroups().values()) {
+			if (g.isChanged()) {
+				return true;
 			}
 		}
 		return false;
@@ -488,10 +480,8 @@ public class WorldDataHolder {
 	public void removeUsersChangedFlag() {
 
 		setUsersChanged(false);
-		synchronized(getUsers()) {
-			for (User u : getUsers().values()) {
-				u.flagAsSaved();
-			}
+		for (User u : getUsers().values()) {
+			u.flagAsSaved();
 		}
 	}
 
@@ -501,10 +491,8 @@ public class WorldDataHolder {
 	public void removeGroupsChangedFlag() {
 
 		setGroupsChanged(false);
-		synchronized(getGroups()) {
-			for (Group g : getGroups().values()) {
-				g.flagAsSaved();
-			}
+		for (Group g : getGroups().values()) {
+			g.flagAsSaved();
 		}
 	}
 
@@ -516,21 +504,17 @@ public class WorldDataHolder {
 
 		boolean expired = false;
 
-		synchronized(getUsers()) {
-			for (User user : getUsers().values()) {
-				if (user.removeExpired()) {
-					setUsersChanged(true);
-					expired = true;
-				}
+		for (Group group : getGroups().values()) {
+			if (group.removeExpired()) {
+				setGroupsChanged(true);
+				expired = true;
 			}
 		}
 
-		synchronized(getGroups()) {
-			for (Group group : getGroups().values()) {
-				if (group.removeExpired()) {
-					setGroupsChanged(true);
-					expired = true;
-				}
+		for (User user : getUsers().values()) {
+			if (user.removeExpired()) {
+				setUsersChanged(true);
+				expired = true;
 			}
 		}
 
@@ -595,7 +579,6 @@ public class WorldDataHolder {
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronized!
 	 *
 	 * @return the groups
 	 */
@@ -605,7 +588,6 @@ public class WorldDataHolder {
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronized!
 	 *
 	 * @return the users
 	 */

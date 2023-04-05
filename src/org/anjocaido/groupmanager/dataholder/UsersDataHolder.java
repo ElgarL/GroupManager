@@ -18,7 +18,6 @@
 package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -40,7 +39,7 @@ public class UsersDataHolder {
 	/**
 	 * The actual groups holder
 	 */
-	private final SortedMap<String, User> users = Collections.synchronizedSortedMap(new TreeMap<>());
+	private final SortedMap<String, User> users = new TreeMap<>();
 
 	/**
 	 * Constructor
@@ -51,13 +50,10 @@ public class UsersDataHolder {
 
 		this.dataSource = dataSource;
 		// Push this data source to the users, so they pull the correct groups data.
-		synchronized(users) {
-			users.entrySet().forEach(entry -> entry.getValue().setDataSource(this.dataSource));
-		}
+		users.entrySet().forEach(entry -> entry.getValue().setDataSource(this.dataSource));
 	}
 
 	/**
-	 * Note: Iteration over this object has to be synchronized!
 	 * 
 	 * @return the users
 	 */
@@ -76,9 +72,7 @@ public class UsersDataHolder {
 	 */
 	void resetUsers() {
 
-		synchronized(users) {
-			this.users.clear();
-		}
+		this.users.clear();
 	}
 
 	/**
@@ -112,9 +106,7 @@ public class UsersDataHolder {
 		
 		setUsersChanged(true);
 		
-		synchronized(users) {
-			users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
-		}
+		users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
 	}
 
 	/**
