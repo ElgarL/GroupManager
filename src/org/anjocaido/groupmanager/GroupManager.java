@@ -429,13 +429,10 @@ public class GroupManager extends JavaPlugin {
 
 						/*
 						 * If we removed any permissions and saving is not disabled
-						 * update our data files so we are not updating perms
+						 * we update our data files so we are not updating perms
 						 * every 60 seconds.
 						 */
-						if (getWorldsHolder().purgeExpiredPerms()) {
-
-							getWorldsHolder().refreshData(null);
-						}
+						getWorldsHolder().purgeExpiredPerms();
 
 					} catch (Exception ex) {
 						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions:\n" + Tasks.getStackTraceAsString(ex));

@@ -203,20 +203,14 @@ public abstract class WorldsHolder extends ChildMirrors {
 				 */
 				if (world.purgeTimedPermissions()) {
 					result = true;
-
-					/*for (User user : world.getUserList()) {
-						// If the player is online, this will create new data for the user.
-						Player targetPlayer = BukkitWrapper.getInstance().getPlayer(user.getLastName());
-						if (targetPlayer != null)
-							GroupManager.getBukkitPermissions().updatePermissions(targetPlayer);
-					}*/
 				}
 				alreadyDone.add(world);
 			}
 		}
 
-		if (result)
-			plugin.getWorldsHolder().refreshData(null);
+		if (result) {
+			plugin.getWorldsHolder().refreshData(() -> GroupManager.getBukkitPermissions().updateAllPlayers());
+		}
 
 		return result;
 	}
