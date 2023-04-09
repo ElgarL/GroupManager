@@ -471,9 +471,9 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Remove any expired subGroups.
+	 * Remove any expired user permissions or subGroups.
 	 *
-	 * @return true if any Groups were removed.
+	 * @return true if any permissions or Groups were removed.
 	 */
 	public boolean removeExpired() {
 
