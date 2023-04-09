@@ -18,6 +18,7 @@
 package org.anjocaido.groupmanager.data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -478,16 +479,21 @@ public class User extends DataUnit implements Cloneable {
 	public boolean removeExpired() {
 
 		boolean expired = false;
-
-		for (Entry<String, Long> entry : subGroups.entrySet()) {
-			if ((entry.getValue() != 0) && Tasks.isExpired(entry.getValue())) {
-				if (subGroups.remove(entry.getKey()) != null) {
-
-					expired = true;
-					GroupManager.logger.log(Level.INFO, (String.format("Timed Subgroup removed from : %s : %s", getLastName(), entry.getKey())));
-				}
+		
+		Iterator<String> iterator = subGroups.keySet().iterator();
+		
+		while (iterator.hasNext()) {
+			String name = iterator.next();
+			Long value = subGroups.get(name);
+			
+			if ((value != 0) && Tasks.isExpired(value)) {
+				iterator.remove();
+				
+				expired = true;
+				GroupManager.logger.log(Level.INFO, (String.format("Timed Subgroup removed from : %s : %s", getLastName(), name)));
 			}
 		}
+
 		return expired || super.removeExpired();
 	}
 }

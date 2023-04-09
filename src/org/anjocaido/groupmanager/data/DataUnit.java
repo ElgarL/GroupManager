@@ -19,6 +19,7 @@ package org.anjocaido.groupmanager.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,7 +45,7 @@ public abstract class DataUnit {
 	private boolean changed;
 	private long timeStamp = 0;
 
-	private final Map<String, Long> permissions = Collections.synchronizedSortedMap(new TreeMap<>(new StringPermissionComparator()));
+	private final Map<String, Long> permissions = new TreeMap<>(new StringPermissionComparator());
 
 	DataUnit(WorldDataHolder dataSource, String name) {
 
@@ -315,13 +316,16 @@ public abstract class DataUnit {
 
 		boolean expired = false;
 
-		for (Entry<String, Long> perm : permissions.entrySet()) {
-			if ((perm.getValue() != 0) && Tasks.isExpired(perm.getValue())) {
-				if (permissions.remove(perm.getKey()) != null) {
-
-					expired = true;
-					GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), perm.getKey())));
-				}
+		Iterator<String> iterator = permissions.keySet().iterator();
+		
+		while (iterator.hasNext()) {
+			String name = iterator.next();
+			Long value = permissions.get(name);
+			
+			if ((value != 0) && Tasks.isExpired(value)) {
+				iterator.remove();
+				expired = true;
+				GroupManager.logger.log(Level.INFO, (String.format("Timed Permission removed from : %s : %s", getLastName(), name)));
 			}
 		}
 

@@ -438,7 +438,7 @@ public class GroupManager extends JavaPlugin {
 						}
 
 					} catch (Exception ex) {
-						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions: " + ex.getMessage());
+						GroupManager.logger.log(Level.SEVERE, "Failed to purge expired permissions:\n" + Tasks.getStackTraceAsString(ex));
 					}
 				}
 			};
