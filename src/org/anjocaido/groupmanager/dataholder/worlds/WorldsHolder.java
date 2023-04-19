@@ -38,6 +38,7 @@ import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.storage.DataSource;
 import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.storage.statements.Statements;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
@@ -79,7 +80,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 
 	public void addWorldData(String key, OverloadedWorldHolder worldData) {
 
-		synchronized(worldsData) {
+		synchronized (worldsData) {
 			worldsData.put(key.toLowerCase(), worldData);
 		}
 	}
@@ -89,7 +90,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	public void resetWorldsHolder() {
 
-		synchronized(worldsData) {
+		synchronized (worldsData) {
 			worldsData = Collections.synchronizedMap(new LinkedHashMap<>());
 			clearGroupsMirror();
 			clearUsersMirror();
@@ -136,7 +137,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	 */
 	void loadParentWorlds() {
 
-		synchronized(worldsData) {
+		synchronized (worldsData) {
 			for (String world : worldsData.keySet()) {
 				dataSource.init(world);
 				dataSource.loadWorld(world, false);
@@ -153,7 +154,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		GroupManager.getGlobalGroups().load();
 
 		ArrayList<WorldDataHolder> alreadyDone = new ArrayList<>();
-		
+
 		synchronized (worldsData) {
 			for (WorldDataHolder w : worldsData.values()) {
 				if (alreadyDone.contains(w)) {
@@ -209,7 +210,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 		}
 
 		if (result) {
-			plugin.getWorldsHolder().refreshData(() -> GroupManager.getBukkitPermissions().updateAllPlayers());
+			plugin.getWorldsHolder().refreshData(null);
 		}
 
 		return result;
@@ -222,7 +223,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public CompletableFuture<Void> refreshData(Runnable task) {
 
 		//GroupManager.logger.info("Refresh: " + Tasks.printStackTrace());
-		
+
 		// Check for any updated permissions
 		return CompletableFuture.supplyAsync(() -> {
 
@@ -242,7 +243,7 @@ public abstract class WorldsHolder extends ChildMirrors {
 				/*
 				 * Release the lock.
 				 */
-				if(plugin.getSaveLock().isHeldByCurrentThread()) {
+				if (plugin.getSaveLock().isHeldByCurrentThread()) {
 					GroupManager.setLoaded(true);
 					plugin.getSaveLock().unlock();
 				}
@@ -251,10 +252,17 @@ public abstract class WorldsHolder extends ChildMirrors {
 			return changed;
 		}).thenAccept((changed) -> {
 
-			if (changed) {
-				GroupManager.getBukkitPermissions().updateAllPlayers();
+			if ((changed) || (task != null)) {
+				Bukkit.getScheduler().callSyncMethod(plugin, () -> {
+					
+					if (changed)
+						GroupManager.getBukkitPermissions().updateAllPlayers();
+					if (task != null)
+						task.run();
+					
+					return null;
+				});
 			}
-			if (task != null) task.run();
 		});
 	}
 
@@ -504,8 +512,8 @@ public abstract class WorldsHolder extends ChildMirrors {
 	public boolean hasOwnData(String worldName) {
 
 		String key = worldName.toLowerCase();
-		
-		synchronized(worldsData) {
+
+		synchronized (worldsData) {
 			return worldsData.containsKey(key) && worldsData.get(key) != null && (!hasGroupsMirror(key) || !hasUsersMirror(key));
 		}
 	}
