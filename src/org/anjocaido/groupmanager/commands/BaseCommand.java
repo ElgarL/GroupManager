@@ -142,9 +142,9 @@ public abstract class BaseCommand implements CommandExecutor, TabCompleter {
 
 			senderUser = plugin.getWorldsHolder().getWorldData(senderPlayer).getUser(senderPlayer.getUniqueId().toString());
 			senderGroup = senderUser.getGroup();
-			isOpOverride = (isOpOverride && (senderPlayer.isOp() || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op"))); //$NON-NLS-1$
+			isOpOverride = ((isOpOverride && senderPlayer.isOp()) || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager.op")); //$NON-NLS-1$
 
-			if (isOpOverride || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias)) { //$NON-NLS-1$
+			if (isOpOverride || plugin.getWorldsHolder().getWorldPermissions(senderPlayer).has(senderPlayer, "groupmanager." + alias) || senderPlayer.hasPermission("groupmanager." + alias)) { //$NON-NLS-1$
 				playerCanDo = true;
 			}
 		} else {
