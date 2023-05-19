@@ -72,8 +72,9 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	}
 
 	/**
-	 * Checks if a player can use that permission node.
-	 * Includes Bukkit permissions assigned by other plugins and defaults.
+	 * Checks if a Player has that permission node in their current world.
+	 * Includes Bukkit permissions assigned by other plug-ins and defaults.
+	 * Supports wildcards.
 	 * 
 	 * @param player
 	 * @param permission
@@ -87,8 +88,8 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	}
 
 	/**
-	 * Checks if a player can use that permission node.
-	 * Will NOT include Bukkit only permissions.
+	 * Checks if a User has that permission node.
+	 * Will NOT include Bukkit assigned permissions.
 	 * 
 	 * @param playerName
 	 * @param permission
