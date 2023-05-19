@@ -116,13 +116,12 @@ public class GMHook
 	}
 
 	/**
-	 * Use Player.hasPermission
+	 * Supports wildcards.
 	 * 
 	 * @param player
 	 * @param node
 	 * @return
 	 */
-	@Deprecated
 	public boolean hasPermission(final Player player, final String node) {
 		if (!hasGroupManager()) return false;
 		
