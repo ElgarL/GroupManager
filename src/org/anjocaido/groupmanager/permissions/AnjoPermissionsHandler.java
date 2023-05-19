@@ -90,6 +90,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	/**
 	 * Checks if a User has that permission node.
 	 * Will NOT include Bukkit assigned permissions.
+	 * Supports wildcards.
 	 * 
 	 * @param playerName
 	 * @param permission
