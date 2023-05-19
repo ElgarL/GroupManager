@@ -73,6 +73,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 
 	/**
 	 * Checks if a player can use that permission node.
+	 * Includes Bukkit permissions assigned by other plugins and defaults.
 	 * 
 	 * @param player
 	 * @param permission
@@ -81,11 +82,13 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	@Override
 	public boolean permission(Player player, String permission) {
 
-		return checkUserPermission(ph.getUser(player.getUniqueId().toString()), permission);
+		PermissionCheckResult result = checkFullUserPermission(ph.getUser(player.getUniqueId().toString()), permission);
+		return result.resultType == PermissionCheckResult.Type.EXCEPTION || result.resultType == PermissionCheckResult.Type.FOUND;
 	}
 
 	/**
 	 * Checks if a player can use that permission node.
+	 * Will NOT include Bukkit only permissions.
 	 * 
 	 * @param playerName
 	 * @param permission
@@ -787,7 +790,7 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 	 */
 	public boolean checkUserPermission(User user, String permission) {
 
-		PermissionCheckResult result = checkFullGMPermission(user, permission, true);
+		PermissionCheckResult result = checkFullGMPermission(user, permission, false);
 		return result.resultType == PermissionCheckResult.Type.EXCEPTION || result.resultType == PermissionCheckResult.Type.FOUND;
 	}
 
