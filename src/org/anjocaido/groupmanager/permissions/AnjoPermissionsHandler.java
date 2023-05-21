@@ -858,18 +858,6 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 		PermissionCheckResult result = new PermissionCheckResult();
 		result.accessLevel = targetPermission;
 		result.resultType = PermissionCheckResult.Type.NOTFOUND;
-
-		if (checkBukkit) {
-			// Check Bukkit perms to support plugins which add perms via code
-			// (Heroes).
-			final Player player = user.getBukkitPlayer();
-
-			if ((player != null) && player.hasPermission(targetPermission)) {
-				result.resultType = PermissionCheckResult.Type.FOUND;
-				result.owner = user;
-				return result;
-			}
-		}
 		
 		PermissionCheckResult resultUser = checkUserOnlyPermission(user, targetPermission);
 		if (resultUser.resultType != PermissionCheckResult.Type.NOTFOUND) {
@@ -927,6 +915,19 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 					result = resultSubGroup;
 				}
 
+			}
+		}
+		
+		// If set to check Bukkit and we found no permission in GroupManager
+		if (checkBukkit && result.resultType == PermissionCheckResult.Type.NOTFOUND) {
+			// Check Bukkit perms to support plugins which add perms via code
+			// (Heroes).
+			final Player player = user.getBukkitPlayer();
+
+			if ((player != null) && player.hasPermission(targetPermission)) {
+				result.resultType = PermissionCheckResult.Type.FOUND;
+				result.owner = user;
+				return result;
 			}
 		}
 
