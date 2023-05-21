@@ -927,7 +927,6 @@ public class AnjoPermissionsHandler extends PermissionsReaderInterface {
 			if ((player != null) && player.hasPermission(targetPermission)) {
 				result.resultType = PermissionCheckResult.Type.FOUND;
 				result.owner = user;
-				return result;
 			}
 		}
 
