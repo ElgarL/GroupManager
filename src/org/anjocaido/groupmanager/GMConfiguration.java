@@ -28,7 +28,6 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.storage.DataSource.ACCESS_LEVEL;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
 /**
@@ -113,7 +112,7 @@ public class GMConfiguration {
 			}
 		}
 
-		Yaml configYAML = new Yaml(new SafeConstructor());
+		Yaml configYAML = new Yaml();
 
 		Map<String, Object> GMconfig;
 		try {

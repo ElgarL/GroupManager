@@ -33,7 +33,6 @@ import org.anjocaido.groupmanager.localization.Messages;
 import org.anjocaido.groupmanager.utils.Tasks;
 import org.bukkit.World;
 import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 
 /**
@@ -242,7 +241,7 @@ public class CoreYaml implements DataSource {
 		// READ GROUPS FILE
 		File groupsFile = dataHolder.getGroupsFile();
 
-		org.yaml.snakeyaml.Yaml yamlGroups = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+		org.yaml.snakeyaml.Yaml yamlGroups = new org.yaml.snakeyaml.Yaml();
 		Map<String, Object> groupsRootDataNode;
 
 		if (!groupsFile.exists()) {
@@ -510,7 +509,7 @@ public class CoreYaml implements DataSource {
 		// READ USERS FILE
 		File usersFile = dataHolder.getUsersFile();
 
-		org.yaml.snakeyaml.Yaml yamlUsers = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+		org.yaml.snakeyaml.Yaml yamlUsers = new org.yaml.snakeyaml.Yaml();
 		Map<String, Object> usersRootDataNode;
 
 		if (!dataHolder.getUsersFile().exists()) {
@@ -1035,7 +1034,7 @@ public class CoreYaml implements DataSource {
 	public void loadGlobalGroups(GlobalGroups globalGroups) {
 
 		File globalGroupsFile = globalGroups.getGlobalGroupsFile();
-		org.yaml.snakeyaml.Yaml groupYAML = new org.yaml.snakeyaml.Yaml(new SafeConstructor());
+		org.yaml.snakeyaml.Yaml groupYAML = new org.yaml.snakeyaml.Yaml();
 
 		Map<String, Object> groups;
 
