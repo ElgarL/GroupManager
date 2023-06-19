@@ -18,8 +18,9 @@
 package org.anjocaido.groupmanager.dataholder;
 
 import java.io.File;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.anjocaido.groupmanager.data.User;
 
@@ -39,7 +40,7 @@ public class UsersDataHolder {
 	/**
 	 * The actual groups holder
 	 */
-	private final SortedMap<String, User> users = new TreeMap<>();
+	private final ConcurrentSkipListMap<String, User> users = new ConcurrentSkipListMap<>();
 
 	/**
 	 * Constructor
@@ -50,14 +51,15 @@ public class UsersDataHolder {
 
 		this.dataSource = dataSource;
 		// Push this data source to the users, so they pull the correct groups data.
-		users.entrySet().forEach(entry -> entry.getValue().setDataSource(this.dataSource));
+		for (Iterator<Entry<String, User>> iterator = users.entrySet().iterator(); iterator.hasNext();)
+			iterator.next().getValue().setDataSource(this.dataSource);
 	}
 
 	/**
 	 * 
 	 * @return the users
 	 */
-	public SortedMap<String, User> getUsers() {
+	public ConcurrentSkipListMap<String, User> getUsers() {
 
 		return users;
 	}
@@ -106,7 +108,8 @@ public class UsersDataHolder {
 		
 		setUsersChanged(true);
 		
-		users.entrySet().forEach(entry -> entry.getValue().flagAsChanged());
+		for (Iterator<Entry<String, User>> iterator = users.entrySet().iterator(); iterator.hasNext();)
+			iterator.next().getValue().flagAsChanged();
 	}
 
 	/**

@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.data.Group;
@@ -582,7 +582,7 @@ public class WorldDataHolder {
 	 *
 	 * @return the groups
 	 */
-	public SortedMap<String, Group> getGroups() {
+	public ConcurrentSkipListMap<String, Group> getGroups() {
 
 		return groups.getGroups();
 	}
@@ -591,7 +591,7 @@ public class WorldDataHolder {
 	 *
 	 * @return the users
 	 */
-	public SortedMap<String, User> getUsers() {
+	public ConcurrentSkipListMap<String, User> getUsers() {
 
 		return users.getUsers();
 	}

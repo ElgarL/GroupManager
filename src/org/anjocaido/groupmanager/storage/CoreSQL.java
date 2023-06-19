@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -892,7 +893,7 @@ public class CoreSQL implements DataSource {
 
 				conn.setAutoCommit(false);
 
-				SortedMap<String, Group> groups = dataHolder.getGroups();
+				ConcurrentSkipListMap<String,Group> groups = dataHolder.getGroups();
 				Set<String> keys = groups.keySet();
 
 				Iterator<String> iter = keys.iterator();
@@ -1025,7 +1026,7 @@ public class CoreSQL implements DataSource {
 
 				conn.setAutoCommit(false);
 
-				SortedMap<String, User> users = dataHolder.getUsers();
+				ConcurrentSkipListMap<String,User> users = dataHolder.getUsers();
 				Set<String> keys = users.keySet();
 
 				Iterator<String> iter = keys.iterator();

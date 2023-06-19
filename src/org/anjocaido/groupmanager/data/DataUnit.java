@@ -24,9 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.dataholder.WorldDataHolder;
@@ -45,7 +46,7 @@ public abstract class DataUnit {
 	private boolean changed;
 	private long timeStamp = 0;
 
-	private final Map<String, Long> permissions = new TreeMap<>(new StringPermissionComparator());
+	private final Map<String, Long> permissions = new ConcurrentSkipListMap<>(new StringPermissionComparator());
 
 	DataUnit(WorldDataHolder dataSource, String name) {
 
@@ -101,7 +102,8 @@ public abstract class DataUnit {
 	 */
 	public void setDataSource(WorldDataHolder source) {
 
-		this.dataSource = source;
+		if (this.dataSource != source)
+			this.dataSource = source;
 	}
 
 	/**
@@ -275,7 +277,7 @@ public abstract class DataUnit {
 	 */
 	public List<String> getPermissionList() {
 
-		return Collections.unmodifiableList(new ArrayList<>(permissions.keySet()));
+		return Collections.unmodifiableList(permissions.keySet().stream().collect(Collectors.toList()));
 	}
 
 	/**
