@@ -321,3 +321,5 @@ v3.0:
     - Re-order permission checks so GM permissions will be checked first before failing a wildcard test in superperms.
 v3.1:
     - Fix rare concurrency error.
+v3.2:
+    - Add jitpack.yml to build against java 17 so jitpack works again.
