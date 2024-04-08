@@ -187,7 +187,7 @@ public class User extends DataUnit implements Cloneable {
 	}
 
 	/**
-	 * Silently set the Users Group.
+	 * Wrapper for backwards compatibility to set the Users Group.
 	 * 
 	 * @param group the group to set
 	 */

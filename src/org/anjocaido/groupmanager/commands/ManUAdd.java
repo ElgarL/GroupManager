@@ -103,7 +103,8 @@ public class ManUAdd extends BaseCommand {
 		
 		// Auto saves.
 		auxUser.setGroup(auxGroup);
-		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
+		
+		if (isConsole)
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
 
 		return true;

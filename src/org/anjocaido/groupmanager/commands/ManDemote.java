@@ -95,7 +95,7 @@ public class ManDemote extends BaseCommand {
 		// Seems OK
 		auxUser.setGroup(auxGroup);	// Auto saves.
 		
-		if (!sender.hasPermission("groupmanager.notify.other") || (isConsole))
+		if (isConsole)
 			sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("USER_CHANGED_TO_GROUP"), auxUser.getLastName(), auxGroup.getName(), dataHolder.getName())); //$NON-NLS-1$
 
 		return true;
