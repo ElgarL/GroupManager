@@ -179,7 +179,7 @@ public abstract class Tasks {
 				break;
 			}
 		}
-		return TimeUnit.MILLISECONDS.toMinutes(instant.toEpochMilli());
+		return TimeUnit.MILLISECONDS.toSeconds(instant.toEpochMilli());
 	}
 
 	/**

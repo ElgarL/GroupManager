@@ -119,6 +119,12 @@ public class BukkitWrapper {
 		// Search all known players (to this server) for a matching UUID.
 		return getOfflinePlayer(uid).getLastPlayed();
 	}
+	
+	public Long getLastOnline(String name) {
+
+		// Search all known players (to this server) for a matching UUID.
+		return getOfflinePlayer(name).getLastPlayed();
+	}
 
 	public Long getFirstPlayed(UUID uid) {
 

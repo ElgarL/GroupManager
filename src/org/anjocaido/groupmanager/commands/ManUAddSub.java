@@ -88,7 +88,7 @@ public class ManUAddSub extends BaseCommand {
 				} catch (Exception e) {
 					period = 0L;
 				}
-				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				timed = Instant.now().plus(period, ChronoUnit.SECONDS);
 				auxString = split[0];
 
 				if (period == 0) {
@@ -115,7 +115,7 @@ public class ManUAddSub extends BaseCommand {
 				// Seems OK
 				if (period != null) {
 					if (auxUser.addTimedSubGroup(auxGroup, timed.getEpochSecond())) {
-						sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxGroup.getName(), auxUser.getLastName(), period)); //$NON-NLS-1$
+						sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("SUBGROUP_ADDED_USER_TIMED"), auxGroup.getName(), auxUser.getLastName(), period / 60)); //$NON-NLS-1$
 					} else {
 						sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ERROR_SUBGROUP_ALREADY_AVAILABLE"), auxGroup.getName(), auxUser.getLastName())); //$NON-NLS-1$
 					}

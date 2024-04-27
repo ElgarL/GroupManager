@@ -447,6 +447,7 @@ public class GroupManager extends JavaPlugin {
 
 				if (isLoaded()) {
 
+					GroupManager.logger.log(Level.INFO, "Running maintenance purge of old users.. ");
 					try {
 						int count = 0;
 
@@ -461,17 +462,18 @@ public class GroupManager extends JavaPlugin {
 									/*
 									 * Users with a lastplayed variable set to 0 are protected from deletion.
 									 */
-									if (lastPlayed != 0 && (user.getUUID().length() > 16)) {
-										long serverLastPlayed = BukkitWrapper.getInstance().getLastOnline(UUID.fromString(user.getUUID()));
+									if (lastPlayed == 0) continue;
+									
+									String id = user.getUUID();
+									long serverLastPlayed = (id.length() > 16) ? BukkitWrapper.getInstance().getLastOnline(UUID.fromString(id)) : BukkitWrapper.getInstance().getLastOnline(id);
 
-										if (serverLastPlayed > 0 && (Tasks.isExpired(serverLastPlayed + getGMConfig().userExpires()))) {
+									if (Tasks.isExpired(TimeUnit.MILLISECONDS.toSeconds(serverLastPlayed) + getGMConfig().userExpires())) {
 
-											world.removeUser(user.getUUID());
-											world.setUsersChanged(true);
-											count++;
-										}
+										world.removeUser(user.getUUID());
+										world.setUsersChanged(true);
+										count++;
 									}
-									Thread.sleep(1000);
+									Thread.sleep(50);
 								}
 							}
 						}

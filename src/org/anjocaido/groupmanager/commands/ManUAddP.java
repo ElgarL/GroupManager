@@ -90,7 +90,7 @@ public class ManUAddP extends BaseCommand {
 				} catch (Exception e) {
 					period = 0L;
 				}
-				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				timed = Instant.now().plus(period, ChronoUnit.SECONDS);
 				auxString = split[0];
 
 				if (period == 0) {
@@ -115,7 +115,7 @@ public class ManUAddP extends BaseCommand {
 			// Auto saves.
 			if (period != null) {
 				auxUser.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_USER_TIMED"), auxString, auxUser.getLastName(), period / 60)); //$NON-NLS-1$
 
 			} else {
 				auxUser.addPermission(auxString);

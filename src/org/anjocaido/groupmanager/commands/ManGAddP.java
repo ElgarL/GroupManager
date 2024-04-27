@@ -81,7 +81,7 @@ public class ManGAddP extends BaseCommand {
 				} catch (Exception e) {
 					period = 0L;
 				}
-				timed = Instant.now().plus(period, ChronoUnit.MINUTES);
+				timed = Instant.now().plus(period, ChronoUnit.SECONDS);
 				auxString = split[0];
 
 				if (period == 0) {
@@ -107,7 +107,7 @@ public class ManGAddP extends BaseCommand {
 			// Auto saves.
 			if (period != null) {
 				auxGroup.addTimedPermission(auxString, timed.getEpochSecond());
-				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_GROUP_TIMED"), auxString, auxGroup.getName(), period)); //$NON-NLS-1$
+				sender.sendMessage(ChatColor.YELLOW + String.format(Messages.getString("ADDED_PERMISSION_TO_GROUP_TIMED"), auxString, auxGroup.getName(), period / 60)); //$NON-NLS-1$
 
 			} else {
 				auxGroup.addPermission(auxString);
