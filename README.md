@@ -95,3 +95,19 @@ Typically the build status is given as:
 
     build: false : Disables building/destroying of blocks.
     build: true : Enables building/destroying of blocks.
+
+## PlaceholderAPI
+
+Groupmanager has PAPI support via the following placeholders.
+
+    %groupmanager_group%
+    %groupmanager_allgroups%
+    %groupmanager_subgroups%
+    %groupmanager_user_prefix%
+    %groupmanager_user_suffix%
+    %groupmanager_group_prefix%
+    %groupmanager_group_suffix%
+
+You can also perform a permission check using PAPI
+
+    %groupmanager_perm_permission.here%
