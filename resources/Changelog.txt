@@ -323,3 +323,5 @@ v3.1:
     - Fix rare concurrency error.
 v3.2:
     - Add jitpack.yml to build against java 17 so jitpack works again.
+v3.3:
+    - Add German and Spanish Translations (@ArchaeologyNerd, @Mundo).
