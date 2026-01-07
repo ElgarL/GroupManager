@@ -2,8 +2,8 @@
   config:
     # Languages must have a corresponding properties file.
     # Acceptable entries are:
-    #   chinese-simplified, chinese-traditional, czech, english, french, indonesian, portuguese,
-    #   portuguese-brazil, russian, romanian, swedish, turkish.
+    #   chinese-simplified, chinese-traditional, czech, english, french, german, indonesian,
+    #   portuguese, portuguese-brazil, russian, romanian, spanish, swedish, turkish.
     language: english
 
     # With this enabled, every operator will have full permissions when managing GroupManager
@@ -92,3 +92,4 @@
     #     - groups   (World4 would use the groups.yml from world2, but it's own users.yml)
     #   world5:
     #     - world6   (this would cause world6 to mirror both files from world5)
+
