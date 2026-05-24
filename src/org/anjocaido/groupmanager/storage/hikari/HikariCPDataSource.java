@@ -36,6 +36,9 @@ public class HikariCPDataSource {
 		config.addDataSourceProperty("prepStmtCacheSize", "250");
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		config.addDataSourceProperty("maximum-pool-size", "100");
+		config.addDataSourceProperty("useSSL", "false");
+		config.addDataSourceProperty("serverTimezone", "UTC");
+		config.addDataSourceProperty("allowPublicKeyRetrieval", "true");
 		ds = new HikariDataSource(config);
 	}
 }
